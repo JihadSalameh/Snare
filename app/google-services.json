@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "681228228573",
+    "project_id": "snare-e1afc",
+    "storage_bucket": "snare-e1afc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:681228228573:android:2fc2edd6350c13fbc64834",
+        "android_client_info": {
+          "package_name": "com.example.snare"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "681228228573-65t0rc9regvaek9r2e5globqjml6ui4d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB_MIcjV76H5xDR7uSj4rJjzpPK0krt5w0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "681228228573-65t0rc9regvaek9r2e5globqjml6ui4d.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
