@@ -25,7 +25,7 @@ public class StartActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 FirebaseAuth.getInstance().signOut();
-                Toast.makeText(StartActivity.this, "Logged out!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(StartActivity.this, "Signed out!", Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(StartActivity.this, MainActivity.class));
                 finish();
             }
