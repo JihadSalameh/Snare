@@ -14,9 +14,6 @@
         android:theme="@style/Theme.Snare"
         tools:targetApi="31">
         <activity
-            android:name=".exp"
-            android:exported="false" />
-        <activity
             android:name=".StartActivity"
             android:exported="false" />
         <activity
