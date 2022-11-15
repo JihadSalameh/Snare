@@ -8,22 +8,12 @@
     tools:context=".LoginActivity">
 
     <ImageView
-        android:id="@+id/facebookSignIn"
-        android:layout_width="55dp"
-        android:layout_height="55dp"
-        android:layout_marginStart="144dp"
-        android:layout_marginTop="12dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView"
-        app:srcCompat="@drawable/fb_icon" />
-
-    <ImageView
         android:id="@+id/googleSignIn"
         android:layout_width="55dp"
         android:layout_height="55dp"
-        android:layout_marginStart="8dp"
         android:layout_marginTop="12dp"
-        app:layout_constraintStart_toEndOf="@+id/facebookSignIn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView"
         app:srcCompat="@drawable/googleicon" />
 

@@ -82,6 +82,7 @@ public class LoginActivity extends AppCompatActivity {
                 signIn();
             }
         });
+
     }
 
     private void signIn() {
@@ -113,16 +114,15 @@ public class LoginActivity extends AppCompatActivity {
                         if(task.isSuccessful()) {
                             FirebaseUser user = auth.getCurrentUser();
                             Toast.makeText(LoginActivity.this, user.getEmail(), Toast.LENGTH_SHORT).show();
-                            udpadeUI(user);
+                            updateUI(user);
                         } else {
                             Toast.makeText(LoginActivity.this, task.getException().toString(), Toast.LENGTH_SHORT).show();
-                            udpadeUI(null);
                         }
                     }
                 });
     }
 
-    private void udpadeUI(FirebaseUser user) {
+    private void updateUI(FirebaseUser user) {
         Toast.makeText(LoginActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
         startActivity(new Intent(LoginActivity.this, StartActivity.class));
         finish();
