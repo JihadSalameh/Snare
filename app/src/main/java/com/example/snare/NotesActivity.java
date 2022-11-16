@@ -10,23 +10,25 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 
-public class StartActivity extends AppCompatActivity {
+public class NotesActivity extends AppCompatActivity {
 
     private Button signOut;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_start);
+        setContentView(R.layout.activity_notes);
 
         signOut = findViewById(R.id.SignOutBtn);
+
+        //String auth = FirebaseAuth.getInstance().getCurrentUser().getIdToken(true).toString();
 
         signOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 FirebaseAuth.getInstance().signOut();
-                Toast.makeText(StartActivity.this, "Signed out!", Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(StartActivity.this, MainActivity.class));
+                Toast.makeText(NotesActivity.this, "Signed out!", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(NotesActivity.this, MainActivity.class));
                 finish();
             }
         });
