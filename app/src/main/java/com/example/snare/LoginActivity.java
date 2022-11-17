@@ -33,7 +33,6 @@ public class LoginActivity extends AppCompatActivity {
     private EditText email;
     private EditText password;
     private Button login;
-    private Button back;
     private ImageView google_img;
 
     GoogleSignInClient mGoogleSignInClient;
@@ -48,7 +47,6 @@ public class LoginActivity extends AppCompatActivity {
         email = findViewById(R.id.email_Txt);
         password = findViewById(R.id.password_Txt);
         login = findViewById(R.id.login_Btn);
-        back = findViewById(R.id.backToMainBtn);
         google_img = findViewById(R.id.googleSignIn);
 
         auth = FirebaseAuth.getInstance();
@@ -59,14 +57,6 @@ public class LoginActivity extends AppCompatActivity {
                 String email_txt = email.getText().toString();
                 String password_txt = password.getText().toString();
                 LoginUser(email_txt, password_txt);
-            }
-        });
-
-        back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                finish();
             }
         });
 

@@ -48,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
 
         if(user != null) {
             startActivity(new Intent(MainActivity.this, NotesActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK));
+            finish();
         }
     }
 }
