@@ -4,15 +4,38 @@
     tools:ignore="HardcodedText">
 
     <item
-        android:id="@+id/nav_account"
-        android:title="Account" />
+        android:id="@+id/nav_notes"
+        android:title="Notes"
+        android:icon="@drawable/ic_baseline_note_24" />
+
+    <item
+        android:id="@+id/nav_reminders"
+        android:title="Reminders"
+        android:icon="@drawable/ic_baseline_format_list_bulleted_24" />
+
+    <item
+        android:id="@+id/nav_shouts"
+        android:title="Shouts"
+        android:icon="@drawable/ic_baseline_surround_sound_24" />
+
+    <item
+        android:id="@+id/nav_groups"
+        android:title="Groups"
+        android:icon="@drawable/ic_baseline_group_24" />
+
+    <item
+        android:id="@+id/nav_labels"
+        android:title="Labels"
+        android:icon="@drawable/ic_baseline_label_24" />
 
     <item
         android:id="@+id/nav_settings"
-        android:title="Settings" />
+        android:title="Settings"
+        android:icon="@drawable/ic_baseline_settings_24" />
 
     <item
         android:id="@+id/nav_logout"
-        android:title="Logout" />
+        android:title="Logout"
+        android:icon="@drawable/ic_baseline_logout_24"/>
 
 </menu>

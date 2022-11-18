@@ -8,16 +8,12 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class NotesActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-
-    private Button signOut;
 
     public DrawerLayout drawerLayout;
     public ActionBarDrawerToggle actionBarDrawerToggle;
@@ -27,7 +23,6 @@ public class NotesActivity extends AppCompatActivity implements NavigationView.O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notes);
 
-        signOut = findViewById(R.id.SignOutBtn);
         drawerLayout = findViewById(R.id.my_drawer_layout);
 
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.nav_open, R.string.nav_close);
@@ -38,16 +33,6 @@ public class NotesActivity extends AppCompatActivity implements NavigationView.O
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         //String auth = FirebaseAuth.getInstance().getCurrentUser().getIdToken(true).toString();
-
-        signOut.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FirebaseAuth.getInstance().signOut();
-                Toast.makeText(NotesActivity.this, "Signed out!", Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(NotesActivity.this, MainActivity.class));
-                finish();
-            }
-        });
     }
 
 

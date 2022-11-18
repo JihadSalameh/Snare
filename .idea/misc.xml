@@ -3,13 +3,17 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/drawable/ic_baseline_settings_24.xml" value="0.112" />
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/layout/activity_exp.xml" value="0.21829710144927536" />
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/layout/activity_login.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/layout/activity_main.xml" value="0.17074275362318841" />
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/layout/activity_notes.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/layout/activity_register.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/layout/activity_start.xml" value="0.17074275362318841" />
+        <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/layout/content_test.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/menu/navigation_menu.xml" value="0.22447916666666667" />
+        <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/menu/test.xml" value="0.22447916666666667" />
+        <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.113" />
       </map>
     </option>
   </component>
