@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
         register = findViewById(R.id.signUpBtn);
         login = findViewById(R.id.signInBtn);
 
-        register.setOnClickListener(new View.OnClickListener() {
+        /*register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(MainActivity.this, RegisterActivity.class));
@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(MainActivity.this, LoginActivity.class));
                 finish();
             }
-        });
+        });*/
     }
 
     @Override
@@ -50,5 +50,15 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(MainActivity.this, NotesActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK));
             finish();
         }
+    }
+
+    public void Signup(View view) {
+        startActivity(new Intent(MainActivity.this, RegisterActivity.class));
+        finish();
+    }
+
+    public void Login(View view) {
+        startActivity(new Intent(MainActivity.this, LoginActivity.class));
+        finish();
     }
 }

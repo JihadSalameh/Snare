@@ -15,6 +15,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -24,6 +26,9 @@ public class RegisterActivity extends AppCompatActivity {
     private Button register;
 
     private FirebaseAuth auth;
+    /*Edit here ****************************************************
+    private FirebaseDatabase firebaseDatabase;
+    private DatabaseReference reference;*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +41,9 @@ public class RegisterActivity extends AppCompatActivity {
         register = findViewById(R.id.registerBtn);
 
         auth = FirebaseAuth.getInstance();
+        /*Edit here *****************************************
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        reference = firebaseDatabase.getReference("user");*/
 
         register.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -53,6 +61,10 @@ public class RegisterActivity extends AppCompatActivity {
                 } else {
                     registerUser(email, password);
                 }
+
+                /*Edit Here ****************************************
+                User user = new User("jihad", email);
+                reference.setValue(user);*/
             }
         });
     }
