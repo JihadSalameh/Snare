@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#4D3759"
-    tools:context=".SettingsActivity">
+    tools:context=".RegistrationContActivity">
 
 
     <ImageView
@@ -23,47 +23,58 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:editable="false"
-        android:text="Edit picture"
+        android:gravity="center"
+        android:minHeight="48dp"
+        android:onClick="EditImage"
+        android:text="Upload picture"
         android:textColor="#E9A6A6"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profileImgSettings" />
-
-    <TextView
-        android:id="@+id/usernameLbl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="20dp"
-        android:editable="true"
-        android:textColor="#E9A6A6"
-        android:textSize="30sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editProfileImg" />
-
-    <TextView
-        android:id="@+id/dobLbl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="32dp"
-        android:editable="true"
-        android:textColor="#E9A6A6"
-        android:textSize="30sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/usernameLbl" />
+        app:layout_constraintTop_toBottomOf="@+id/profileImgSettings"/>
 
     <Button
         android:id="@+id/saveBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
-        android:background="@drawable/button"
+        android:background="@drawable/login_btn"
         android:backgroundTint="#E9A6A6"
+        android:onClick="Save"
         android:text="Save"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <EditText
+        android:id="@+id/dobTxt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:backgroundTint="#E9A6A6"
+        android:ems="10"
+        android:hint="DD/MM/YYYY"
+        android:inputType="date"
+        android:minHeight="48dp"
+        android:textColor="#E9A6A6"
+        android:textColorHint="#E9A6A6"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/usernameTxt" />
+
+    <EditText
+        android:id="@+id/usernameTxt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:backgroundTint="#E9A6A6"
+        android:ems="10"
+        android:hint="Name"
+        android:inputType="textPersonName"
+        android:minHeight="48dp"
+        android:textColor="#E9A6A6"
+        android:textColorHint="#E9A6A6"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editProfileImg" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

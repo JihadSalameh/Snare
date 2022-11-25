@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -15,20 +14,14 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 public class RegisterActivity extends AppCompatActivity {
 
     private EditText txt_email;
     private EditText txt_password;
     private EditText txt_confirmPassword;
-    private Button register;
 
     private FirebaseAuth auth;
-    /*Edit here ****************************************************
-    private FirebaseDatabase firebaseDatabase;
-    private DatabaseReference reference;*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,35 +31,8 @@ public class RegisterActivity extends AppCompatActivity {
         txt_email = findViewById(R.id.emailTxt);
         txt_password = findViewById(R.id.passwordTxt);
         txt_confirmPassword = findViewById(R.id.confirmPasswordTxt);
-        register = findViewById(R.id.registerBtn);
 
         auth = FirebaseAuth.getInstance();
-        /*Edit here *****************************************
-        firebaseDatabase = FirebaseDatabase.getInstance();
-        reference = firebaseDatabase.getReference("user");*/
-
-        register.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String email = txt_email.getText().toString();
-                String password = txt_password.getText().toString();
-                String confirmPassword = txt_confirmPassword.getText().toString();
-
-                if(TextUtils.isEmpty(email) || TextUtils.isEmpty(password) || TextUtils.isEmpty(confirmPassword)) {
-                    Toast.makeText(RegisterActivity.this, "Empty Credentials!", Toast.LENGTH_SHORT).show();
-                } else if(!password.equals(confirmPassword)) {
-                    Toast.makeText(RegisterActivity.this, "Password Doesn't match!", Toast.LENGTH_SHORT).show();
-                } else if(password.length() < 8 ) {
-                    Toast.makeText(RegisterActivity.this, "Password Too Short!", Toast.LENGTH_SHORT).show();
-                } else {
-                    registerUser(email, password);
-                }
-
-                /*Edit Here ****************************************
-                User user = new User("jihad", email);
-                reference.setValue(user);*/
-            }
-        });
     }
 
     private void registerUser(String email, String password) {
@@ -75,12 +41,33 @@ public class RegisterActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(task.isSuccessful()) {
                     Toast.makeText(RegisterActivity.this, "User registered successfully!", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(RegisterActivity.this, NotesActivity.class));
+                    startActivity(new Intent(RegisterActivity.this, RegistrationContActivity.class));
                     finish();
                 } else {
                     Toast.makeText(RegisterActivity.this, "Registration failed!", Toast.LENGTH_SHORT).show();
                 }
             }
         });
+    }
+
+    public void HaveAccount(View view) {
+        startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+        finish();
+    }
+
+    public void Register(View view) {
+        String email = txt_email.getText().toString();
+        String password = txt_password.getText().toString();
+        String confirmPassword = txt_confirmPassword.getText().toString();
+
+        if(TextUtils.isEmpty(email) || TextUtils.isEmpty(password) || TextUtils.isEmpty(confirmPassword)) {
+            Toast.makeText(RegisterActivity.this, "Empty Credentials!", Toast.LENGTH_SHORT).show();
+        } else if(!password.equals(confirmPassword)) {
+            Toast.makeText(RegisterActivity.this, "Password Doesn't match!", Toast.LENGTH_SHORT).show();
+        } else if(password.length() < 8 ) {
+            Toast.makeText(RegisterActivity.this, "Password Too Short!", Toast.LENGTH_SHORT).show();
+        } else {
+            registerUser(email, password);
+        }
     }
 }

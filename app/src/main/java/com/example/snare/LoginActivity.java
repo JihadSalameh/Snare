@@ -32,8 +32,6 @@ public class LoginActivity extends AppCompatActivity {
     private static final int RC_SIGN_IN = 100;
     private EditText email;
     private EditText password;
-    private Button login;
-    private ImageView google_img;
 
     GoogleSignInClient mGoogleSignInClient;
 
@@ -46,36 +44,17 @@ public class LoginActivity extends AppCompatActivity {
 
         email = findViewById(R.id.email_Txt);
         password = findViewById(R.id.password_Txt);
-        login = findViewById(R.id.login_Btn);
-        google_img = findViewById(R.id.googleSignIn);
 
         auth = FirebaseAuth.getInstance();
-
-        login.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String email_txt = email.getText().toString();
-                String password_txt = password.getText().toString();
-                LoginUser(email_txt, password_txt);
-            }
-        });
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-
-        google_img.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                signIn();
-            }
-        });
-
     }
 
-    private void signIn() {
+    private void signInGoogle() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
@@ -132,5 +111,15 @@ public class LoginActivity extends AppCompatActivity {
                 Toast.makeText(LoginActivity.this, "Wrong Username Or Password!", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    public void Signin(View view) {
+        String email_txt = email.getText().toString();
+        String password_txt = password.getText().toString();
+        LoginUser(email_txt, password_txt);
+    }
+
+    public void GoogleSignin(View view) {
+        signInGoogle();
     }
 }

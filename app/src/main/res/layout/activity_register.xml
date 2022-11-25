@@ -70,23 +70,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/emailTxt" />
 
-    <EditText
-        android:id="@+id/confirm_reg"
-        android:layout_width="269dp"
-        android:layout_height="48dp"
-        android:backgroundTint="#E9A6A6"
-        android:ems="10"
-        android:hint="Confirm hint"
-        android:inputType="textPassword"
-        android:minHeight="48dp"
-        android:textAlignment="textStart"
-        android:textColor="#E9A6A6"
-        android:textColorHint="#E9A6A6"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
-        app:layout_constraintStart_toStartOf="parent" />
-
     <Button
         android:id="@+id/registerBtn"
         android:layout_width="wrap_content"
@@ -97,7 +80,8 @@
         android:textColor="#864879"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/confirmPasswordTxt" />
+        app:layout_constraintTop_toBottomOf="@+id/confirmPasswordTxt"
+        android:onClick="Register" />
 
     <TextView
         android:text="Already have an account?"
@@ -106,5 +90,6 @@
         app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" android:layout_marginBottom="8dp"
         android:textColor="#3F3351" android:textSize="20sp" android:textStyle="bold"
-        android:textAlignment="center"/>
+        android:textAlignment="center"
+        android:onClick="HaveAccount" />
 </androidx.constraintlayout.widget.ConstraintLayout>
