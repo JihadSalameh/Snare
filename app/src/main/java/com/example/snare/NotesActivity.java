@@ -31,7 +31,6 @@ public class NotesActivity extends AppCompatActivity {
     public DrawerLayout drawerLayout;
     public ActionBarDrawerToggle actionBarDrawerToggle;
     public NavigationView navigationView;
-    //User user = new User();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,38 +45,24 @@ public class NotesActivity extends AppCompatActivity {
         actionBarDrawerToggle.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        //System.out.println(FirebaseAuth.getInstance().getCurrentUser().getEmail());
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
         databaseReference.get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
             @Override
             public void onSuccess(DataSnapshot snapshot) {
+                User user = snapshot.getValue(User.class);
+                System.out.println(user.toString());
+
                 //user.setName(snapshot.child("name").getValue(String.class));
-                for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                    ImageView imageView = findViewById(R.id.profileImg);
-                    TextView name = findViewById(R.id.nameTxt);
-                    TextView email = findViewById(R.id.emailTxtNav);
 
-                    Picasso.get().load(snapshot.child("profilePic").getValue(String.class)).into(imageView);
-                    name.setText(snapshot.child("name").getValue(String.class));
-                    email.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
+                ImageView imageView = findViewById(R.id.profileImg);
+                TextView name = findViewById(R.id.nameTxt);
+                TextView email = findViewById(R.id.emailTxtNav);
 
-                    /*String key = dataSnapshot.getKey();
-                    String value = (String) dataSnapshot.getValue();
-
-                    System.out.println(key + " " + value);
-                    if(key.equals("dob")) {
-                        user.setDob(value);
-                    } else if(key.equals("id")) {
-                        user.setId(value);
-                    } else if(key.equals("name")) {
-                        user.setName(value);
-                    } else if(key.equals("profilePic")) {
-                        user.setProfilePic(value);
-                    }*/
-                }
+                Picasso.get().load(snapshot.child("profilePic").getValue(String.class)).into(imageView);
+                name.setText(snapshot.child("name").getValue(String.class));
+                email.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
             }
         });
-        //System.out.println("**********************************" + user.getName());
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -85,9 +70,6 @@ public class NotesActivity extends AppCompatActivity {
                 if(item.getTitle().toString().equals("Logout")) {
                     logout();
                 }
-                /*else if(item.getTitle().toString().equals("Settings")) {
-                    startActivity(new Intent(NotesActivity.this, RegistrationContActivity.class));
-                }*/
 
                 return true;
             }
