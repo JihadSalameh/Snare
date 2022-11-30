@@ -26,10 +26,6 @@
             android:theme="@style/Theme.SnareWithoutActionBar" />
         <activity
             android:name=".LoginActivity"
-            android:exported="false"
-            android:theme="@style/Theme.SnareWithoutActionBar" />
-        <activity
-            android:name=".MainActivity"
             android:exported="true"
             android:theme="@style/Theme.SnareWithoutActionBar">
             <intent-filter>

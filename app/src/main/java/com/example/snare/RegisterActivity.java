@@ -17,6 +17,14 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class RegisterActivity extends AppCompatActivity {
 
+    /**
+     *
+     * restriction for the email address(authentication) DONE
+     * biometric authentication
+     * phone number (get it from google or user registration manually) for friends
+     *
+     */
+
     private EditText txt_email;
     private EditText txt_password;
     private EditText txt_confirmPassword;
@@ -66,6 +74,8 @@ public class RegisterActivity extends AppCompatActivity {
             Toast.makeText(RegisterActivity.this, "Password Doesn't match!", Toast.LENGTH_SHORT).show();
         } else if(password.length() < 8 ) {
             Toast.makeText(RegisterActivity.this, "Password Too Short!", Toast.LENGTH_SHORT).show();
+        } else if(!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            Toast.makeText(this, "Wrong Email Format!", Toast.LENGTH_SHORT).show();
         } else {
             registerUser(email, password);
         }

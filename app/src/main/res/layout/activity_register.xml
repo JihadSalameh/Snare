@@ -84,12 +84,19 @@
         android:onClick="Register" />
 
     <TextView
-        android:text="Already have an account?"
+        android:id="@+id/login_txt"
         android:layout_width="0dp"
-        android:layout_height="wrap_content" android:id="@+id/login_txt"
-        app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" android:layout_marginBottom="8dp"
-        android:textColor="#3F3351" android:textSize="20sp" android:textStyle="bold"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:minHeight="32dp"
+        android:onClick="HaveAccount"
+        android:text="Already have an account?"
         android:textAlignment="center"
-        android:onClick="HaveAccount" />
+        android:textColor="#3F3351"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="TouchTargetSizeCheck" />
 </androidx.constraintlayout.widget.ConstraintLayout>

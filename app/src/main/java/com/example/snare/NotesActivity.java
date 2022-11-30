@@ -50,7 +50,7 @@ public class NotesActivity extends AppCompatActivity {
             @Override
             public void onSuccess(DataSnapshot snapshot) {
                 User user = snapshot.getValue(User.class);
-                System.out.println(user.toString());
+                //System.out.println(user.toString());
 
                 //user.setName(snapshot.child("name").getValue(String.class));
 
@@ -88,7 +88,7 @@ public class NotesActivity extends AppCompatActivity {
     private void logout() {
         FirebaseAuth.getInstance().signOut();
         Toast.makeText(NotesActivity.this, "Signed out!", Toast.LENGTH_SHORT).show();
-        startActivity(new Intent(NotesActivity.this, MainActivity.class));
+        startActivity(new Intent(NotesActivity.this, LoginActivity.class));
         finish();
     }
 }
