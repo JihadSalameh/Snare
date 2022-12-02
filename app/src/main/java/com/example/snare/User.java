@@ -1,9 +1,5 @@
 package com.example.snare;
 
-import android.media.Image;
-
-import java.util.Date;
-
 public class User {
 
     private String Id;

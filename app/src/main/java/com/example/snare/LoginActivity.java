@@ -34,19 +34,12 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.auth.GoogleAuthProvider;
 
 import java.util.concurrent.Executor;
 
 public class LoginActivity extends AppCompatActivity {
-
-    /**
-     *
-     * restriction for the email address(authentication) DONE
-     * biometric authentication
-     * phone number (get it from google or user registration manually) for friends
-     *
-     */
 
     private static final int RC_SIGN_IN = 100;
     private static final int REQUEST_CODE = 200;
@@ -166,6 +159,15 @@ public class LoginActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()) {
                             FirebaseUser user = auth.getCurrentUser();
+
+                            /*
+                            GETS EVERYTHING FROM GOOGLE AUTH WITHOUT THE DOB
+                            System.out.println(user.getPhotoUrl());
+                            System.out.println(user.getEmail());
+                            System.out.println(user.getDisplayName());
+                            System.out.println(user.getUid());
+                            */
+
                             Toast.makeText(LoginActivity.this, user.getEmail(), Toast.LENGTH_SHORT).show();
                             updateUI(user);
                         } else {

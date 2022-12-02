@@ -80,7 +80,6 @@ public class RegistrationContActivity extends AppCompatActivity {
                 fileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri) {
-                        //FirebaseAuth.getInstance().getCurrentUser().getIdToken(true).toString()
                         User user = new User(FirebaseAuth.getInstance().getUid(), uri.toString(), username.getText().toString(), dob.getText().toString());
                         databaseReference.child(user.getId()).setValue(user);
 

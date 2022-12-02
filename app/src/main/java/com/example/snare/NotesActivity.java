@@ -19,6 +19,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -50,9 +51,6 @@ public class NotesActivity extends AppCompatActivity {
             @Override
             public void onSuccess(DataSnapshot snapshot) {
                 User user = snapshot.getValue(User.class);
-                //System.out.println(user.toString());
-
-                //user.setName(snapshot.child("name").getValue(String.class));
 
                 ImageView imageView = findViewById(R.id.profileImg);
                 TextView name = findViewById(R.id.nameTxt);
@@ -81,7 +79,6 @@ public class NotesActivity extends AppCompatActivity {
         if(actionBarDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
