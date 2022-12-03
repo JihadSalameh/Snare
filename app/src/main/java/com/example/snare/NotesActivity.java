@@ -46,6 +46,23 @@ public class NotesActivity extends AppCompatActivity {
         actionBarDrawerToggle.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        fillNavDrawer();
+
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                if(item.getTitle().toString().equals("Logout")) {
+                    logout();
+                } else if(item.getTitle().toString().equals("Profile")) {
+                    startActivity(new Intent(NotesActivity.this, ProfileActivity.class));
+                }
+
+                return true;
+            }
+        });
+    }
+
+    private void fillNavDrawer() {
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
         databaseReference.get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
             @Override
@@ -61,17 +78,13 @@ public class NotesActivity extends AppCompatActivity {
                 email.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
             }
         });
+    }
 
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                if(item.getTitle().toString().equals("Logout")) {
-                    logout();
-                }
+    @Override
+    protected void onStart() {
+        super.onStart();
 
-                return true;
-            }
-        });
+        fillNavDrawer();
     }
 
     @Override

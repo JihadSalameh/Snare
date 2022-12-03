@@ -6,12 +6,14 @@ public class User {
     private String profilePic;
     private String name;
     private String dob;
+    private String phoneNumber;
 
-    public User(String Id, String profilePic, String name, String dob) {
+    public User(String Id, String profilePic, String name, String dob, String phoneNumber) {
         this.profilePic = profilePic;
         this.name = name;
         this.Id = Id;
         this.dob = dob;
+        this.phoneNumber = phoneNumber;
     }
 
     public User() {
@@ -50,13 +52,22 @@ public class User {
         Id = id;
     }
 
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
     @Override
     public String toString() {
         return "User{" +
-                "Id='" + getId() + '\'' +
-                ", profilePic='" + getProfilePic() + '\'' +
-                ", name='" + getName() + '\'' +
-                ", dob='" + getDob() + '\'' +
+                "Id='" + Id + '\'' +
+                ", profilePic='" + profilePic + '\'' +
+                ", name='" + name + '\'' +
+                ", dob='" + dob + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
                 '}';
     }
 }
