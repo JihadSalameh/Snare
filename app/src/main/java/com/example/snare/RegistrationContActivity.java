@@ -82,8 +82,8 @@ public class RegistrationContActivity extends AppCompatActivity {
                 fileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri) {
-                        User user = new User(FirebaseAuth.getInstance().getUid(), uri.toString(), username.getText().toString(), dob.getText().toString(), phoneNum.getText().toString());
-                        databaseReference.child(user.getId()).setValue(user);
+                        User user = new User(uri.toString(), username.getText().toString(), dob.getText().toString(), phoneNum.getText().toString());
+                        databaseReference.child(FirebaseAuth.getInstance().getUid()).setValue(user);
 
                         Toast.makeText(RegistrationContActivity.this, "Uploaded Successfully!", Toast.LENGTH_SHORT).show();
 

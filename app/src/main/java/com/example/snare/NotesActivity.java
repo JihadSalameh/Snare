@@ -6,25 +6,18 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.content.Intent;
-import android.content.SyncAdapterType;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 public class NotesActivity extends AppCompatActivity {
@@ -55,6 +48,8 @@ public class NotesActivity extends AppCompatActivity {
                     logout();
                 } else if(item.getTitle().toString().equals("Profile")) {
                     startActivity(new Intent(NotesActivity.this, ProfileActivity.class));
+                } else if(item.getTitle().toString().equals("Friends")) {
+                    startActivity(new Intent(NotesActivity.this, FriendsActivity.class));
                 }
 
                 return true;

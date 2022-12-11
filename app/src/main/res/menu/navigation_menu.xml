@@ -29,6 +29,11 @@
         android:icon="@drawable/ic_baseline_label_24" />
 
     <item
+        android:id="@+id/nav_friends"
+        android:title="Friends"
+        android:icon="@drawable/ic_baseline_people_alt_24" />
+
+    <item
         android:id="@+id/nav_settings"
         android:title="Profile"
         android:icon="@drawable/ic_baseline_account_circle_24" />

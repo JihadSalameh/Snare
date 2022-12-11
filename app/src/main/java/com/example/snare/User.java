@@ -2,16 +2,14 @@ package com.example.snare;
 
 public class User {
 
-    private String Id;
     private String profilePic;
     private String name;
     private String dob;
     private String phoneNumber;
 
-    public User(String Id, String profilePic, String name, String dob, String phoneNumber) {
+    public User(String profilePic, String name, String dob, String phoneNumber) {
         this.profilePic = profilePic;
         this.name = name;
-        this.Id = Id;
         this.dob = dob;
         this.phoneNumber = phoneNumber;
     }
@@ -44,14 +42,6 @@ public class User {
         this.dob = dob;
     }
 
-    public String getId() {
-        return Id;
-    }
-
-    public void setId(String id) {
-        Id = id;
-    }
-
     public String getPhoneNumber() {
         return phoneNumber;
     }
@@ -63,7 +53,6 @@ public class User {
     @Override
     public String toString() {
         return "User{" +
-                "Id='" + Id + '\'' +
                 ", profilePic='" + profilePic + '\'' +
                 ", name='" + name + '\'' +
                 ", dob='" + dob + '\'' +

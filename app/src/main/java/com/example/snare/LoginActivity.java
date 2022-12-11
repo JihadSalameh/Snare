@@ -5,10 +5,13 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -25,6 +28,10 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.squareup.picasso.Picasso;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -37,6 +44,8 @@ public class LoginActivity extends AppCompatActivity {
 
     private FirebaseAuth auth;
     private FirebaseUser user;
+
+    SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,7 +98,6 @@ public class LoginActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()) {
                             FirebaseUser user = auth.getCurrentUser();
-
                             Toast.makeText(LoginActivity.this, user.getEmail(), Toast.LENGTH_SHORT).show();
                             updateUI(user);
                         } else {
@@ -106,9 +114,25 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void LoginUser(String email_txt, String password_txt) {
+        sharedPreferences = getSharedPreferences("User", 0);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
         auth.signInWithEmailAndPassword(email_txt, password_txt).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
             @Override
             public void onSuccess(AuthResult authResult) {
+                /*DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                databaseReference.get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
+                    @Override
+                    public void onSuccess(DataSnapshot snapshot) {
+                        editor.putString("Username", snapshot.child("name").getValue(String.class));
+                        editor.putString("Email", email_txt);
+                        editor.putString("Dob", snapshot.child("dob").getValue(String.class));
+                        editor.putString("Id", snapshot.child("id").getValue(String.class));
+                        editor.putString("PhoneNumber", snapshot.child("phoneNumber").getValue(String.class));
+                        editor.putString("ProfilePic", snapshot.child("profilePic").getValue(String.class));
+                        editor.commit();
+                    }
+                });*/
                 Toast.makeText(LoginActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(LoginActivity.this, NotesActivity.class));
                 finish();
