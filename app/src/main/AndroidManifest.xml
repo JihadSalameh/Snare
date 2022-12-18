@@ -15,6 +15,14 @@
         android:supportsRtl="true"
         tools:targetApi="31">
         <activity
+            android:name=".ViewFriendActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Snare" />
+        <activity
+            android:name=".FindFriendActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Snare" />
+        <activity
             android:name=".FriendsActivity"
             android:exported="false"
             android:theme="@style/Theme.Snare" />

@@ -1,4 +1,4 @@
-package com.example.snare;
+package com.example.snare.Utills;
 
 public class User {
 
