@@ -3,7 +3,6 @@ package com.example.snare;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.media.Image;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -12,6 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -27,6 +27,7 @@ import java.util.HashMap;
 public class ViewFriendActivity extends AppCompatActivity {
 
     DatabaseReference ref, requestRef, friendRef;
+    DatabaseReference userRef;
     FirebaseAuth auth;
     FirebaseUser user;
 
@@ -51,6 +52,7 @@ public class ViewFriendActivity extends AppCompatActivity {
         friendRef = FirebaseDatabase.getInstance().getReference().child("Friends");
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
+        userRef = FirebaseDatabase.getInstance().getReference("Users").child(user.getUid());
 
         profileImg = findViewById(R.id.profileImage);
         username = findViewById(R.id.userName);
@@ -106,6 +108,7 @@ public class ViewFriendActivity extends AppCompatActivity {
                         decline.setVisibility(View.GONE);
                     }
 
+                    ////DON'T THINK IT'S NEEDED CHECK LATER
                     if(snapshot.child("status").getValue().toString().equals("request_declined")) {
                         currentState = "I_sent_declined";
                         perform.setText("Cancel Friend Request");
@@ -176,64 +179,37 @@ public class ViewFriendActivity extends AppCompatActivity {
         if(currentState.equals("nothing_happened")) {
             HashMap hashMap = new HashMap();
             hashMap.put("status", "pending");
-            requestRef.child(user.getUid()).child(userId).updateChildren(hashMap).addOnCompleteListener(new OnCompleteListener() {
-                @Override
-                public void onComplete(@NonNull Task task) {
-                    if(task.isSuccessful()) {
-                        Toast.makeText(ViewFriendActivity.this, "Friend Request Sent!", Toast.LENGTH_SHORT).show();
-                        decline.setVisibility(View.GONE);
-                        currentState = "I_sent_pending";
-                        perform.setText("Cancel Friend Request");
-                    } else {
-                        Toast.makeText(ViewFriendActivity.this, ""+task.getException().toString(), Toast.LENGTH_SHORT).show();
-                    }
+            requestRef.child(user.getUid()).child(userId).updateChildren(hashMap).addOnCompleteListener(task -> {
+                if(task.isSuccessful()) {
+                    Toast.makeText(ViewFriendActivity.this, "Friend Request Sent!", Toast.LENGTH_SHORT).show();
+                    decline.setVisibility(View.GONE);
+                    currentState = "I_sent_pending";
+                    perform.setText("Cancel Friend Request");
+                } else {
+                    Toast.makeText(ViewFriendActivity.this, ""+task.getException().toString(), Toast.LENGTH_SHORT).show();
                 }
             });
         }
 
         if(currentState.equals("I_sent_pending") || currentState.equals("request_declined")) {
-            requestRef.child(user.getUid()).child(userId).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    if(task.isSuccessful()) {
-                        Toast.makeText(ViewFriendActivity.this, "Friend Request Cancelled!", Toast.LENGTH_SHORT).show();
-                        currentState = "nothing_happened";
-                        perform.setText("SEND REQUEST");
-                        decline.setVisibility(View.GONE);
-                    } else {
-                        Toast.makeText(ViewFriendActivity.this, ""+task.getException().toString(), Toast.LENGTH_SHORT).show();
-                    }
+            requestRef.child(user.getUid()).child(userId).removeValue().addOnCompleteListener(task -> {
+                if(task.isSuccessful()) {
+                    Toast.makeText(ViewFriendActivity.this, "Friend Request Cancelled!", Toast.LENGTH_SHORT).show();
+                    currentState = "nothing_happened";
+                    perform.setText("SEND REQUEST");
+                    decline.setVisibility(View.GONE);
+                } else {
+                    Toast.makeText(ViewFriendActivity.this, ""+task.getException().toString(), Toast.LENGTH_SHORT).show();
                 }
             });
         }
 
         if(currentState.equals("he_sent_pending")) {
-            requestRef.child(user.getUid()).child(userId).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    if(task.isSuccessful()) {
-                        HashMap hashMap = new HashMap();
-                        hashMap.put("status", "friend");
-                        hashMap.put("name", username);
-                        hashMap.put("profilePic", profileImageUrl);
-                        friendRef.child(user.getUid()).child(userId).updateChildren(hashMap).addOnCompleteListener(new OnCompleteListener() {
-                            @Override
-                            public void onComplete(@NonNull Task task) {
-                                if(task.isSuccessful()) {
-                                    friendRef.child(userId).child(user.getUid()).updateChildren(hashMap).addOnCompleteListener(new OnCompleteListener() {
-                                        @Override
-                                        public void onComplete(@NonNull Task task) {
-                                            Toast.makeText(ViewFriendActivity.this, "Friend Added!", Toast.LENGTH_SHORT).show();
-                                            currentState = "friend";
-                                            perform.setVisibility(View.GONE);
-                                            decline.setText("UNFRIEND");
-                                            decline.setVisibility(View.VISIBLE);
-                                        }
-                                    });
-                                }
-                            }
-                        });
-                    }
+            requestRef.child(userId).child(user.getUid()).removeValue().addOnCompleteListener(task -> {
+                if(task.isSuccessful()) {
+                    AddFriend();
+                } else {
+                    Toast.makeText(ViewFriendActivity.this, ""+task.getException().toString(), Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -243,6 +219,79 @@ public class ViewFriendActivity extends AppCompatActivity {
         }
     }
 
+    private void AddFriend() {
+        userRef.get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
+            @Override
+            public void onSuccess(DataSnapshot dataSnapshot) {
+                HashMap hashMap = new HashMap();
+                hashMap.put("status", "friend");
+                hashMap.put("name", name);
+                hashMap.put("profilePic", profileImageUrl);
+
+                HashMap hashMap1 = new HashMap();
+                hashMap1.put("status", "friend");
+                hashMap1.put("name", dataSnapshot.child("name").getValue(String.class));
+                hashMap1.put("profilePic", dataSnapshot.child("profilePic").getValue(String.class));
+
+                friendRef.child(user.getUid()).child(userId).updateChildren(hashMap).addOnCompleteListener(new OnCompleteListener() {
+                    @Override
+                    public void onComplete(@NonNull Task task) {
+                        if(task.isSuccessful()) {
+                            friendRef.child(userId).child(user.getUid()).updateChildren(hashMap1).addOnCompleteListener(new OnCompleteListener() {
+                                @Override
+                                public void onComplete(@NonNull Task task) {
+                                    if(task.isSuccessful()) {
+                                        Toast.makeText(ViewFriendActivity.this, "Friend Added!", Toast.LENGTH_SHORT).show();
+                                        currentState = "friend";
+                                        perform.setVisibility(View.GONE);
+                                        decline.setText("UNFRIEND");
+                                        decline.setVisibility(View.VISIBLE);
+                                    }
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+        });
+    }
+
     public void DeclineRequest(View view) {
+        if(currentState.equals("friend")) {
+            friendRef.child(user.getUid()).child(userId).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if(task.isSuccessful()) {
+                        friendRef.child(userId).child(user.getUid()).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if(task.isSuccessful()) {
+                                    Toast.makeText(ViewFriendActivity.this, "You Are Unfriended!", Toast.LENGTH_SHORT).show();
+                                    currentState = "nothing_happened";
+                                    perform.setText("SEND REQUEST");
+                                    perform.setVisibility(View.VISIBLE);
+                                    decline.setVisibility(View.GONE);
+                                }
+                            }
+                        });
+                    }
+                }
+            });
+        }
+
+        if(currentState.equals("he_sent_pending")) {
+            requestRef.child(userId).child(user.getUid()).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if(task.isSuccessful()) {
+                        Toast.makeText(ViewFriendActivity.this, "Friend Request Denied!", Toast.LENGTH_SHORT).show();
+                        currentState = "nothing_happened";
+                        perform.setText("SEND REQUEST");
+                        perform.setVisibility(View.VISIBLE);
+                        decline.setVisibility(View.GONE);
+                    }
+                }
+            });
+        }
     }
 }

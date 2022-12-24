@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -51,17 +52,23 @@ public class FriendsActivity extends AppCompatActivity {
     }
 
     private void LoadFriends(String s) {
-        /*Friends friends = new Friends("https://firebasestorage.googleapis.com/v0/b/snare-e1afc.appspot.com/o/1670603990682.jpg?alt=media&token=5bb0e686-3249-4705-9585-8c729c8ed479", "khalil");
-        ref.child(user.getUid()).child("JQguniqmuiZqJFG9ZsotHG8aJlK2").setValue(friends);*/
-
         Query query = ref.child(user.getUid()).orderByChild("name");
         options = new FirebaseRecyclerOptions.Builder<Friends>().setQuery(query, Friends.class).build();
         adapter = new FirebaseRecyclerAdapter<Friends, FriendMyViewHolder>(options) {
             @Override
-            protected void onBindViewHolder(@NonNull FriendMyViewHolder holder, int position, @NonNull Friends model) {
+            protected void onBindViewHolder(@NonNull FriendMyViewHolder holder, @SuppressLint("RecyclerView") int position, @NonNull Friends model) {
                 holder.profile.setBackground(null);
                 Picasso.get().load(model.getProfilePic()).into(holder.profile);
                 holder.name.setText(model.getName());
+
+                holder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(FriendsActivity.this, ViewFriendActivity.class);
+                        intent.putExtra("userKey", getRef(position).getKey().toString());
+                        startActivity(intent);
+                    }
+                });
             }
 
             @NonNull
