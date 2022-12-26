@@ -1,4 +1,4 @@
-package com.example.snare;
+package com.example.snare.Activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,6 +15,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SearchView;
 
+import com.example.snare.ViewHolders.FriendViewHolder;
+import com.example.snare.R;
 import com.example.snare.Utills.User;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -32,7 +34,7 @@ import java.util.ArrayList;
 public class FindFriendActivity extends AppCompatActivity {
 
     FirebaseRecyclerOptions<User> options;
-    FirebaseRecyclerAdapter<User, FindFriendViewHolder> adapter;
+    FirebaseRecyclerAdapter<User, FriendViewHolder> adapter;
 
     DatabaseReference ref, friendRef;
     FirebaseAuth auth;
@@ -65,9 +67,9 @@ public class FindFriendActivity extends AppCompatActivity {
         });
         Query query = ref.orderByChild("name").startAt(s).endAt(s+"\uf8ff");
         options = new FirebaseRecyclerOptions.Builder<User>().setQuery(query, User.class).build();
-        adapter = new FirebaseRecyclerAdapter<User, FindFriendViewHolder>(options) {
+        adapter = new FirebaseRecyclerAdapter<User, FriendViewHolder>(options) {
             @Override
-            protected void onBindViewHolder(@NonNull FindFriendViewHolder holder, @SuppressLint("RecyclerView") int position, @NonNull User model) {
+            protected void onBindViewHolder(@NonNull FriendViewHolder holder, @SuppressLint("RecyclerView") int position, @NonNull User model) {
                 if(!user.getUid().equals(getRef(position).getKey().toString()) && !CheckIfFriend(getRef(position).getKey().toString())) {
                     holder.profile.setBackground(null);
                     Picasso.get().load(model.getProfilePic()).into(holder.profile);
@@ -89,9 +91,9 @@ public class FindFriendActivity extends AppCompatActivity {
 
             @NonNull
             @Override
-            public FindFriendViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            public FriendViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
                 View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.single_view_friend, parent, false);
-                return new FindFriendViewHolder(view);
+                return new FriendViewHolder(view);
             }
         };
 

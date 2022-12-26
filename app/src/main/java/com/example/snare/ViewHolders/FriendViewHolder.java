@@ -1,4 +1,4 @@
-package com.example.snare;
+package com.example.snare.ViewHolders;
 
 import android.view.View;
 import android.widget.ImageView;
@@ -7,12 +7,16 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class FriendMyViewHolder extends RecyclerView.ViewHolder {
+import com.example.snare.R;
 
-    ImageView profile;
-    TextView name;
+import java.text.BreakIterator;
 
-    public FriendMyViewHolder(@NonNull View itemView) {
+public class FriendViewHolder extends RecyclerView.ViewHolder {
+
+    public ImageView profile;
+    public TextView name;
+
+    public FriendViewHolder(@NonNull View itemView) {
         super(itemView);
 
         profile = itemView.findViewById(R.id.profileImgFriend);

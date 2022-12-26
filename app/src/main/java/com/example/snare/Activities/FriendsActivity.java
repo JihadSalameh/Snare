@@ -1,4 +1,4 @@
-package com.example.snare;
+package com.example.snare.Activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,6 +12,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.snare.ViewHolders.FriendViewHolder;
+import com.example.snare.R;
 import com.example.snare.Utills.Friends;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -26,7 +28,7 @@ import com.squareup.picasso.Picasso;
 public class FriendsActivity extends AppCompatActivity {
 
     FirebaseRecyclerOptions<Friends> options;
-    FirebaseRecyclerAdapter<Friends, FriendMyViewHolder> adapter;
+    FirebaseRecyclerAdapter<Friends, FriendViewHolder> adapter;
 
     RecyclerView recyclerView;
     FloatingActionButton addFriends;
@@ -54,9 +56,9 @@ public class FriendsActivity extends AppCompatActivity {
     private void LoadFriends(String s) {
         Query query = ref.child(user.getUid()).orderByChild("name");
         options = new FirebaseRecyclerOptions.Builder<Friends>().setQuery(query, Friends.class).build();
-        adapter = new FirebaseRecyclerAdapter<Friends, FriendMyViewHolder>(options) {
+        adapter = new FirebaseRecyclerAdapter<Friends, FriendViewHolder>(options) {
             @Override
-            protected void onBindViewHolder(@NonNull FriendMyViewHolder holder, @SuppressLint("RecyclerView") int position, @NonNull Friends model) {
+            protected void onBindViewHolder(@NonNull FriendViewHolder holder, @SuppressLint("RecyclerView") int position, @NonNull Friends model) {
                 holder.profile.setBackground(null);
                 Picasso.get().load(model.getProfilePic()).into(holder.profile);
                 holder.name.setText(model.getName());
@@ -73,10 +75,10 @@ public class FriendsActivity extends AppCompatActivity {
 
             @NonNull
             @Override
-            public FriendMyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            public FriendViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
                 View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.single_view_friend, parent, false);
 
-                return new FriendMyViewHolder(view);
+                return new FriendViewHolder(view);
             }
         };
 
