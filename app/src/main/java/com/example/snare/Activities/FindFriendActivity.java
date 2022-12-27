@@ -17,7 +17,7 @@ import android.widget.SearchView;
 
 import com.example.snare.ViewHolders.FriendViewHolder;
 import com.example.snare.R;
-import com.example.snare.Utills.User;
+import com.example.snare.Entities.User;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;

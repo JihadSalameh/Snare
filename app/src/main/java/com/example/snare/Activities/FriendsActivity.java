@@ -14,7 +14,7 @@ import android.view.ViewGroup;
 
 import com.example.snare.ViewHolders.FriendViewHolder;
 import com.example.snare.R;
-import com.example.snare.Utills.Friends;
+import com.example.snare.Entities.Friends;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;

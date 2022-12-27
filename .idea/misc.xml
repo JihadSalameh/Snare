@@ -3,14 +3,16 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/drawable-xxxhdpi/background_add_button.xml" value="0.1555" />
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/drawable/ic_baseline_settings_24.xml" value="0.112" />
+        <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/layout/activity_create_note.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/layout/activity_exp.xml" value="0.21829710144927536" />
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/layout/activity_find_friend.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/layout/activity_friends.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/layout/activity_login.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/layout/activity_main.xml" value="0.17074275362318841" />
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/layout/activity_nav_header.xml" value="0.33" />
-        <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/layout/activity_notes.xml" value="0.1" />
+        <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/layout/activity_notes.xml" value="0.22" />
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/layout/activity_profile.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/layout/activity_register.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/layout/activity_registrationcont.xml" value="0.22447916666666667" />

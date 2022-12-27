@@ -3,4 +3,16 @@
     <string name="server_client_id">WEB CLIENT ID</string>
     <string name="nav_open">Open</string>
     <string name="nav_close">Close</string>
+
+    <string name="my_notes">my notes</string>
+    <string name="search_notes">search notes</string>
+    <string name="note_title">Note Title</string>
+    <string name="note_content">note content</string>
+    <string name="miscellaneous">Colors</string>
+    <string name="pick_color">pick color</string>
+    <string name="add_image">add_image</string>
+    <string name="delete_note">Delete Note</string>
+    <string name="are_you_sure_you_want_to_delete_this_note">Are you sure you want to delete this note ?</string>
+    <string name="delete_note_confirm">Delete Note</string>
+    <string name="cancel">Cancel</string>
 </resources>

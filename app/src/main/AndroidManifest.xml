@@ -15,6 +15,10 @@
         android:supportsRtl="true"
         tools:targetApi="31">
         <activity
+            android:name=".Activities.CreateNoteActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Snare" />
+        <activity
             android:name=".Activities.ViewFriendActivity"
             android:exported="false"
             android:theme="@style/Theme.Snare" />

@@ -1,4 +1,4 @@
-package com.example.snare.Utills;
+package com.example.snare.Entities;
 
 public class Friends {
 
