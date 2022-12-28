@@ -21,10 +21,12 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,7 +53,6 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
     public ActionBarDrawerToggle actionBarDrawerToggle;
     public NavigationView navigationView;
 
-    private EditText inputSearch;
     private RecyclerView noteRecycleView;
     private ImageView imageAddImage;
     private ImageView imageAddNote;
@@ -72,8 +73,7 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notes);
 
-        drawerLayout = findViewById(R.id.my_drawer_layout);
-        navigationView = findViewById(R.id.nav_menu);
+        setActivity();
 
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.nav_open, R.string.nav_close);
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
@@ -82,6 +82,10 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
 
         fillNavDrawer();
 
+        navOnClickAction();
+    }
+
+    private void navOnClickAction() {
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -96,8 +100,6 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
                 return true;
             }
         });
-
-        setActivity();
     }
 
     private void setActivity() {
@@ -108,7 +110,8 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
     }
 
     private void initializeActivity() {
-        inputSearch = findViewById(R.id.inputSearch);
+        drawerLayout = findViewById(R.id.my_drawer_layout);
+        navigationView = findViewById(R.id.nav_menu);
         noteRecycleView = findViewById(R.id.noteRecycleView);
         imageAddImage = findViewById(R.id.imageAddImage);
         imageAddNote = findViewById(R.id.imageAddNote);
@@ -118,7 +121,6 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
 
     private void setListeners() {
         setImageAddNoteMainListener();
-        setInputSearchListener();
         setImageAddImageListener();
         setImageAddNoteListener();
     }
@@ -134,7 +136,6 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
     }
 
     private void getAllNotes(int requestCode, boolean isNoteDeleted) {
-
         class GetNotesTask extends AsyncTask<Void, Void, List<Note>> {
 
             @Override
@@ -169,7 +170,6 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
     }
 
     private void setRecycleView() {
-
         noteRecycleView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
         noteList = new ArrayList<>();
         notesAdapter = new NotesAdapter(noteList, this);
@@ -178,8 +178,8 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-
         super.onActivityResult(requestCode, resultCode, data);
+
         if (requestCode == REQUEST_CODE_ADD_NOTE & resultCode == RESULT_OK) {
             getAllNotes(REQUEST_CODE_ADD_NOTE, false);
         } else if (requestCode == REQUEST_CODE_UPDATE_NOTE && resultCode == RESULT_OK) {
@@ -218,27 +218,6 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
         intent.putExtra("note", note);
         startActivityForResult(intent, REQUEST_CODE_UPDATE_NOTE);
 
-    }
-
-    private void setInputSearchListener() {
-        inputSearch.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                notesAdapter.cancelTimer();
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                if (noteList.size() != 0) {
-                    notesAdapter.searchNotes(editable.toString());
-                }
-            }
-        });
     }
 
     private void setImageAddImageListener() {
@@ -308,8 +287,6 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
         databaseReference.get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
             @Override
             public void onSuccess(DataSnapshot snapshot) {
-                User user = snapshot.getValue(User.class);
-
                 ImageView imageView = findViewById(R.id.profileImg);
                 TextView name = findViewById(R.id.nameTxt);
                 TextView email = findViewById(R.id.emailTxtNav);
@@ -341,5 +318,30 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
         Toast.makeText(NotesActivity.this, "Signed out!", Toast.LENGTH_SHORT).show();
         startActivity(new Intent(NotesActivity.this, LoginActivity.class));
         finish();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.search_menu, menu);
+        MenuItem menuItem = menu.findItem(R.id.search);
+        SearchView searchView = (SearchView) menuItem.getActionView();
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                if (noteList.size() != 0) {
+                    notesAdapter.searchNotes(newText);
+                }
+
+                return false;
+            }
+        });
+
+        return true;
     }
 }

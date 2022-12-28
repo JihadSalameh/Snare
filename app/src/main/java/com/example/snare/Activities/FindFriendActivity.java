@@ -58,6 +58,13 @@ public class FindFriendActivity extends AppCompatActivity {
         LoadUsers("");
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        LoadUsers("");
+    }
+
     private void LoadUsers(String s) {
         friendRef.child(user.getUid()).get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
             @Override

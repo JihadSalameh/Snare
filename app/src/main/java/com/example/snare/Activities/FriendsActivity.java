@@ -9,8 +9,11 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SearchView;
 
 import com.example.snare.ViewHolders.FriendViewHolder;
 import com.example.snare.R;
@@ -53,8 +56,15 @@ public class FriendsActivity extends AppCompatActivity {
         LoadFriends("");
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        LoadFriends("");
+    }
+
     private void LoadFriends(String s) {
-        Query query = ref.child(user.getUid()).orderByChild("name");
+        Query query = ref.child(user.getUid()).orderByChild("name").startAt(s).endAt(s+"\uf8ff");
         options = new FirebaseRecyclerOptions.Builder<Friends>().setQuery(query, Friends.class).build();
         adapter = new FirebaseRecyclerAdapter<Friends, FriendViewHolder>(options) {
             @Override
@@ -88,5 +98,27 @@ public class FriendsActivity extends AppCompatActivity {
 
     public void LoadAddFriend(View view) {
         startActivity(new Intent(FriendsActivity.this, FindFriendActivity.class));
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.search_menu, menu);
+        MenuItem menuItem = menu.findItem(R.id.search);
+        SearchView searchView = (SearchView) menuItem.getActionView();
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                LoadFriends(newText);
+                return false;
+            }
+        });
+
+        return true;
     }
 }
