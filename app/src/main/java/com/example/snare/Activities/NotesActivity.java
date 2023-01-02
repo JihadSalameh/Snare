@@ -204,7 +204,7 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
                 }
 
             } else {
-                Toast.makeText(this, "no image selectes", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "no image selected", Toast.LENGTH_SHORT).show();
             }
 
         }

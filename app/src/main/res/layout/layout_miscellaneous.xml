@@ -202,7 +202,7 @@
             android:includeFontPadding="false"
             android:text="@string/delete_note"
             android:textColor="@color/colorIcons"
-            android:textSize="@dimen/_12ssp"/>
+            android:textSize="@dimen/_12ssp" />
 
     </LinearLayout>
 
