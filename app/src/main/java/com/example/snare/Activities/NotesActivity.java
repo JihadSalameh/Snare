@@ -95,6 +95,9 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
                     startActivity(new Intent(NotesActivity.this, ProfileActivity.class));
                 } else if(item.getTitle().toString().equals("Friends")) {
                     startActivity(new Intent(NotesActivity.this, FriendsActivity.class));
+                } else if(item.getTitle().toString().equals("Shouts")) {
+                    startActivity(new Intent(NotesActivity.this, ShoutsActivity.class));
+                    finish();
                 }
 
                 return true;

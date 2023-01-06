@@ -68,4 +68,5 @@ dependencies {
     implementation 'com.squareup.picasso:picasso:2.71828'
     implementation "androidx.biometric:biometric:1.1.0"
     implementation 'com.firebaseui:firebase-ui-database:8.0.2'
+    implementation 'com.google.android.gms:play-services-maps:17.0.1'
 }
