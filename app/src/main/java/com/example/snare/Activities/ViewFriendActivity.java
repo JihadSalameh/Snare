@@ -93,30 +93,11 @@ public class ViewFriendActivity extends AppCompatActivity {
                     decline.setVisibility(View.GONE);
                     block.setVisibility(View.VISIBLE);
                     block.setText("UNBLOCK");
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-
-        friendRef.child(userId).child(user.getUid()).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if(snapshot.exists() && snapshot.child("status").getValue().toString().equals("friend")) {
-                    currentState = "friend";
-                    perform.setVisibility(View.GONE);
-                    decline.setText("UNFRIEND");
-                    decline.setVisibility(View.VISIBLE);
-                    block.setVisibility(View.VISIBLE);
-                } else if(snapshot.exists() && snapshot.child("status").getValue().toString().equals("blocked")) {
+                } else if(snapshot.exists() && snapshot.child("status").getValue().toString().equals("blocked_by")) {
                     currentState = "blocked";
                     perform.setVisibility(View.GONE);
                     decline.setVisibility(View.GONE);
-                    block.setVisibility(View.VISIBLE);
-                    block.setText("UNBLOCK");
+                    block.setVisibility(View.GONE);
                 }
             }
 
@@ -339,7 +320,7 @@ public class ViewFriendActivity extends AppCompatActivity {
                     hashMap.put("profilePic", profileImageUrl);
 
                     HashMap hashMap1 = new HashMap();
-                    hashMap1.put("status", "blocked");
+                    hashMap1.put("status", "blocked_by");
                     hashMap1.put("name", dataSnapshot.child("name").getValue(String.class));
                     hashMap1.put("profilePic", dataSnapshot.child("profilePic").getValue(String.class));
 
