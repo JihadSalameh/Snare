@@ -5,6 +5,7 @@
       <map>
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/drawable-xxxhdpi/background_add_button.xml" value="0.1555" />
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/drawable/ic_baseline_settings_24.xml" value="0.112" />
+        <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/layout/activity_blocked_users.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/layout/activity_create_note.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/layout/activity_exp.xml" value="0.21829710144927536" />
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/layout/activity_find_friend.xml" value="0.22447916666666667" />
@@ -22,6 +23,7 @@
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/layout/content_test.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/layout/layout_miscellaneous.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/layout/single_view_friend.xml" value="0.22447916666666667" />
+        <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/menu/blocked_users_search_custom_menu.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/menu/navigation_menu.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/menu/search_menu.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/menu/test.xml" value="0.22447916666666667" />

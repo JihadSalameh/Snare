@@ -32,6 +32,20 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/profileImgSettings"/>
 
+    <TextView
+        android:id="@+id/blockedUsers"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:gravity="center"
+        android:minHeight="48dp"
+        android:onClick="ViewBlockedUsers"
+        android:text="Blocked Users"
+        android:textColor="#E9A6A6"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/phoneNumTxt" />
+
     <Button
         android:id="@+id/saveBtn"
         android:layout_width="wrap_content"

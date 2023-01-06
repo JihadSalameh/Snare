@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.webkit.MimeTypeMap;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,9 +30,10 @@ import com.squareup.picasso.Picasso;
 public class ProfileActivity extends AppCompatActivity {
 
     private ImageView profileImg;
-    private TextView username = null;
-    private TextView dob = null;
-    private TextView phoneNum = null;
+    private EditText username = null;
+    private EditText dob = null;
+    private EditText phoneNum = null;
+    private TextView blocked_users;
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference;
     private DatabaseReference databaseReference1;
@@ -47,6 +49,7 @@ public class ProfileActivity extends AppCompatActivity {
         username = findViewById(R.id.usernameTxt);
         dob = findViewById(R.id.dobTxt);
         phoneNum = findViewById(R.id.phoneNumTxt);
+        blocked_users = findViewById(R.id.blockedUsers);
 
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference().child("Users");
@@ -116,6 +119,10 @@ public class ProfileActivity extends AppCompatActivity {
                 Toast.makeText(ProfileActivity.this, "Uploading Failed!", Toast.LENGTH_SHORT).show();
             }
         });*/
+    }
+
+    public void ViewBlockedUsers(View view) {
+        startActivity(new Intent(ProfileActivity.this, BlockedUsersActivity.class));
     }
 
     /*private String getFileExtension(Uri imageUri) {

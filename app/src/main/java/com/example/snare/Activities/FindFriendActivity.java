@@ -59,8 +59,8 @@ public class FindFriendActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
+    protected void onRestart() {
+        super.onRestart();
 
         LoadUsers("");
     }
@@ -77,7 +77,7 @@ public class FindFriendActivity extends AppCompatActivity {
         adapter = new FirebaseRecyclerAdapter<User, FriendViewHolder>(options) {
             @Override
             protected void onBindViewHolder(@NonNull FriendViewHolder holder, @SuppressLint("RecyclerView") int position, @NonNull User model) {
-                if(!user.getUid().equals(getRef(position).getKey().toString()) && !CheckIfFriend(getRef(position).getKey().toString())) {
+                if(!user.getUid().equals(getRef(position).getKey()) && !CheckIfFriend(getRef(position).getKey())) {
                     holder.profile.setBackground(null);
                     Picasso.get().load(model.getProfilePic()).into(holder.profile);
                     holder.name.setText(model.getName());
@@ -90,7 +90,7 @@ public class FindFriendActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         Intent intent = new Intent(FindFriendActivity.this, ViewFriendActivity.class);
-                        intent.putExtra("userKey", getRef(position).getKey().toString());
+                        intent.putExtra("userKey", getRef(position).getKey());
                         startActivity(intent);
                     }
                 });
@@ -117,11 +117,10 @@ public class FindFriendActivity extends AppCompatActivity {
         return false;
     }
 
-    private ArrayList<String> StoreFriends(DataSnapshot dataSnapshot) {
+    private void StoreFriends(DataSnapshot dataSnapshot) {
         for(DataSnapshot snapshot: dataSnapshot.getChildren()) {
             list.add(snapshot.getKey());
         }
-        return list;
     }
 
 

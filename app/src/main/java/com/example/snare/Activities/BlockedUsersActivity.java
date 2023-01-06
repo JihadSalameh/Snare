@@ -13,17 +13,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ActionMenuView;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.SearchView;
 
-import com.example.snare.ViewHolders.FriendViewHolder;
-import com.example.snare.R;
 import com.example.snare.Entities.Friends;
+import com.example.snare.R;
+import com.example.snare.ViewHolders.FriendViewHolder;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -31,13 +27,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.squareup.picasso.Picasso;
 
-public class FriendsActivity extends AppCompatActivity {
+public class BlockedUsersActivity extends AppCompatActivity {
 
     FirebaseRecyclerOptions<Friends> options;
     FirebaseRecyclerAdapter<Friends, FriendViewHolder> adapter;
 
     RecyclerView recyclerView;
-    FloatingActionButton addFriends;
 
     FirebaseAuth auth;
     FirebaseUser user;
@@ -46,22 +41,14 @@ public class FriendsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_friends);
+        setContentView(R.layout.activity_blocked_users);
 
-        addFriends = findViewById(R.id.addFriends);
-        recyclerView = findViewById(R.id.friendsRecyclerView);
+        recyclerView = findViewById(R.id.BlockedFriendsRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
         ref = FirebaseDatabase.getInstance().getReference().child("Friends");
-
-        LoadFriends("");
-    }
-
-    @Override
-    protected void onRestart() {
-        super.onRestart();
 
         LoadFriends("");
     }
@@ -72,7 +59,7 @@ public class FriendsActivity extends AppCompatActivity {
         adapter = new FirebaseRecyclerAdapter<Friends, FriendViewHolder>(options) {
             @Override
             protected void onBindViewHolder(@NonNull FriendViewHolder holder, @SuppressLint("RecyclerView") int position, @NonNull Friends model) {
-                if(model.getStatus().equals("friend")) {
+                if(model.getStatus().equals("blocked")) {
                     holder.profile.setBackground(null);
                     Picasso.get().load(model.getProfilePic()).into(holder.profile);
                     holder.name.setText(model.getName());
@@ -80,7 +67,7 @@ public class FriendsActivity extends AppCompatActivity {
                     holder.itemView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            Intent intent = new Intent(FriendsActivity.this, ViewFriendActivity.class);
+                            Intent intent = new Intent(BlockedUsersActivity.this, ViewFriendActivity.class);
                             intent.putExtra("userKey", getRef(position).getKey());
                             startActivity(intent);
                         }
@@ -89,19 +76,6 @@ public class FriendsActivity extends AppCompatActivity {
                     holder.itemView.setVisibility(View.GONE);
                     holder.itemView.setLayoutParams(new RecyclerView.LayoutParams(0, 0));
                 }
-
-                /*holder.profile.setBackground(null);
-                Picasso.get().load(model.getProfilePic()).into(holder.profile);
-                holder.name.setText(model.getName());
-
-                holder.itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(FriendsActivity.this, ViewFriendActivity.class);
-                        intent.putExtra("userKey", getRef(position).getKey());
-                        startActivity(intent);
-                    }
-                });*/
             }
 
             @NonNull
@@ -115,10 +89,6 @@ public class FriendsActivity extends AppCompatActivity {
 
         adapter.startListening();
         recyclerView.setAdapter(adapter);
-    }
-
-    public void LoadAddFriend(View view) {
-        startActivity(new Intent(FriendsActivity.this, FindFriendActivity.class));
     }
 
     @Override
