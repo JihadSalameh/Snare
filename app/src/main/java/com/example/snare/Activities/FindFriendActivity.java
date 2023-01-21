@@ -20,7 +20,6 @@ import com.example.snare.R;
 import com.example.snare.Entities.User;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -66,12 +65,8 @@ public class FindFriendActivity extends AppCompatActivity {
     }
 
     private void LoadUsers(String s) {
-        friendRef.child(user.getUid()).get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
-            @Override
-            public void onSuccess(DataSnapshot dataSnapshot) {
-                StoreFriends(dataSnapshot);
-            }
-        });
+        friendRef.child(user.getUid()).get().addOnSuccessListener(dataSnapshot -> StoreFriends(dataSnapshot));
+
         Query query = ref.orderByChild("name").startAt(s).endAt(s+"\uf8ff");
         options = new FirebaseRecyclerOptions.Builder<User>().setQuery(query, User.class).build();
         adapter = new FirebaseRecyclerAdapter<User, FriendViewHolder>(options) {
@@ -86,13 +81,10 @@ public class FindFriendActivity extends AppCompatActivity {
                     holder.itemView.setLayoutParams(new RecyclerView.LayoutParams(0, 0));
                 }
 
-                holder.itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(FindFriendActivity.this, ViewFriendActivity.class);
-                        intent.putExtra("userKey", getRef(position).getKey());
-                        startActivity(intent);
-                    }
+                holder.itemView.setOnClickListener(v -> {
+                    Intent intent = new Intent(FindFriendActivity.this, ViewFriendActivity.class);
+                    intent.putExtra("userKey", getRef(position).getKey());
+                    startActivity(intent);
                 });
             }
 
@@ -122,7 +114,6 @@ public class FindFriendActivity extends AppCompatActivity {
             list.add(snapshot.getKey());
         }
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

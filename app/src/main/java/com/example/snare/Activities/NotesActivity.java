@@ -19,12 +19,8 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.TextView;
@@ -32,14 +28,11 @@ import android.widget.Toast;
 
 import com.example.snare.Entities.Note;
 import com.example.snare.R;
-import com.example.snare.Entities.User;
 import com.example.snare.adapters.NotesAdapter;
 import com.example.snare.dao.NotesDataBase;
 import com.example.snare.listeners.NotesListeners;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.squareup.picasso.Picasso;
@@ -86,22 +79,19 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
     }
 
     private void navOnClickAction() {
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                if(item.getTitle().toString().equals("Logout")) {
-                    logout();
-                } else if(item.getTitle().toString().equals("Profile")) {
-                    startActivity(new Intent(NotesActivity.this, ProfileActivity.class));
-                } else if(item.getTitle().toString().equals("Friends")) {
-                    startActivity(new Intent(NotesActivity.this, FriendsActivity.class));
-                } else if(item.getTitle().toString().equals("Shouts")) {
-                    startActivity(new Intent(NotesActivity.this, ShoutsActivity.class));
-                    finish();
-                }
-
-                return true;
+        navigationView.setNavigationItemSelectedListener(item -> {
+            if(item.getTitle().toString().equals("Logout")) {
+                logout();
+            } else if(item.getTitle().toString().equals("Profile")) {
+                startActivity(new Intent(NotesActivity.this, ProfileActivity.class));
+            } else if(item.getTitle().toString().equals("Friends")) {
+                startActivity(new Intent(NotesActivity.this, FriendsActivity.class));
+            } else if(item.getTitle().toString().equals("Shouts")) {
+                startActivity(new Intent(NotesActivity.this, ShoutsActivity.class));
+                finish();
             }
+
+            return true;
         });
     }
 
@@ -129,13 +119,7 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
     }
 
     private void setImageAddNoteMainListener() {
-        imageAddNoteMain.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivityForResult(new Intent(getApplicationContext(), CreateNoteActivity.class),
-                        REQUEST_CODE_ADD_NOTE);
-            }
-        });
+        imageAddNoteMain.setOnClickListener(view -> startActivityForResult(new Intent(getApplicationContext(), CreateNoteActivity.class), REQUEST_CODE_ADD_NOTE));
     }
 
     private void getAllNotes(int requestCode, boolean isNoteDeleted) {
@@ -149,23 +133,22 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
             @Override
             protected void onPostExecute(List<Note> notes) {
                 super.onPostExecute(notes);
-                if (requestCode == REQUEST_CODE_SHOW_NOTE) {
+                if(requestCode == REQUEST_CODE_SHOW_NOTE) {
                     noteList.addAll(notes);
                     notesAdapter.notifyDataSetChanged();
-                } else if (requestCode == REQUEST_CODE_ADD_NOTE) {
+                } else if(requestCode == REQUEST_CODE_ADD_NOTE) {
                     noteList.add(0, notes.get(0));
                     notesAdapter.notifyItemInserted(0);
                     noteRecycleView.smoothScrollToPosition(0);
-                } else if (requestCode == REQUEST_CODE_UPDATE_NOTE) {
+                } else if(requestCode == REQUEST_CODE_UPDATE_NOTE) {
                     noteList.remove(onClickPosition);
-                    if (isNoteDeleted) {
+                    if(isNoteDeleted) {
                         notesAdapter.notifyItemRemoved(onClickPosition);
                     } else {
                         noteList.add(onClickPosition, notes.get(onClickPosition));
                         notesAdapter.notifyItemChanged(onClickPosition);
                     }
                 }
-
             }
         }
 
@@ -183,17 +166,16 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == REQUEST_CODE_ADD_NOTE & resultCode == RESULT_OK) {
+        if(requestCode == REQUEST_CODE_ADD_NOTE & resultCode == RESULT_OK) {
             getAllNotes(REQUEST_CODE_ADD_NOTE, false);
-        } else if (requestCode == REQUEST_CODE_UPDATE_NOTE && resultCode == RESULT_OK) {
-            if (data != null) {
+        } else if(requestCode == REQUEST_CODE_UPDATE_NOTE && resultCode == RESULT_OK) {
+            if(data != null) {
                 getAllNotes(REQUEST_CODE_UPDATE_NOTE, data.getBooleanExtra("isNoteDeleted", false));
             }
-        } else if (requestCode == REQUEST_CODE_SELECT_IMAGE && resultCode == RESULT_OK) {
-
+        } else if(requestCode == REQUEST_CODE_SELECT_IMAGE && resultCode == RESULT_OK) {
             // Get the selected image's URI
             Uri selectedImageUri = data.getData();
-            if (selectedImageUri != null) {
+            if(selectedImageUri != null) {
                 try {
                     String selectedImagePath = getPathFromUri(selectedImageUri);
                     Intent intent = new Intent(getApplicationContext(),CreateNoteActivity.class);
@@ -202,14 +184,12 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
                     intent.putExtra("imagePath",selectedImagePath);
                     startActivityForResult(intent,REQUEST_CODE_ADD_NOTE);
 
-                } catch (Exception e) {
+                } catch(Exception e) {
                     e.printStackTrace();
                 }
-
             } else {
                 Toast.makeText(this, "no image selected", Toast.LENGTH_SHORT).show();
             }
-
         }
     }
 
@@ -224,27 +204,23 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
     }
 
     private void setImageAddImageListener() {
-        imageAddImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE) !=
-                        PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(NotesActivity.this,
-                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                            REQUEST_CODE_STORAGE_PERMISSION);
-                } else {
-                    selectImage();
-                }
+        imageAddImage.setOnClickListener(view -> {
+            if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE) !=
+                    PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(NotesActivity.this,
+                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                        REQUEST_CODE_STORAGE_PERMISSION);
+            } else {
+                selectImage();
             }
         });
     }
 
     private void selectImage() {
-
         // Create an Intent to open the image picker
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         intent.setType("image/*");
-        if (intent.resolveActivity(getPackageManager()) != null) {
+        if(intent.resolveActivity(getPackageManager()) != null) {
             startActivityForResult(intent, REQUEST_CODE_SELECT_IMAGE);
         }
     }
@@ -254,7 +230,7 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
         String filePath = null;
         // Get the file path from the Uri
         Cursor cursor = getContentResolver().query(imageUri, null, null, null, null);
-        if (cursor != null) {
+        if(cursor != null) {
             cursor.moveToFirst();
             filePath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
             cursor.close();
@@ -276,28 +252,19 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
     }
 
     private void setImageAddNoteListener() {
-        imageAddNote.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivityForResult(new Intent(getApplicationContext(), CreateNoteActivity.class),
-                        REQUEST_CODE_ADD_NOTE);
-            }
-        });
+        imageAddNote.setOnClickListener(view -> startActivityForResult(new Intent(getApplicationContext(), CreateNoteActivity.class), REQUEST_CODE_ADD_NOTE));
     }
 
     private void fillNavDrawer() {
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
-        databaseReference.get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
-            @Override
-            public void onSuccess(DataSnapshot snapshot) {
-                ImageView imageView = findViewById(R.id.profileImg);
-                TextView name = findViewById(R.id.nameTxt);
-                TextView email = findViewById(R.id.emailTxtNav);
+        databaseReference.get().addOnSuccessListener(snapshot -> {
+            ImageView imageView = findViewById(R.id.profileImg);
+            TextView name = findViewById(R.id.nameTxt);
+            TextView email = findViewById(R.id.emailTxtNav);
 
-                Picasso.get().load(snapshot.child("profilePic").getValue(String.class)).into(imageView);
-                name.setText(snapshot.child("name").getValue(String.class));
-                email.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
-            }
+            Picasso.get().load(snapshot.child("profilePic").getValue(String.class)).into(imageView);
+            name.setText(snapshot.child("name").getValue(String.class));
+            email.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
         });
     }
 

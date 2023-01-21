@@ -1,6 +1,5 @@
 package com.example.snare.Activities;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -18,12 +17,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
@@ -88,21 +83,18 @@ public class LoginActivity extends AppCompatActivity {
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
         auth.signInWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if(task.isSuccessful()) {
-                            FirebaseUser user = auth.getCurrentUser();
-                            Toast.makeText(LoginActivity.this, user.getEmail(), Toast.LENGTH_SHORT).show();
-                            updateUI(user);
-                        } else {
-                            Toast.makeText(LoginActivity.this, task.getException().toString(), Toast.LENGTH_SHORT).show();
-                        }
+                .addOnCompleteListener(this, task -> {
+                    if(task.isSuccessful()) {
+                        FirebaseUser user = auth.getCurrentUser();
+                        Toast.makeText(LoginActivity.this, user.getEmail(), Toast.LENGTH_SHORT).show();
+                        updateUI();
+                    } else {
+                        Toast.makeText(LoginActivity.this, task.getException().toString(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
 
-    private void updateUI(FirebaseUser user) {
+    private void updateUI() {
         Toast.makeText(LoginActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
         startActivity(new Intent(LoginActivity.this, NotesActivity.class));
         finish();
@@ -112,35 +104,14 @@ public class LoginActivity extends AppCompatActivity {
         sharedPreferences = getSharedPreferences("User", 0);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
-        auth.signInWithEmailAndPassword(email_txt, password_txt).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
-            @Override
-            public void onSuccess(AuthResult authResult) {
-                /*DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
-                databaseReference.get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
-                    @Override
-                    public void onSuccess(DataSnapshot snapshot) {
-                        editor.putString("Username", snapshot.child("name").getValue(String.class));
-                        editor.putString("Email", email_txt);
-                        editor.putString("Dob", snapshot.child("dob").getValue(String.class));
-                        editor.putString("Id", snapshot.child("id").getValue(String.class));
-                        editor.putString("PhoneNumber", snapshot.child("phoneNumber").getValue(String.class));
-                        editor.putString("ProfilePic", snapshot.child("profilePic").getValue(String.class));
-                        editor.commit();
-                    }
-                });*/
-                Toast.makeText(LoginActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(LoginActivity.this, NotesActivity.class));
-                finish();
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(LoginActivity.this, "Wrong Username Or Password!", Toast.LENGTH_SHORT).show();
-            }
-        });
+        auth.signInWithEmailAndPassword(email_txt, password_txt).addOnSuccessListener(authResult -> {
+            Toast.makeText(LoginActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(LoginActivity.this, NotesActivity.class));
+            finish();
+        }).addOnFailureListener(e -> Toast.makeText(LoginActivity.this, "Wrong Username Or Password!", Toast.LENGTH_SHORT).show());
     }
 
-    public void Signin(View view) {
+    public void Sign_in(View view) {
         String email_txt = email.getText().toString();
         String password_txt = password.getText().toString();
 
@@ -153,7 +124,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    public void GoogleSignin(View view) {
+    public void Google_Sign_in(View view) {
         signInGoogle();
     }
 

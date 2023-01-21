@@ -13,9 +13,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ActionMenuView;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.SearchView;
 
 import com.example.snare.ViewHolders.FriendViewHolder;
@@ -77,31 +74,15 @@ public class FriendsActivity extends AppCompatActivity {
                     Picasso.get().load(model.getProfilePic()).into(holder.profile);
                     holder.name.setText(model.getName());
 
-                    holder.itemView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Intent intent = new Intent(FriendsActivity.this, ViewFriendActivity.class);
-                            intent.putExtra("userKey", getRef(position).getKey());
-                            startActivity(intent);
-                        }
+                    holder.itemView.setOnClickListener(v -> {
+                        Intent intent = new Intent(FriendsActivity.this, ViewFriendActivity.class);
+                        intent.putExtra("userKey", getRef(position).getKey());
+                        startActivity(intent);
                     });
                 } else {
                     holder.itemView.setVisibility(View.GONE);
                     holder.itemView.setLayoutParams(new RecyclerView.LayoutParams(0, 0));
                 }
-
-                /*holder.profile.setBackground(null);
-                Picasso.get().load(model.getProfilePic()).into(holder.profile);
-                holder.name.setText(model.getName());
-
-                holder.itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(FriendsActivity.this, ViewFriendActivity.class);
-                        intent.putExtra("userKey", getRef(position).getKey());
-                        startActivity(intent);
-                    }
-                });*/
             }
 
             @NonNull

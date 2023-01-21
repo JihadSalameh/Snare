@@ -1,6 +1,5 @@
 package com.example.snare.Activities;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -16,14 +15,11 @@ import android.widget.Toast;
 
 import com.example.snare.R;
 import com.example.snare.Entities.User;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
 public class RegistrationContActivity extends AppCompatActivity {
 
@@ -78,29 +74,16 @@ public class RegistrationContActivity extends AppCompatActivity {
 
     private void uploadToFirebase(Uri imageUri, TextView username, TextView dob, TextView phoneNum) {
         StorageReference fileRef = storageReference.child(System.currentTimeMillis() + "." + getFileExtension(imageUri));
-        fileRef.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                fileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                    @Override
-                    public void onSuccess(Uri uri) {
-                        User user = new User(uri.toString(), username.getText().toString(), dob.getText().toString(), phoneNum.getText().toString());
-                        databaseReference.child(FirebaseAuth.getInstance().getUid()).setValue(user);
+        fileRef.putFile(imageUri).addOnSuccessListener(taskSnapshot -> fileRef.getDownloadUrl().addOnSuccessListener(uri -> {
+            User user = new User(uri.toString(), username.getText().toString(), dob.getText().toString(), phoneNum.getText().toString());
+            databaseReference.child(FirebaseAuth.getInstance().getUid()).setValue(user);
 
-                        Toast.makeText(RegistrationContActivity.this, "Uploaded Successfully!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(RegistrationContActivity.this, "Uploaded Successfully!", Toast.LENGTH_SHORT).show();
 
-                        //Uploaded then moving to next screen
-                        startActivity(new Intent(RegistrationContActivity.this, NotesActivity.class));
-                        finish();
-                    }
-                });
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(RegistrationContActivity.this, "Uploading Failed!", Toast.LENGTH_SHORT).show();
-            }
-        });
+            //Uploaded then moving to next screen
+            startActivity(new Intent(RegistrationContActivity.this, NotesActivity.class));
+            finish();
+        })).addOnFailureListener(e -> Toast.makeText(RegistrationContActivity.this, "Uploading Failed!", Toast.LENGTH_SHORT).show());
     }
 
     private String getFileExtension(Uri imageUri) {

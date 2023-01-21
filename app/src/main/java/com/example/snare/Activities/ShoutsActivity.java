@@ -6,10 +6,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.snare.R;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.squareup.picasso.Picasso;
@@ -52,38 +50,32 @@ public class ShoutsActivity extends AppCompatActivity {
     }
 
     private void navOnClickAction() {
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                if(item.getTitle().toString().equals("Logout")) {
-                    logout();
-                } else if(item.getTitle().toString().equals("Profile")) {
-                    startActivity(new Intent(ShoutsActivity.this, ProfileActivity.class));
-                } else if(item.getTitle().toString().equals("Friends")) {
-                    startActivity(new Intent(ShoutsActivity.this, FriendsActivity.class));
-                } else if(item.getTitle().toString().equals("Notes")) {
-                    startActivity(new Intent(ShoutsActivity.this, NotesActivity.class));
-                    finish();
-                }
-
-                return true;
+        navigationView.setNavigationItemSelectedListener(item -> {
+            if(item.getTitle().toString().equals("Logout")) {
+                logout();
+            } else if(item.getTitle().toString().equals("Profile")) {
+                startActivity(new Intent(ShoutsActivity.this, ProfileActivity.class));
+            } else if(item.getTitle().toString().equals("Friends")) {
+                startActivity(new Intent(ShoutsActivity.this, FriendsActivity.class));
+            } else if(item.getTitle().toString().equals("Notes")) {
+                startActivity(new Intent(ShoutsActivity.this, NotesActivity.class));
+                finish();
             }
+
+            return true;
         });
     }
 
     private void fillNavDrawer() {
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
-        databaseReference.get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
-            @Override
-            public void onSuccess(DataSnapshot snapshot) {
-                ImageView imageView = findViewById(R.id.profileImg);
-                TextView name = findViewById(R.id.nameTxt);
-                TextView email = findViewById(R.id.emailTxtNav);
+        databaseReference.get().addOnSuccessListener(snapshot -> {
+            ImageView imageView = findViewById(R.id.profileImg);
+            TextView name = findViewById(R.id.nameTxt);
+            TextView email = findViewById(R.id.emailTxtNav);
 
-                Picasso.get().load(snapshot.child("profilePic").getValue(String.class)).into(imageView);
-                name.setText(snapshot.child("name").getValue(String.class));
-                email.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
-            }
+            Picasso.get().load(snapshot.child("profilePic").getValue(String.class)).into(imageView);
+            name.setText(snapshot.child("name").getValue(String.class));
+            email.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
         });
     }
 

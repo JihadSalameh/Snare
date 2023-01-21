@@ -50,12 +50,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NoteViewHold
     @Override
     public void onBindViewHolder(@NonNull NoteViewHolder holder, @SuppressLint("RecyclerView") int position) {
         holder.setNote(notes.get(position));
-        holder.layoutNote.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                notesListeners.onNoteClick(notes.get(position), position);
-            }
-        });
+        holder.layoutNote.setOnClickListener(view -> notesListeners.onNoteClick(notes.get(position), position));
     }
 
     @Override
@@ -87,12 +82,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NoteViewHold
                     notes = temp;
                 }
 
-                new Handler(Looper.getMainLooper()).post(new Runnable() {
-                    @Override
-                    public void run() {
-                        notifyDataSetChanged();
-                    }
-                });
+                new Handler(Looper.getMainLooper()).post(() -> notifyDataSetChanged());
 
             }
         }, 500);
@@ -141,6 +131,5 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NoteViewHold
             }
         }
     }
-
 
 }

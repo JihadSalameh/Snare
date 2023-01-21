@@ -29,6 +29,7 @@ android {
     buildFeatures {
         viewBinding true
     }
+    buildToolsVersion '31.0.0'
 }
 
 dependencies {
@@ -37,6 +38,7 @@ dependencies {
 
     // Room
     implementation 'androidx.room:room-runtime:2.4.3'
+    implementation 'com.google.firebase:firebase-messaging:23.1.1'
     annotationProcessor 'androidx.room:room-compiler:2.4.3'
 
     // Recycle View
@@ -49,7 +51,7 @@ dependencies {
     // Rounded ImageView
     implementation 'com.makeramen:roundedimageview:2.3.0'
 
-    
+
 
     implementation 'androidx.appcompat:appcompat:1.5.1'
     implementation 'com.google.android.material:material:1.7.0'
@@ -69,4 +71,6 @@ dependencies {
     implementation "androidx.biometric:biometric:1.1.0"
     implementation 'com.firebaseui:firebase-ui-database:8.0.2'
     implementation 'com.google.android.gms:play-services-maps:17.0.1'
+    implementation 'com.google.firebase:firebase-messaging'
+    implementation 'com.google.firebase:firebase-analytics'
 }

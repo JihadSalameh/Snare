@@ -112,34 +112,23 @@ public class CreateNoteActivity extends AppCompatActivity {
     }
 
     private void setImageBackListener() {
-        imageBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onBackPressed();
-            }
-        });
+        imageBack.setOnClickListener(view -> onBackPressed());
     }
 
     private void setImageSaveListener() {
+        imageSave.setOnClickListener(view -> {
+            setTimeDate();
+            Note note = new Note();
+            note.setTitle(inputNoteTitle.getText().toString());
+            note.setNoteText(inputNote.getText().toString());
+            note.setDateTime(textDateTime.getText().toString());
+            note.setColor(selectedNoteColor);
+            note.setImagePath(selectedImagePath);
 
-        imageSave.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                setTimeDate();
-                Note note = new Note();
-                note.setTitle(inputNoteTitle.getText().toString());
-                note.setNoteText(inputNote.getText().toString());
-                note.setDateTime(textDateTime.getText().toString());
-                note.setColor(selectedNoteColor);
-                note.setImagePath(selectedImagePath);
-
-                if (alreadyAvailableNote != null) {
-                    note.setId(alreadyAvailableNote.getId());
-                }
-                saveNote(note);
-
+            if(alreadyAvailableNote != null) {
+                note.setId(alreadyAvailableNote.getId());
             }
+            saveNote(note);
         });
 
     }
@@ -150,8 +139,7 @@ public class CreateNoteActivity extends AppCompatActivity {
     }
 
     private void saveNote(Note note) {
-
-        if (isTitleEmpty()) {
+        if(isTitleEmpty()) {
             Toast.makeText(this, "Note Title is Empty", Toast.LENGTH_LONG).show();
             return;
         }
@@ -174,7 +162,6 @@ public class CreateNoteActivity extends AppCompatActivity {
         }
 
         new SaveNoteTask().execute();
-
     }
 
     private boolean isTitleEmpty() {
@@ -182,15 +169,11 @@ public class CreateNoteActivity extends AppCompatActivity {
     }
 
     private void setBottomSheetBehaviorListener() {
-
-        layoutMiscellaneous.findViewById(R.id.textMiscellaneous).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (bottomSheetBehavior.getState() != BottomSheetBehavior.STATE_EXPANDED) {
-                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-                } else {
-                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                }
+        layoutMiscellaneous.findViewById(R.id.textMiscellaneous).setOnClickListener(view -> {
+            if (bottomSheetBehavior.getState() != BottomSheetBehavior.STATE_EXPANDED) {
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+            } else {
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             }
         });
     }
@@ -201,94 +184,75 @@ public class CreateNoteActivity extends AppCompatActivity {
     }
 
     private void setImageColor1Listener() {
-        layoutMiscellaneous.findViewById(R.id.imageColor1).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                selectedNoteColor = "#333333";
-                imageColor1.setImageResource(R.drawable.ic_done);
-                imageColor2.setImageResource(0);
-                imageColor3.setImageResource(0);
-                imageColor4.setImageResource(0);
-                imageColor5.setImageResource(0);
-                setViewTitleIndicatorColor();
-            }
+        layoutMiscellaneous.findViewById(R.id.imageColor1).setOnClickListener(view -> {
+            selectedNoteColor = "#333333";
+            imageColor1.setImageResource(R.drawable.ic_done);
+            imageColor2.setImageResource(0);
+            imageColor3.setImageResource(0);
+            imageColor4.setImageResource(0);
+            imageColor5.setImageResource(0);
+            setViewTitleIndicatorColor();
         });
     }
 
     private void setImageColor2Listener() {
-        layoutMiscellaneous.findViewById(R.id.imageColor2).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                selectedNoteColor = "#FDBE3B";
-                imageColor1.setImageResource(0);
-                imageColor2.setImageResource(R.drawable.ic_done);
-                imageColor3.setImageResource(0);
-                imageColor4.setImageResource(0);
-                imageColor5.setImageResource(0);
-                setViewTitleIndicatorColor();
-            }
+        layoutMiscellaneous.findViewById(R.id.imageColor2).setOnClickListener(view -> {
+            selectedNoteColor = "#FDBE3B";
+            imageColor1.setImageResource(0);
+            imageColor2.setImageResource(R.drawable.ic_done);
+            imageColor3.setImageResource(0);
+            imageColor4.setImageResource(0);
+            imageColor5.setImageResource(0);
+            setViewTitleIndicatorColor();
         });
     }
 
     private void setImageColor3Listener() {
-        layoutMiscellaneous.findViewById(R.id.imageColor3).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                selectedNoteColor = "#FF4842";
-                imageColor1.setImageResource(0);
-                imageColor2.setImageResource(0);
-                imageColor3.setImageResource(R.drawable.ic_done);
-                imageColor4.setImageResource(0);
-                imageColor5.setImageResource(0);
-                setViewTitleIndicatorColor();
-            }
+        layoutMiscellaneous.findViewById(R.id.imageColor3).setOnClickListener(view -> {
+            selectedNoteColor = "#FF4842";
+            imageColor1.setImageResource(0);
+            imageColor2.setImageResource(0);
+            imageColor3.setImageResource(R.drawable.ic_done);
+            imageColor4.setImageResource(0);
+            imageColor5.setImageResource(0);
+            setViewTitleIndicatorColor();
         });
     }
 
     private void setImageColor4Listener() {
-        layoutMiscellaneous.findViewById(R.id.imageColor4).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                selectedNoteColor = "#3A52FC";
-                imageColor1.setImageResource(0);
-                imageColor2.setImageResource(0);
-                imageColor3.setImageResource(0);
-                imageColor4.setImageResource(R.drawable.ic_done);
-                imageColor5.setImageResource(0);
-                setViewTitleIndicatorColor();
-            }
+        layoutMiscellaneous.findViewById(R.id.imageColor4).setOnClickListener(view -> {
+            selectedNoteColor = "#3A52FC";
+            imageColor1.setImageResource(0);
+            imageColor2.setImageResource(0);
+            imageColor3.setImageResource(0);
+            imageColor4.setImageResource(R.drawable.ic_done);
+            imageColor5.setImageResource(0);
+            setViewTitleIndicatorColor();
         });
     }
 
     private void setImageColor5Listener() {
-        layoutMiscellaneous.findViewById(R.id.imageColor5).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                selectedNoteColor = "#000000";
-                imageColor1.setImageResource(0);
-                imageColor2.setImageResource(0);
-                imageColor3.setImageResource(0);
-                imageColor4.setImageResource(0);
-                imageColor5.setImageResource(R.drawable.ic_done);
-                setViewTitleIndicatorColor();
-            }
+        layoutMiscellaneous.findViewById(R.id.imageColor5).setOnClickListener(view -> {
+            selectedNoteColor = "#000000";
+            imageColor1.setImageResource(0);
+            imageColor2.setImageResource(0);
+            imageColor3.setImageResource(0);
+            imageColor4.setImageResource(0);
+            imageColor5.setImageResource(R.drawable.ic_done);
+            setViewTitleIndicatorColor();
         });
     }
 
     private void setAddImageListener() {
-        layoutMiscellaneous.findViewById(R.id.layoutAddImage).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                bottomSheetBehavior.setState(bottomSheetBehavior.STATE_COLLAPSED);
+        layoutMiscellaneous.findViewById(R.id.layoutAddImage).setOnClickListener(view -> {
+            bottomSheetBehavior.setState(bottomSheetBehavior.STATE_COLLAPSED);
 
-                if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE) !=
-                        PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(CreateNoteActivity.this,
-                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                            REQUEST_CODE_STORAGE_PERMISSION);
-                } else {
-                    selectImage();
-                }
+            if(ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(CreateNoteActivity.this,
+                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                        REQUEST_CODE_STORAGE_PERMISSION);
+            } else {
+                selectImage();
             }
         });
     }
@@ -297,7 +261,7 @@ public class CreateNoteActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_CODE_STORAGE_PERMISSION) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 selectImage();
             } else {
                 Toast.makeText(this, "permission is required", Toast.LENGTH_SHORT).show();
@@ -309,7 +273,7 @@ public class CreateNoteActivity extends AppCompatActivity {
         // Create an Intent to open the image picker
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         intent.setType("image/*");
-        if (intent.resolveActivity(getPackageManager()) != null) {
+        if(intent.resolveActivity(getPackageManager()) != null) {
             startActivityForResult(intent, SELECT_IMAGE_REQUEST_CODE);
         }
     }
@@ -318,10 +282,10 @@ public class CreateNoteActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == SELECT_IMAGE_REQUEST_CODE && resultCode == RESULT_OK) {
+        if(requestCode == SELECT_IMAGE_REQUEST_CODE && resultCode == RESULT_OK) {
             // Get the selected image's URI
             Uri selectedImageUri = data.getData();
-            if (selectedImageUri != null) {
+            if(selectedImageUri != null) {
                 InputStream inputStream = null;
                 try {
                     inputStream = getContentResolver().openInputStream(selectedImageUri);
@@ -334,7 +298,7 @@ public class CreateNoteActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             } else {
-                Toast.makeText(this, "no image selectes", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "no image selected", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -344,7 +308,7 @@ public class CreateNoteActivity extends AppCompatActivity {
         String filePath = null;
         // Get the file path from the Uri
         Cursor cursor = getContentResolver().query(imageUri, null, null, null, null);
-        if (cursor != null) {
+        if(cursor != null) {
             cursor.moveToFirst();
             filePath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
             cursor.close();
@@ -354,7 +318,7 @@ public class CreateNoteActivity extends AppCompatActivity {
     }
 
     private void checkIfUpdateOrCreate() {
-        if (getIntent().getBooleanExtra("isViewOrUpdate", false)) {
+        if(getIntent().getBooleanExtra("isViewOrUpdate", false)) {
             alreadyAvailableNote = (Note) getIntent().getSerializableExtra("note");
             setViewNote();
             setViewColor();
@@ -362,7 +326,7 @@ public class CreateNoteActivity extends AppCompatActivity {
     }
 
     private void checkIfAddNoteFromQuickAction() {
-        if (getIntent().getBooleanExtra("isFromQuickActionsBar", false)) {
+        if(getIntent().getBooleanExtra("isFromQuickActionsBar", false)) {
             if (getIntent().getStringExtra("quickActionBarType").equals("image")) {
                 makeNoteWithImage();
             }
@@ -371,7 +335,7 @@ public class CreateNoteActivity extends AppCompatActivity {
 
     private void makeNoteWithImage() {
         String imagePath = getIntent().getStringExtra("imagePath");
-        if (imagePath != null && !imagePath.trim().isEmpty()) {
+        if(imagePath != null && !imagePath.trim().isEmpty()) {
             imageNote.setImageBitmap(BitmapFactory.decodeFile(imagePath));
             imageNote.setVisibility(View.VISIBLE);
             imageRemoveImage.setVisibility(View.VISIBLE);
@@ -381,9 +345,8 @@ public class CreateNoteActivity extends AppCompatActivity {
     }
 
     private void setViewColor() {
-        if (alreadyAvailableNote != null && alreadyAvailableNote.getColor() != null && !alreadyAvailableNote.getColor().trim().isEmpty()) {
-
-            switch (alreadyAvailableNote.getColor()) {
+        if(alreadyAvailableNote != null && alreadyAvailableNote.getColor() != null && !alreadyAvailableNote.getColor().trim().isEmpty()) {
+            switch(alreadyAvailableNote.getColor()) {
                 case "#FDBE3B":
                     layoutMiscellaneous.findViewById(R.id.viewColor2).performClick();
                     break;
@@ -406,7 +369,7 @@ public class CreateNoteActivity extends AppCompatActivity {
         inputNote.setText(alreadyAvailableNote.getNoteText());
         textDateTime.setText(alreadyAvailableNote.getDateTime());
 
-        if (alreadyAvailableNote.getImagePath() != null && !alreadyAvailableNote.getImagePath().trim().isEmpty()) {
+        if(alreadyAvailableNote.getImagePath() != null && !alreadyAvailableNote.getImagePath().trim().isEmpty()) {
             imageNote.setImageBitmap(BitmapFactory.decodeFile(alreadyAvailableNote.getImagePath()));
             imageNote.setVisibility(View.VISIBLE);
             imageRemoveImage.setVisibility(View.VISIBLE);
@@ -420,13 +383,9 @@ public class CreateNoteActivity extends AppCompatActivity {
     private void setDeleteListener() {
         LinearLayout layoutDeleteNote = findViewById(R.id.layoutDeleteNote);
         layoutDeleteNote.setVisibility(View.VISIBLE);
-        layoutDeleteNote.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                showDeleteDialog();
-            }
+        layoutDeleteNote.setOnClickListener(view -> {
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            showDeleteDialog();
         });
     }
 
@@ -443,7 +402,7 @@ public class CreateNoteActivity extends AppCompatActivity {
 
         dialogDeleteNote = builder.create();
 
-        if (dialogDeleteNote.getWindow() != null) {
+        if(dialogDeleteNote.getWindow() != null) {
             dialogDeleteNote.getWindow().setBackgroundDrawable(new ColorDrawable(0));
         }
 
@@ -458,7 +417,6 @@ public class CreateNoteActivity extends AppCompatActivity {
                         NotesDataBase.getDatabase(getApplicationContext()).noteDao().deleteNote(alreadyAvailableNote);
                         return null;
                     }
-
 
                     @Override
                     protected void onPostExecute(Void avoid) {
@@ -475,29 +433,19 @@ public class CreateNoteActivity extends AppCompatActivity {
             }
         });
 
-        dialogView.findViewById(R.id.textCancel).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dialogDeleteNote.dismiss();
-            }
-        });
+        dialogView.findViewById(R.id.textCancel).setOnClickListener(view -> dialogDeleteNote.dismiss());
 
         dialogDeleteNote.show();
     }
 
 
     private void setRemoveImageListener() {
-
-        imageRemoveImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                imageNote.setImageBitmap(null);
-                imageNote.setVisibility(View.GONE);
-                imageRemoveImage.setVisibility(View.GONE);
-                selectedImagePath = "";
-            }
+        imageRemoveImage.setOnClickListener(view -> {
+            imageNote.setImageBitmap(null);
+            imageNote.setVisibility(View.GONE);
+            imageRemoveImage.setVisibility(View.GONE);
+            selectedImagePath = "";
         });
     }
-
 
 }

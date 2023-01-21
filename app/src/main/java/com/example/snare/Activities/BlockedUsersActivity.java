@@ -64,13 +64,10 @@ public class BlockedUsersActivity extends AppCompatActivity {
                     Picasso.get().load(model.getProfilePic()).into(holder.profile);
                     holder.name.setText(model.getName());
 
-                    holder.itemView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Intent intent = new Intent(BlockedUsersActivity.this, ViewFriendActivity.class);
-                            intent.putExtra("userKey", getRef(position).getKey());
-                            startActivity(intent);
-                        }
+                    holder.itemView.setOnClickListener(v -> {
+                        Intent intent = new Intent(BlockedUsersActivity.this, ViewFriendActivity.class);
+                        intent.putExtra("userKey", getRef(position).getKey());
+                        startActivity(intent);
                     });
                 } else {
                     holder.itemView.setVisibility(View.GONE);

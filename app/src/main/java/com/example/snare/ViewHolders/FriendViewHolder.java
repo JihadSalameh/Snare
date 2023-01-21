@@ -9,8 +9,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.snare.R;
 
-import java.text.BreakIterator;
-
 public class FriendViewHolder extends RecyclerView.ViewHolder {
 
     public ImageView profile;

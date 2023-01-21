@@ -11,9 +11,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.snare.R;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -40,6 +37,7 @@ public class ViewFriendActivity extends AppCompatActivity {
 
     String userId;
     String currentState = "nothing_happened";
+    private int notificationId = 1;
 
     @Override
     protected void onDestroy() {
@@ -230,79 +228,61 @@ public class ViewFriendActivity extends AppCompatActivity {
     }
 
     private void AddFriend() {
-        userRef.get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
-            @Override
-            public void onSuccess(DataSnapshot dataSnapshot) {
-                HashMap hashMap = new HashMap();
-                hashMap.put("status", "friend");
-                hashMap.put("name", name);
-                hashMap.put("profilePic", profileImageUrl);
+        userRef.get().addOnSuccessListener(dataSnapshot -> {
+            HashMap hashMap = new HashMap();
+            hashMap.put("status", "friend");
+            hashMap.put("name", name);
+            hashMap.put("profilePic", profileImageUrl);
 
-                HashMap hashMap1 = new HashMap();
-                hashMap1.put("status", "friend");
-                hashMap1.put("name", dataSnapshot.child("name").getValue(String.class));
-                hashMap1.put("profilePic", dataSnapshot.child("profilePic").getValue(String.class));
+            HashMap hashMap1 = new HashMap();
+            hashMap1.put("status", "friend");
+            hashMap1.put("name", dataSnapshot.child("name").getValue(String.class));
+            hashMap1.put("profilePic", dataSnapshot.child("profilePic").getValue(String.class));
 
-                friendRef.child(user.getUid()).child(userId).updateChildren(hashMap).addOnCompleteListener(new OnCompleteListener() {
-                    @Override
-                    public void onComplete(@NonNull Task task) {
-                        if(task.isSuccessful()) {
-                            friendRef.child(userId).child(user.getUid()).updateChildren(hashMap1).addOnCompleteListener(new OnCompleteListener() {
-                                @Override
-                                public void onComplete(@NonNull Task task) {
-                                    if(task.isSuccessful()) {
-                                        Toast.makeText(ViewFriendActivity.this, "Friend Added!", Toast.LENGTH_SHORT).show();
-                                        currentState = "friend";
-                                        perform.setVisibility(View.GONE);
-                                        decline.setText("UNFRIEND");
-                                        decline.setVisibility(View.VISIBLE);
-                                        block.setText("BLOCK");
-                                        block.setVisibility(View.VISIBLE);
-                                    }
-                                }
-                            });
+            friendRef.child(user.getUid()).child(userId).updateChildren(hashMap).addOnCompleteListener(task -> {
+                if(task.isSuccessful()) {
+                    friendRef.child(userId).child(user.getUid()).updateChildren(hashMap1).addOnCompleteListener(task1 -> {
+                        if(task1.isSuccessful()) {
+                            Toast.makeText(ViewFriendActivity.this, "Friend Added!", Toast.LENGTH_SHORT).show();
+                            currentState = "friend";
+                            perform.setVisibility(View.GONE);
+                            decline.setText("UNFRIEND");
+                            decline.setVisibility(View.VISIBLE);
+                            block.setText("BLOCK");
+                            block.setVisibility(View.VISIBLE);
                         }
-                    }
-                });
-            }
+                    });
+                }
+            });
         });
     }
 
     public void DeclineRequest(View view) {
         if(currentState.equals("friend")) {
-            friendRef.child(user.getUid()).child(userId).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    if(task.isSuccessful()) {
-                        friendRef.child(userId).child(user.getUid()).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if(task.isSuccessful()) {
-                                    Toast.makeText(ViewFriendActivity.this, "You Are Unfriended!", Toast.LENGTH_SHORT).show();
-                                    currentState = "nothing_happened";
-                                    perform.setText("SEND REQUEST");
-                                    perform.setVisibility(View.VISIBLE);
-                                    decline.setVisibility(View.GONE);
-                                    block.setVisibility(View.GONE);
-                                }
-                            }
-                        });
-                    }
+            friendRef.child(user.getUid()).child(userId).removeValue().addOnCompleteListener(task -> {
+                if(task.isSuccessful()) {
+                    friendRef.child(userId).child(user.getUid()).removeValue().addOnCompleteListener(task1 -> {
+                        if(task1.isSuccessful()) {
+                            Toast.makeText(ViewFriendActivity.this, "You Are Unfriended!", Toast.LENGTH_SHORT).show();
+                            currentState = "nothing_happened";
+                            perform.setText("SEND REQUEST");
+                            perform.setVisibility(View.VISIBLE);
+                            decline.setVisibility(View.GONE);
+                            block.setVisibility(View.GONE);
+                        }
+                    });
                 }
             });
         }
 
         if(currentState.equals("he_sent_pending")) {
-            requestRef.child(userId).child(user.getUid()).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    if(task.isSuccessful()) {
-                        Toast.makeText(ViewFriendActivity.this, "Friend Request Denied!", Toast.LENGTH_SHORT).show();
-                        currentState = "nothing_happened";
-                        perform.setText("SEND REQUEST");
-                        perform.setVisibility(View.VISIBLE);
-                        decline.setVisibility(View.GONE);
-                    }
+            requestRef.child(userId).child(user.getUid()).removeValue().addOnCompleteListener(task -> {
+                if(task.isSuccessful()) {
+                    Toast.makeText(ViewFriendActivity.this, "Friend Request Denied!", Toast.LENGTH_SHORT).show();
+                    currentState = "nothing_happened";
+                    perform.setText("SEND REQUEST");
+                    perform.setVisibility(View.VISIBLE);
+                    decline.setVisibility(View.GONE);
                 }
             });
         }
@@ -311,40 +291,31 @@ public class ViewFriendActivity extends AppCompatActivity {
     public void blockUser(View view) {
         if(block.getText().equals("BLOCK")) {
             currentState = "blocked";
-            userRef.get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
-                @Override
-                public void onSuccess(DataSnapshot dataSnapshot) {
-                    HashMap hashMap = new HashMap();
-                    hashMap.put("status", "blocked");
-                    hashMap.put("name", name);
-                    hashMap.put("profilePic", profileImageUrl);
+            userRef.get().addOnSuccessListener(dataSnapshot -> {
+                HashMap hashMap = new HashMap();
+                hashMap.put("status", "blocked");
+                hashMap.put("name", name);
+                hashMap.put("profilePic", profileImageUrl);
 
-                    HashMap hashMap1 = new HashMap();
-                    hashMap1.put("status", "blocked_by");
-                    hashMap1.put("name", dataSnapshot.child("name").getValue(String.class));
-                    hashMap1.put("profilePic", dataSnapshot.child("profilePic").getValue(String.class));
+                HashMap hashMap1 = new HashMap();
+                hashMap1.put("status", "blocked_by");
+                hashMap1.put("name", dataSnapshot.child("name").getValue(String.class));
+                hashMap1.put("profilePic", dataSnapshot.child("profilePic").getValue(String.class));
 
-                    friendRef.child(user.getUid()).child(userId).updateChildren(hashMap).addOnCompleteListener(new OnCompleteListener() {
-                        @Override
-                        public void onComplete(@NonNull Task task) {
-                            if(task.isSuccessful()) {
-                                friendRef.child(userId).child(user.getUid()).updateChildren(hashMap1).addOnCompleteListener(new OnCompleteListener() {
-                                    @Override
-                                    public void onComplete(@NonNull Task task) {
-                                        if(task.isSuccessful()) {
-                                            Toast.makeText(ViewFriendActivity.this, "Friend Blocked!", Toast.LENGTH_SHORT).show();
-                                            currentState = "blocked";
-                                            perform.setVisibility(View.VISIBLE);
-                                            perform.setText("UNBLOCK");
-                                            block.setVisibility(View.GONE);
-                                            decline.setVisibility(View.GONE);
-                                        }
-                                    }
-                                });
+                friendRef.child(user.getUid()).child(userId).updateChildren(hashMap).addOnCompleteListener(task -> {
+                    if(task.isSuccessful()) {
+                        friendRef.child(userId).child(user.getUid()).updateChildren(hashMap1).addOnCompleteListener(task1 -> {
+                            if(task1.isSuccessful()) {
+                                Toast.makeText(ViewFriendActivity.this, "Friend Blocked!", Toast.LENGTH_SHORT).show();
+                                currentState = "blocked";
+                                perform.setVisibility(View.VISIBLE);
+                                perform.setText("UNBLOCK");
+                                block.setVisibility(View.GONE);
+                                decline.setVisibility(View.GONE);
                             }
-                        }
-                    });
-                }
+                        });
+                    }
+                });
             });
         } else if(block.getText().equals("UNBLOCK")) {
             AddFriend();
