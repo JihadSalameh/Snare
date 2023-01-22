@@ -11,16 +11,18 @@ import androidx.core.app.NotificationManagerCompat;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import java.util.Objects;
+
 public class PushNotificationService extends FirebaseMessagingService {
 
     @Override
     public void onMessageReceived(@NonNull RemoteMessage message) {
-        String title = message.getNotification().getTitle();
+        String title = Objects.requireNonNull(message.getNotification()).getTitle();
         String text = message.getNotification().getBody();
-        String CHANNEL_ID = "Friend Request";
+        String CHANNEL_ID = "Notification";
         NotificationChannel channel = new NotificationChannel(
                 CHANNEL_ID,
-                "Friend Request Notification",
+                "Notification",
                 NotificationManager.IMPORTANCE_HIGH);
         getSystemService(NotificationManager.class).createNotificationChannel(channel);
         Context context;

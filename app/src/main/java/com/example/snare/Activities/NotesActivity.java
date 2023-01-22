@@ -36,19 +36,26 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class NotesActivity extends AppCompatActivity implements NotesListeners {
 
     public DrawerLayout drawerLayout;
     public ActionBarDrawerToggle actionBarDrawerToggle;
     public NavigationView navigationView;
+
+    DatabaseReference userRef;
+    FirebaseAuth auth;
+    FirebaseUser user;
 
     private RecyclerView noteRecycleView;
     private ImageView imageAddImage;
@@ -70,9 +77,7 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notes);
 
-        ////////// REACHED HERE
         ////////// Change in Postman to TOKEN
-
         FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
             if(task.isComplete()){
                 GetToken(task);
@@ -86,6 +91,10 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
         actionBarDrawerToggle.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
+        userRef = FirebaseDatabase.getInstance().getReference("Users").child(user.getUid());
+
         fillNavDrawer();
 
         navOnClickAction();
@@ -93,6 +102,11 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
 
     private void GetToken(Task<String> task) {
         String token = task.getResult().toString();
+
+        Map<String, Object> update = new HashMap<String, Object>();
+        update.put("token", token);
+        userRef.updateChildren(update);
+
         System.out.println("token = " + token);
     }
 

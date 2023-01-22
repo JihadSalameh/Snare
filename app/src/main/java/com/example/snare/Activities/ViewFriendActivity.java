@@ -3,6 +3,7 @@ package com.example.snare.Activities;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -10,7 +11,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.snare.FCMSend;
 import com.example.snare.R;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -189,6 +192,11 @@ public class ViewFriendActivity extends AppCompatActivity {
         if(currentState.equals("nothing_happened")) {
             HashMap hashMap = new HashMap();
             hashMap.put("status", "pending");
+
+            ref.get().addOnSuccessListener(dataSnapshot -> {
+                SendNotification(dataSnapshot);
+            });
+
             requestRef.child(user.getUid()).child(userId).updateChildren(hashMap).addOnCompleteListener(task -> {
                 if(task.isSuccessful()) {
                     Toast.makeText(ViewFriendActivity.this, "Friend Request Sent!", Toast.LENGTH_SHORT).show();
@@ -225,6 +233,17 @@ public class ViewFriendActivity extends AppCompatActivity {
                 }
             });
         }
+    }
+
+    private void SendNotification(DataSnapshot dataSnapshot) {
+        String token = dataSnapshot.child("token").getValue().toString();
+
+        userRef.get().addOnSuccessListener(dataSnapshot1 -> {
+            String message = dataSnapshot1.child("name").getValue().toString() + " sent you a friend request.";
+            String title = "Friend Request";
+
+            FCMSend.pushNotification(ViewFriendActivity.this, token, title, message);
+        });
     }
 
     private void AddFriend() {
