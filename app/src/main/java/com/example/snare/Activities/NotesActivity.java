@@ -19,6 +19,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
@@ -31,10 +32,13 @@ import com.example.snare.R;
 import com.example.snare.adapters.NotesAdapter;
 import com.example.snare.dao.NotesDataBase;
 import com.example.snare.listeners.NotesListeners;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -66,6 +70,15 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notes);
 
+        ////////// REACHED HERE
+        ////////// Change in Postman to TOKEN
+
+        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
+            if(task.isComplete()){
+                GetToken(task);
+            }
+        });
+
         setActivity();
 
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.nav_open, R.string.nav_close);
@@ -76,6 +89,11 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
         fillNavDrawer();
 
         navOnClickAction();
+    }
+
+    private void GetToken(Task<String> task) {
+        String token = task.getResult().toString();
+        System.out.println("token = " + token);
     }
 
     private void navOnClickAction() {
