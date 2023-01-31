@@ -19,9 +19,10 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.TextView;
@@ -32,7 +33,6 @@ import com.example.snare.R;
 import com.example.snare.adapters.NotesAdapter;
 import com.example.snare.dao.NotesDataBase;
 import com.example.snare.listeners.NotesListeners;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -77,7 +77,6 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notes);
 
-        ////////// Change in Postman to TOKEN
         FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
             if(task.isComplete()){
                 GetToken(task);
@@ -101,7 +100,7 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
     }
 
     private void GetToken(Task<String> task) {
-        String token = task.getResult().toString();
+        String token = task.getResult();
 
         Map<String, Object> update = new HashMap<String, Object>();
         update.put("token", token);
@@ -121,6 +120,8 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
             } else if(item.getTitle().toString().equals("Shouts")) {
                 startActivity(new Intent(NotesActivity.this, ShoutsActivity.class));
                 finish();
+            } else if(item.getTitle().toString().equals("Notifications")) {
+                startActivity(new Intent(NotesActivity.this, NotificationsActivity.class));
             }
 
             return true;

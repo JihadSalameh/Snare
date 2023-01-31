@@ -19,6 +19,11 @@
         android:icon="@drawable/ic_baseline_surround_sound_24" />
 
     <item
+        android:id="@+id/nav_notifications"
+        android:title="Notifications"
+        android:icon="@drawable/ic_baseline_notifications_24" />
+
+    <item
         android:id="@+id/nav_groups"
         android:title="Groups"
         android:icon="@drawable/ic_baseline_group_24" />
