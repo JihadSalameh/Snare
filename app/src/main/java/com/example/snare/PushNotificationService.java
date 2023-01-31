@@ -19,7 +19,7 @@ import java.util.Objects;
 
 public class PushNotificationService extends FirebaseMessagingService {
 
-    private NotificationsDao notificationsDao = NotificationsDataBase.getDatabase(getApplicationContext()).notificationsDao();
+    private NotificationsDao notificationsDao;
 
     @Override
     public void onMessageReceived(@NonNull RemoteMessage message) {
@@ -31,7 +31,6 @@ public class PushNotificationService extends FirebaseMessagingService {
                 "Notification",
                 NotificationManager.IMPORTANCE_HIGH);
         getSystemService(NotificationManager.class).createNotificationChannel(channel);
-        Context context;
         Notification.Builder notification = new Notification.Builder(this, CHANNEL_ID)
                 .setContentTitle(title)
                         .setContentText(text)
@@ -39,11 +38,14 @@ public class PushNotificationService extends FirebaseMessagingService {
                                         .setAutoCancel(true);
         NotificationManagerCompat.from(this).notify(1, notification.build());
 
-        super.onMessageReceived(message);
+        notificationsDao = NotificationsDataBase.getDatabase(this).notificationsDao();
+
         Notifications notifications = new Notifications();
         notifications.setTitle(title);
         notifications.setMessage(text);
         InsertNotification(notifications);
+
+        super.onMessageReceived(message);
     }
 
     private void InsertNotification(Notifications notifications) {

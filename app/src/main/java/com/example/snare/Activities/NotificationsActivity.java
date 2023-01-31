@@ -13,6 +13,7 @@ import com.example.snare.adapters.NotificationsAdapter;
 import com.example.snare.dao.NotificationsDao;
 import com.example.snare.dao.NotificationsDataBase;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class NotificationsActivity extends AppCompatActivity {
@@ -27,7 +28,8 @@ public class NotificationsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notifications);
 
-        notificationsDao = NotificationsDataBase.getDatabase(getApplicationContext()).notificationsDao();
+        notificationsDao = NotificationsDataBase.getDatabase(this).notificationsDao();
+        list = new ArrayList<>();
         list = notificationsDao.GetAllNotifications();
 
         recyclerView = findViewById(R.id.notificationsRecyclerView);

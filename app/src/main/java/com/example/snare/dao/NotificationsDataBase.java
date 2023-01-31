@@ -19,7 +19,7 @@ public abstract class NotificationsDataBase extends RoomDatabase {
                     context,
                     NotificationsDataBase.class,
                     "notifications_db"
-            ).build();
+            ).allowMainThreadQueries().build();
         }
 
         return notificationsDataBase;
