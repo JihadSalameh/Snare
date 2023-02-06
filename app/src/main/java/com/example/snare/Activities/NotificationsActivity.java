@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
 
 import com.example.snare.Entities.Notifications;
@@ -20,8 +19,8 @@ public class NotificationsActivity extends AppCompatActivity {
 
     RecyclerView recyclerView;
     NotificationsAdapter adapter;
-    private NotificationsDao notificationsDao;
-    private List<Notifications> list;
+    NotificationsDao notificationsDao;
+    List<Notifications> list;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

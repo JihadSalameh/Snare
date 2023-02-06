@@ -1,5 +1,7 @@
 package com.example.snare.Entities;
 
+import androidx.annotation.NonNull;
+
 public class User {
 
     private String profilePic;
@@ -50,6 +52,7 @@ public class User {
         this.phoneNumber = phoneNumber;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "User{" +

@@ -1,5 +1,6 @@
 package com.example.snare.Entities;
 
+import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
@@ -40,6 +41,7 @@ public class Notifications {
         this.message = message;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return title + " -> " + message;

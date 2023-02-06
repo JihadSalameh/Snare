@@ -3,7 +3,6 @@ package com.example.snare;
 import android.content.Context;
 import android.os.StrictMode;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
@@ -37,7 +36,7 @@ public class FCMSend {
 
             }){
                 @Override
-                public Map<String, String> getHeaders() throws AuthFailureError {
+                public Map<String, String> getHeaders() {
                     Map<String, String> params = new HashMap<>();
                     params.put("Content-Type",  "application/json");
                     params.put("Authorization",  SERVER_KEY);

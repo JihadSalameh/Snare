@@ -21,14 +21,13 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.snare.Entities.Note;
+import com.example.snare.PushNotificationService;
 import com.example.snare.R;
 import com.example.snare.adapters.NotesAdapter;
 import com.example.snare.dao.NotesDataBase;
@@ -46,6 +45,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class NotesActivity extends AppCompatActivity implements NotesListeners {
 
@@ -88,7 +88,7 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.nav_open, R.string.nav_close);
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
         actionBarDrawerToggle.syncState();
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
@@ -102,7 +102,7 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
     private void GetToken(Task<String> task) {
         String token = task.getResult();
 
-        Map<String, Object> update = new HashMap<String, Object>();
+        Map<String, Object> update = new HashMap<>();
         update.put("token", token);
         userRef.updateChildren(update);
 
@@ -156,6 +156,8 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
     }
 
     private void getAllNotes(int requestCode, boolean isNoteDeleted) {
+
+        @SuppressLint("StaticFieldLeak")
         class GetNotesTask extends AsyncTask<Void, Void, List<Note>> {
 
             @Override
@@ -163,6 +165,7 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
                 return NotesDataBase.getDatabase(getApplicationContext()).noteDao().getAllNotes();
             }
 
+            @SuppressLint("NotifyDataSetChanged")
             @Override
             protected void onPostExecute(List<Note> notes) {
                 super.onPostExecute(notes);
@@ -207,6 +210,7 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
             }
         } else if(requestCode == REQUEST_CODE_SELECT_IMAGE && resultCode == RESULT_OK) {
             // Get the selected image's URI
+            assert data != null;
             Uri selectedImageUri = data.getData();
             if(selectedImageUri != null) {
                 try {
@@ -249,6 +253,7 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
         });
     }
 
+    @SuppressLint("IntentReset")
     private void selectImage() {
         // Create an Intent to open the image picker
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -289,7 +294,7 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
     }
 
     private void fillNavDrawer() {
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid());
         databaseReference.get().addOnSuccessListener(snapshot -> {
             ImageView imageView = findViewById(R.id.profileImg);
             TextView name = findViewById(R.id.nameTxt);

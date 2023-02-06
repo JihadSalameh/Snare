@@ -19,6 +19,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.Objects;
+
 public class ShoutsActivity extends AppCompatActivity {
 
     public DrawerLayout drawerLayout;
@@ -36,7 +38,7 @@ public class ShoutsActivity extends AppCompatActivity {
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.nav_open, R.string.nav_close);
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
         actionBarDrawerToggle.syncState();
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
         fillNavDrawer();
         navOnClickAction();
@@ -69,7 +71,7 @@ public class ShoutsActivity extends AppCompatActivity {
     }
 
     private void fillNavDrawer() {
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid());
         databaseReference.get().addOnSuccessListener(snapshot -> {
             ImageView imageView = findViewById(R.id.profileImg);
             TextView name = findViewById(R.id.nameTxt);

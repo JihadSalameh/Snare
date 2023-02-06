@@ -3,7 +3,7 @@ package com.example.snare.Activities;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Context;
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -13,7 +13,6 @@ import android.widget.Toast;
 
 import com.example.snare.FCMSend;
 import com.example.snare.R;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -24,6 +23,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import java.util.HashMap;
+import java.util.Objects;
 
 public class ViewFriendActivity extends AppCompatActivity {
 
@@ -40,7 +40,6 @@ public class ViewFriendActivity extends AppCompatActivity {
 
     String userId;
     String currentState = "nothing_happened";
-    private int notificationId = 1;
 
     @Override
     protected void onDestroy() {
@@ -78,23 +77,24 @@ public class ViewFriendActivity extends AppCompatActivity {
         CheckUserExistence(userId);
     }
 
+    @SuppressLint("SetTextI18n")
     private void CheckUserExistence(String userId) {
         friendRef.child(user.getUid()).child(userId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if(snapshot.exists() && snapshot.child("status").getValue().toString().equals("friend")) {
+                if(snapshot.exists() && Objects.requireNonNull(snapshot.child("status").getValue()).toString().equals("friend")) {
                     currentState = "friend";
                     perform.setVisibility(View.GONE);
                     decline.setText("UNFRIEND");
                     decline.setVisibility(View.VISIBLE);
                     block.setVisibility(View.VISIBLE);
-                } else if(snapshot.exists() && snapshot.child("status").getValue().toString().equals("blocked")) {
+                } else if(snapshot.exists() && Objects.requireNonNull(snapshot.child("status").getValue()).toString().equals("blocked")) {
                     currentState = "blocked";
                     perform.setVisibility(View.GONE);
                     decline.setVisibility(View.GONE);
                     block.setVisibility(View.VISIBLE);
                     block.setText("UNBLOCK");
-                } else if(snapshot.exists() && snapshot.child("status").getValue().toString().equals("blocked_by")) {
+                } else if(snapshot.exists() && Objects.requireNonNull(snapshot.child("status").getValue()).toString().equals("blocked_by")) {
                     currentState = "blocked";
                     perform.setVisibility(View.GONE);
                     decline.setVisibility(View.GONE);
@@ -112,7 +112,7 @@ public class ViewFriendActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if(snapshot.exists()) {
-                    if(snapshot.child("status").getValue().toString().equals("pending")) {
+                    if(Objects.requireNonNull(snapshot.child("status").getValue()).toString().equals("pending")) {
                         currentState = "I_sent_pending";
                         perform.setText("Cancel Friend Request");
                         decline.setVisibility(View.GONE);
@@ -120,7 +120,7 @@ public class ViewFriendActivity extends AppCompatActivity {
                     }
 
                     ////DON'T THINK IT'S NEEDED CHECK LATER///////////////////////////////////////////////////
-                    if(snapshot.child("status").getValue().toString().equals("request_declined")) {
+                    if(Objects.requireNonNull(snapshot.child("status").getValue()).toString().equals("request_declined")) {
                         currentState = "I_sent_declined";
                         perform.setText("Cancel Friend Request");
                         decline.setVisibility(View.GONE);
@@ -138,7 +138,7 @@ public class ViewFriendActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if(snapshot.exists()) {
-                    if(snapshot.child("status").getValue().toString().equals("pending")) {
+                    if(Objects.requireNonNull(snapshot.child("status").getValue()).toString().equals("pending")) {
                         currentState = "he_sent_pending";
                         perform.setText("Accept");
                         decline.setText("Decline");
@@ -167,8 +167,8 @@ public class ViewFriendActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if(snapshot.exists()) {
-                    profileImageUrl = snapshot.child("profilePic").getValue().toString();
-                    name = snapshot.child("name").getValue().toString();
+                    profileImageUrl = Objects.requireNonNull(snapshot.child("profilePic").getValue()).toString();
+                    name = Objects.requireNonNull(snapshot.child("name").getValue()).toString();
 
                     Picasso.get().load(profileImageUrl).into(profileImg);
                     username.setText(name);
@@ -179,7 +179,7 @@ public class ViewFriendActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(ViewFriendActivity.this, ""+error.getMessage().toString(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(ViewFriendActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -188,14 +188,13 @@ public class ViewFriendActivity extends AppCompatActivity {
         performAction(userId);
     }
 
+    @SuppressLint("SetTextI18n")
     private void performAction(String userId) {
         if(currentState.equals("nothing_happened")) {
-            HashMap hashMap = new HashMap();
+            HashMap<String, Object> hashMap = new HashMap<>();
             hashMap.put("status", "pending");
 
-            ref.get().addOnSuccessListener(dataSnapshot -> {
-                SendNotification(dataSnapshot);
-            });
+            ref.get().addOnSuccessListener(this::SendNotificationFriendRequest);
 
             requestRef.child(user.getUid()).child(userId).updateChildren(hashMap).addOnCompleteListener(task -> {
                 if(task.isSuccessful()) {
@@ -205,7 +204,7 @@ public class ViewFriendActivity extends AppCompatActivity {
                     currentState = "I_sent_pending";
                     perform.setText("Cancel Friend Request");
                 } else {
-                    Toast.makeText(ViewFriendActivity.this, ""+task.getException().toString(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ViewFriendActivity.this, Objects.requireNonNull(task.getException()).toString(), Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -219,7 +218,7 @@ public class ViewFriendActivity extends AppCompatActivity {
                     decline.setVisibility(View.GONE);
                     block.setVisibility(View.GONE);
                 } else {
-                    Toast.makeText(ViewFriendActivity.this, ""+task.getException().toString(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ViewFriendActivity.this, Objects.requireNonNull(task.getException()).toString(), Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -227,33 +226,45 @@ public class ViewFriendActivity extends AppCompatActivity {
         if(currentState.equals("he_sent_pending")) {
             requestRef.child(userId).child(user.getUid()).removeValue().addOnCompleteListener(task -> {
                 if(task.isSuccessful()) {
-                    AddFriend();
+                    AddFriend("adding");
                 } else {
-                    Toast.makeText(ViewFriendActivity.this, ""+task.getException().toString(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ViewFriendActivity.this, Objects.requireNonNull(task.getException()).toString(), Toast.LENGTH_SHORT).show();
                 }
             });
         }
     }
 
-    private void SendNotification(DataSnapshot dataSnapshot) {
-        String token = dataSnapshot.child("token").getValue().toString();
+    private void SendNotificationFriendRequest(DataSnapshot dataSnapshot) {
+        String token = Objects.requireNonNull(dataSnapshot.child("token").getValue()).toString();
 
         userRef.get().addOnSuccessListener(dataSnapshot1 -> {
-            String message = dataSnapshot1.child("name").getValue().toString() + " sent you a friend request.";
+            String message = Objects.requireNonNull(dataSnapshot1.child("name").getValue()) + " sent you a friend request.";
             String title = "Friend Request";
 
             FCMSend.pushNotification(ViewFriendActivity.this, token, title, message);
         });
     }
 
-    private void AddFriend() {
+    private void SendNotificationFriendRequestAccepted(DataSnapshot dataSnapshot) {
+        String token = Objects.requireNonNull(dataSnapshot.child("token").getValue()).toString();
+
+        userRef.get().addOnSuccessListener(dataSnapshot1 -> {
+            String message = Objects.requireNonNull(dataSnapshot1.child("name").getValue()) + " accepted your friend request.";
+            String title = "Friends";
+
+            FCMSend.pushNotification(ViewFriendActivity.this, token, title, message);
+        });
+    }
+
+    @SuppressLint("SetTextI18n")
+    private void AddFriend(String status) {
         userRef.get().addOnSuccessListener(dataSnapshot -> {
-            HashMap hashMap = new HashMap();
+            HashMap<String, Object> hashMap = new HashMap<>();
             hashMap.put("status", "friend");
             hashMap.put("name", name);
             hashMap.put("profilePic", profileImageUrl);
 
-            HashMap hashMap1 = new HashMap();
+            HashMap<String, Object> hashMap1 = new HashMap<>();
             hashMap1.put("status", "friend");
             hashMap1.put("name", dataSnapshot.child("name").getValue(String.class));
             hashMap1.put("profilePic", dataSnapshot.child("profilePic").getValue(String.class));
@@ -274,8 +285,13 @@ public class ViewFriendActivity extends AppCompatActivity {
                 }
             });
         });
+
+        if(status.equals("adding")) {
+            ref.get().addOnSuccessListener(this::SendNotificationFriendRequestAccepted);
+        }
     }
 
+    @SuppressLint("SetTextI18n")
     public void DeclineRequest(View view) {
         if(currentState.equals("friend")) {
             friendRef.child(user.getUid()).child(userId).removeValue().addOnCompleteListener(task -> {
@@ -307,16 +323,17 @@ public class ViewFriendActivity extends AppCompatActivity {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     public void blockUser(View view) {
         if(block.getText().equals("BLOCK")) {
             currentState = "blocked";
             userRef.get().addOnSuccessListener(dataSnapshot -> {
-                HashMap hashMap = new HashMap();
+                HashMap<String, Object> hashMap = new HashMap<>();
                 hashMap.put("status", "blocked");
                 hashMap.put("name", name);
                 hashMap.put("profilePic", profileImageUrl);
 
-                HashMap hashMap1 = new HashMap();
+                HashMap<String, Object> hashMap1 = new HashMap<>();
                 hashMap1.put("status", "blocked_by");
                 hashMap1.put("name", dataSnapshot.child("name").getValue(String.class));
                 hashMap1.put("profilePic", dataSnapshot.child("profilePic").getValue(String.class));
@@ -337,7 +354,7 @@ public class ViewFriendActivity extends AppCompatActivity {
                 });
             });
         } else if(block.getText().equals("UNBLOCK")) {
-            AddFriend();
+            AddFriend("unblocking");
         }
     }
 }

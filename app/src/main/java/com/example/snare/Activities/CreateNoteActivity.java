@@ -144,6 +144,7 @@ public class CreateNoteActivity extends AppCompatActivity {
             return;
         }
 
+        @SuppressLint("StaticFieldLeak")
         class SaveNoteTask extends AsyncTask<Void, Void, Void> {
 
             @Override
@@ -245,7 +246,7 @@ public class CreateNoteActivity extends AppCompatActivity {
 
     private void setAddImageListener() {
         layoutMiscellaneous.findViewById(R.id.layoutAddImage).setOnClickListener(view -> {
-            bottomSheetBehavior.setState(bottomSheetBehavior.STATE_COLLAPSED);
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
 
             if(ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(CreateNoteActivity.this,
@@ -269,6 +270,7 @@ public class CreateNoteActivity extends AppCompatActivity {
         }
     }
 
+    @SuppressLint("IntentReset")
     private void selectImage() {
         // Create an Intent to open the image picker
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -286,7 +288,7 @@ public class CreateNoteActivity extends AppCompatActivity {
             // Get the selected image's URI
             Uri selectedImageUri = data.getData();
             if(selectedImageUri != null) {
-                InputStream inputStream = null;
+                InputStream inputStream;
                 try {
                     inputStream = getContentResolver().openInputStream(selectedImageUri);
                     Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
@@ -395,7 +397,7 @@ public class CreateNoteActivity extends AppCompatActivity {
 
         // Inflate the custom layout
         LayoutInflater inflater = this.getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.layout_delete_note, (ViewGroup) findViewById(R.id.layoutDeleteNoteContainer));
+        View dialogView = inflater.inflate(R.layout.layout_delete_note, findViewById(R.id.layoutDeleteNoteContainer));
 
         // Set the custom layout as the view for the delete dialog
         builder.setView(dialogView);
@@ -410,6 +412,7 @@ public class CreateNoteActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
+                @SuppressLint("StaticFieldLeak")
                 class DeleteNoteTask extends AsyncTask<Void, Void, Void> {
 
                     @Override

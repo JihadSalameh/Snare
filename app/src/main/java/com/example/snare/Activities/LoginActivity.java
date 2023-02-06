@@ -23,6 +23,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
+import java.util.Objects;
+
 public class LoginActivity extends AppCompatActivity {
 
     private static final int RC_SIGN_IN = 100;
@@ -33,7 +35,7 @@ public class LoginActivity extends AppCompatActivity {
     GoogleSignInClient mGoogleSignInClient;
 
     private FirebaseAuth auth;
-    private FirebaseUser user;
+    public FirebaseUser user;
 
     SharedPreferences sharedPreferences;
 
@@ -86,10 +88,11 @@ public class LoginActivity extends AppCompatActivity {
                 .addOnCompleteListener(this, task -> {
                     if(task.isSuccessful()) {
                         FirebaseUser user = auth.getCurrentUser();
+                        assert user != null;
                         Toast.makeText(LoginActivity.this, user.getEmail(), Toast.LENGTH_SHORT).show();
                         updateUI();
                     } else {
-                        Toast.makeText(LoginActivity.this, task.getException().toString(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this, Objects.requireNonNull(task.getException()).toString(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -102,7 +105,6 @@ public class LoginActivity extends AppCompatActivity {
 
     private void LoginUser(String email_txt, String password_txt) {
         sharedPreferences = getSharedPreferences("User", 0);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
 
         auth.signInWithEmailAndPassword(email_txt, password_txt).addOnSuccessListener(authResult -> {
             Toast.makeText(LoginActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();

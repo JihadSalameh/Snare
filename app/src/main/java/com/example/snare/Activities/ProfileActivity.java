@@ -13,27 +13,27 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.snare.R;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
+import java.util.Objects;
+
 public class ProfileActivity extends AppCompatActivity {
 
-    private ImageView profileImg;
-    private EditText username = null;
-    private EditText dob = null;
-    private EditText phoneNum = null;
-    private TextView blocked_users;
-    private FirebaseDatabase firebaseDatabase;
-    private DatabaseReference databaseReference;
-    private DatabaseReference databaseReference1;
-    private StorageReference storageReference;
-    private Uri imageUri;
+    ImageView profileImg;
+    EditText username = null;
+    EditText dob = null;
+    EditText phoneNum = null;
+    TextView blocked_users;
+    FirebaseDatabase firebaseDatabase;
+    DatabaseReference databaseReference;
+    DatabaseReference databaseReference1;
+    StorageReference storageReference;
+    Uri imageUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +48,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference().child("Users");
-        databaseReference1 = firebaseDatabase.getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        databaseReference1 = firebaseDatabase.getReference("Users").child(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid());
         storageReference = FirebaseStorage.getInstance().getReference();
 
         databaseReference1.get().addOnSuccessListener(snapshot -> {
@@ -86,7 +86,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void uploadToFirebase(/*Uri imageUri, */TextView username, TextView dob, TextView phoneNum) {
 
-        databaseReference.child(FirebaseAuth.getInstance().getUid()).child("dob").setValue(dob.getText().toString());
+        databaseReference.child(Objects.requireNonNull(FirebaseAuth.getInstance().getUid())).child("dob").setValue(dob.getText().toString());
         databaseReference.child(FirebaseAuth.getInstance().getUid()).child("name").setValue(username.getText().toString());
         databaseReference.child(FirebaseAuth.getInstance().getUid()).child("phoneNumber").setValue(phoneNum.getText().toString());
         Toast.makeText(this, "Done!", Toast.LENGTH_SHORT).show();

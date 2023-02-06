@@ -21,16 +21,18 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.util.Objects;
+
 public class RegistrationContActivity extends AppCompatActivity {
 
-    private ImageView profileImg;
-    private TextView username = null;
-    private TextView dob = null;
-    private TextView phoneNum = null;
-    private FirebaseDatabase firebaseDatabase;
-    private DatabaseReference databaseReference;
-    private StorageReference storageReference;
-    private Uri imageUri;
+    ImageView profileImg;
+    TextView username = null;
+    TextView dob = null;
+    TextView phoneNum = null;
+    FirebaseDatabase firebaseDatabase;
+    DatabaseReference databaseReference;
+    StorageReference storageReference;
+    Uri imageUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +78,7 @@ public class RegistrationContActivity extends AppCompatActivity {
         StorageReference fileRef = storageReference.child(System.currentTimeMillis() + "." + getFileExtension(imageUri));
         fileRef.putFile(imageUri).addOnSuccessListener(taskSnapshot -> fileRef.getDownloadUrl().addOnSuccessListener(uri -> {
             User user = new User(uri.toString(), username.getText().toString(), dob.getText().toString(), phoneNum.getText().toString());
-            databaseReference.child(FirebaseAuth.getInstance().getUid()).setValue(user);
+            databaseReference.child(Objects.requireNonNull(FirebaseAuth.getInstance().getUid())).setValue(user);
 
             Toast.makeText(RegistrationContActivity.this, "Uploaded Successfully!", Toast.LENGTH_SHORT).show();
 

@@ -1,9 +1,9 @@
 package com.example.snare;
 
+import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.content.Context;
 import android.os.AsyncTask;
 
 import androidx.annotation.NonNull;
@@ -17,6 +17,7 @@ import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.Objects;
 
+@SuppressLint("MissingFirebaseInstanceTokenRefresh")
 public class PushNotificationService extends FirebaseMessagingService {
 
     private NotificationsDao notificationsDao;
@@ -54,7 +55,7 @@ public class PushNotificationService extends FirebaseMessagingService {
 
     private static class InsertAsyncTask extends AsyncTask<Notifications, Void, Void> {
 
-        private NotificationsDao notificationsDao;
+        private final NotificationsDao notificationsDao;
 
         public InsertAsyncTask(NotificationsDao notificationsDao1) {
             this.notificationsDao = notificationsDao1;

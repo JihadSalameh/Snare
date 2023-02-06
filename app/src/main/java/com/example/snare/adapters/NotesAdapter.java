@@ -28,9 +28,8 @@ import java.util.TimerTask;
 public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NoteViewHolder> {
 
     private List<Note> notes;
-    private NotesListeners notesListeners;
-    private Timer timer;
-    private List<Note> noteSource;
+    private final NotesListeners notesListeners;
+    private final List<Note> noteSource;
 
     public NotesAdapter(List<Note> notes, NotesListeners notesListeners) {
 
@@ -65,8 +64,9 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NoteViewHold
 
 
     public void searchNotes(String searchKeyword) {
-        timer = new Timer();
+        Timer timer = new Timer();
         timer.schedule(new TimerTask() {
+            @SuppressLint("NotifyDataSetChanged")
             @Override
             public void run() {
                 if (searchKeyword.trim().isEmpty()) {
@@ -88,19 +88,13 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NoteViewHold
         }, 500);
     }
 
-    public void cancelTimer(){
-        if(timer != null){
-            timer.cancel();
-        }
-    }
-
     static class NoteViewHolder extends RecyclerView.ViewHolder {
 
-        private LinearLayout layoutNote;
-        private TextView textTitle;
-        private TextView text;
-        private TextView textDateTime;
-        private RoundedImageView imageNote;
+        private final LinearLayout layoutNote;
+        private final TextView textTitle;
+        private final TextView text;
+        private final TextView textDateTime;
+        private final RoundedImageView imageNote;
 
         public NoteViewHolder(@NonNull View itemView) {
             super(itemView);

@@ -64,8 +64,15 @@ public class FindFriendActivity extends AppCompatActivity {
         LoadUsers("");
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        LoadUsers("");
+    }
+
     private void LoadUsers(String s) {
-        friendRef.child(user.getUid()).get().addOnSuccessListener(dataSnapshot -> StoreFriends(dataSnapshot));
+        friendRef.child(user.getUid()).get().addOnSuccessListener(this::StoreFriends);
 
         Query query = ref.orderByChild("name").startAt(s).endAt(s+"\uf8ff");
         options = new FirebaseRecyclerOptions.Builder<User>().setQuery(query, User.class).build();
