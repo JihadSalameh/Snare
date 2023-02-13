@@ -27,7 +27,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.snare.Entities.Note;
-import com.example.snare.PushNotificationService;
 import com.example.snare.R;
 import com.example.snare.adapters.NotesAdapter;
 import com.example.snare.dao.NotesDataBase;
@@ -122,6 +121,8 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
                 finish();
             } else if(item.getTitle().toString().equals("Notifications")) {
                 startActivity(new Intent(NotesActivity.this, NotificationsActivity.class));
+            } else if(item.getTitle().toString().equals("Pinned Locations")) {
+                startActivity(new Intent(NotesActivity.this, PinnedLocationsActivity.class));
             }
 
             return true;

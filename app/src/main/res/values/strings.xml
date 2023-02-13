@@ -3,7 +3,7 @@
     <string name="server_client_id">WEB CLIENT ID</string>
     <string name="nav_open">Open</string>
     <string name="nav_close">Close</string>
-
+    <string name="map_key" translatable="false">AIzaSyB3hINEIppXObkkhhXtrQYdVJAjLro7v3E</string>
     <string name="my_notes">my notes</string>
     <string name="search_notes">search notes</string>
     <string name="note_title">Note Title</string>

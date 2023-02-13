@@ -12,10 +12,12 @@
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/layout/activity_friends.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/layout/activity_login.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/layout/activity_main.xml" value="0.17074275362318841" />
+        <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/layout/activity_map.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/layout/activity_nav_header.xml" value="0.22" />
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/layout/activity_notes.xml" value="0.2" />
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/layout/activity_notifications.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/layout/activity_notifications_view.xml" value="0.2388888888888889" />
+        <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/layout/activity_pinned_locations.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/layout/activity_profile.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/layout/activity_register.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/layout/activity_registrationcont.xml" value="0.22447916666666667" />
@@ -26,6 +28,7 @@
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/layout/content_test.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/layout/layout_miscellaneous.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/layout/notification_view_holder.xml" value="0.22" />
+        <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/layout/popup.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/layout/single_view_friend.xml" value="0.1" />
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/menu/blocked_users_search_custom_menu.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/menu/navigation_menu.xml" value="0.22447916666666667" />

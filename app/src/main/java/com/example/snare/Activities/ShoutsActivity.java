@@ -64,6 +64,8 @@ public class ShoutsActivity extends AppCompatActivity {
                 finish();
             } else if(item.getTitle().toString().equals("Notifications")) {
                 startActivity(new Intent(ShoutsActivity.this, NotificationsActivity.class));
+            } else if(item.getTitle().toString().equals("Pinned Locations")) {
+                startActivity(new Intent(ShoutsActivity.this, PinnedLocationsActivity.class));
             }
 
             return true;
@@ -97,4 +99,5 @@ public class ShoutsActivity extends AppCompatActivity {
         startActivity(new Intent(ShoutsActivity.this, LoginActivity.class));
         finish();
     }
+
 }
