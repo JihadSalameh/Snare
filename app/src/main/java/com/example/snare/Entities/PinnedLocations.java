@@ -1,16 +1,23 @@
 package com.example.snare.Entities;
 
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
+@Entity(tableName = "pinnedLocations")
 public class PinnedLocations {
 
-    private String name;
-    private String lat;
-    private String lng;
+    @PrimaryKey(autoGenerate = true)
+    private int id;
 
-    public PinnedLocations(String name, String lat, String lng) {
-        this.name = name;
-        this.lat = lat;
-        this.lng = lng;
-    }
+    @ColumnInfo(name = "name")
+    private String name;
+
+    @ColumnInfo(name = "lat")
+    private String lat;
+
+    @ColumnInfo(name = "lng")
+    private String lng;
 
     public String getName() {
         return name;
@@ -34,6 +41,14 @@ public class PinnedLocations {
 
     public void setLng(String lng) {
         this.lng = lng;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     @Override

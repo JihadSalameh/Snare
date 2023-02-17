@@ -9,6 +9,7 @@ import android.app.AlertDialog;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,7 +18,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SearchView;
 
+import com.example.snare.Entities.Notifications;
+import com.example.snare.Entities.PinnedLocations;
+import com.example.snare.PushNotificationService;
 import com.example.snare.R;
+import com.example.snare.dao.NotificationsDao;
+import com.example.snare.dao.PinnedLocationsDao;
+import com.example.snare.dao.PinnedLocationsDataBase;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -44,6 +51,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     FirebaseAuth auth;
     FirebaseUser user;
     DatabaseReference ref;
+    private PinnedLocationsDao pinnedLocationsDao;
 
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private static final float DEFAULT_ZOOM = 15;
@@ -82,12 +90,37 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         save.setOnClickListener(view -> {
             places.put(locationName.getText().toString().trim(), loc);
+
             ref.updateChildren(places);
+
+            pinnedLocationsDao = PinnedLocationsDataBase.getDatabase(this).pinnedLocationsDao();
+            PinnedLocations location = new PinnedLocations();
+            location.setName(locationName.getText().toString().trim());
+            location.setLat(String.valueOf(loc.latitude));
+            location.setLng(String.valueOf(loc.longitude));
+
+            new InsertAsyncTask(pinnedLocationsDao).execute(location);
+
             locationName.setText("");
             dialog.dismiss();
         });
 
         cancel.setOnClickListener(view -> dialog.dismiss());
+    }
+
+    private static class InsertAsyncTask extends AsyncTask<PinnedLocations, Void, Void> {
+
+        private final PinnedLocationsDao pinnedLocationsDao;
+
+        public InsertAsyncTask(PinnedLocationsDao pinnedLocationsDao1) {
+            this.pinnedLocationsDao = pinnedLocationsDao1;
+        }
+
+        @Override
+        protected Void doInBackground(PinnedLocations... locations) {
+            pinnedLocationsDao.Insert(locations[0]);
+            return null;
+        }
     }
 
     @Override
