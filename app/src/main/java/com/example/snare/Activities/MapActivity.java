@@ -18,11 +18,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SearchView;
 
-import com.example.snare.Entities.Notifications;
 import com.example.snare.Entities.PinnedLocations;
-import com.example.snare.PushNotificationService;
 import com.example.snare.R;
-import com.example.snare.dao.NotificationsDao;
 import com.example.snare.dao.PinnedLocationsDao;
 import com.example.snare.dao.PinnedLocationsDataBase;
 import com.google.android.gms.maps.CameraUpdateFactory;
