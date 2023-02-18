@@ -146,21 +146,23 @@ public class ReminderActivity extends AppCompatActivity implements RemindersList
                         @SuppressLint("NotifyDataSetChanged")
                         @Override
                         public void onRemindersRetrieved(List<Reminder> reminders) {
-                            if (requestCode == REQUEST_CODE_SHOW_REMINDER) {
-                                remindersList.addAll(reminders);
-                                reminderAdapter.notifyDataSetChanged();
-                            }
-                            else if (requestCode == REQUEST_CODE_ADD_REMINDER) {
-                                remindersList.add(0, reminders.get(0));
-                                reminderAdapter.notifyItemInserted(0);
-                                reminderRecycleView.smoothScrollToPosition(0);
-                            } else if (requestCode == REQUEST_CODE_UPDATE_REMINDER) {
-                                remindersList.remove(onClickPosition);
-                                if (isReminderDeleted) {
-                                    reminderAdapter.notifyItemRemoved(onClickPosition);
-                                } else {
-                                    remindersList.add(onClickPosition, reminders.get(onClickPosition));
-                                    reminderAdapter.notifyItemChanged(onClickPosition);
+                            if(reminders != null) {
+                                if (requestCode == REQUEST_CODE_SHOW_REMINDER) {
+                                    remindersList.addAll(reminders);
+                                    reminderAdapter.notifyDataSetChanged();
+                                }
+                                else if (requestCode == REQUEST_CODE_ADD_REMINDER) {
+                                    remindersList.add(0, reminders.get(0));
+                                    reminderAdapter.notifyItemInserted(0);
+                                    reminderRecycleView.smoothScrollToPosition(0);
+                                } else if (requestCode == REQUEST_CODE_UPDATE_REMINDER) {
+                                    remindersList.remove(onClickPosition);
+                                    if (isReminderDeleted) {
+                                        reminderAdapter.notifyItemRemoved(onClickPosition);
+                                    } else {
+                                        remindersList.add(onClickPosition, reminders.get(onClickPosition));
+                                        reminderAdapter.notifyItemChanged(onClickPosition);
+                                    }
                                 }
                             }
                         }

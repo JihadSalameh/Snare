@@ -12,9 +12,12 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -165,33 +168,77 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
 
             @Override
             protected List<Note> doInBackground(Void... voids) {
-                return NotesDataBase.getDatabase(getApplicationContext()).noteDao().getAllNotes();
+                if(isNetworkAvailable(getApplicationContext())) {
+                    FirebaseNotes firebaseNotes = new FirebaseNotes();
+                    firebaseNotes.getAllNotes(new FirebaseNotes.NotesCallback() {
+                        @Override
+                        public void onNotesRetrieved(List<Note> notes) {
+                            if(notes != null) {
+                                if(requestCode == REQUEST_CODE_SHOW_NOTE) {
+                                    noteList.addAll(notes);
+                                    notesAdapter.notifyDataSetChanged();
+                                } else if(requestCode == REQUEST_CODE_ADD_NOTE) {
+                                    noteList.add(0, notes.get(0));
+                                    notesAdapter.notifyItemInserted(0);
+                                    noteRecycleView.smoothScrollToPosition(0);
+                                } else if(requestCode == REQUEST_CODE_UPDATE_NOTE) {
+                                    noteList.remove(onClickPosition);
+                                    if(isNoteDeleted) {
+                                        notesAdapter.notifyItemRemoved(onClickPosition);
+                                    } else {
+                                        noteList.add(onClickPosition, notes.get(onClickPosition));
+                                        notesAdapter.notifyItemChanged(onClickPosition);
+                                    }
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onNotesRetrieveError(String error) {
+                            System.out.println(error);
+                        }
+                    });
+
+                    return null;
+
+                } else {
+                    return NotesDataBase.getDatabase(getApplicationContext()).noteDao().getAllNotes();
+                }
             }
 
             @SuppressLint("NotifyDataSetChanged")
             @Override
             protected void onPostExecute(List<Note> notes) {
                 super.onPostExecute(notes);
-                if(requestCode == REQUEST_CODE_SHOW_NOTE) {
-                    noteList.addAll(notes);
-                    notesAdapter.notifyDataSetChanged();
-                } else if(requestCode == REQUEST_CODE_ADD_NOTE) {
-                    noteList.add(0, notes.get(0));
-                    notesAdapter.notifyItemInserted(0);
-                    noteRecycleView.smoothScrollToPosition(0);
-                } else if(requestCode == REQUEST_CODE_UPDATE_NOTE) {
-                    noteList.remove(onClickPosition);
-                    if(isNoteDeleted) {
-                        notesAdapter.notifyItemRemoved(onClickPosition);
-                    } else {
-                        noteList.add(onClickPosition, notes.get(onClickPosition));
-                        notesAdapter.notifyItemChanged(onClickPosition);
+                if(notes != null) {
+                    if(requestCode == REQUEST_CODE_SHOW_NOTE) {
+                        noteList.addAll(notes);
+                        notesAdapter.notifyDataSetChanged();
+                    } else if(requestCode == REQUEST_CODE_ADD_NOTE) {
+                        noteList.add(0, notes.get(0));
+                        notesAdapter.notifyItemInserted(0);
+                        noteRecycleView.smoothScrollToPosition(0);
+                    } else if(requestCode == REQUEST_CODE_UPDATE_NOTE) {
+                        noteList.remove(onClickPosition);
+                        if(isNoteDeleted) {
+                            notesAdapter.notifyItemRemoved(onClickPosition);
+                        } else {
+                            noteList.add(onClickPosition, notes.get(onClickPosition));
+                            notesAdapter.notifyItemChanged(onClickPosition);
+                        }
                     }
                 }
             }
         }
 
         new GetNotesTask().execute();
+    }
+
+    public  boolean isNetworkAvailable(Context context) {
+        ConnectivityManager connectivityManager =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     private void setRecycleView() {
