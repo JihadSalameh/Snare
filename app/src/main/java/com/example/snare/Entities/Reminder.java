@@ -9,8 +9,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
 
-@Entity(tableName = "notes")
-public class Note implements Serializable {
+@Entity(tableName = "reminders")
+public class Reminder implements Serializable {
 
     @PrimaryKey
     @NonNull
@@ -22,8 +22,8 @@ public class Note implements Serializable {
     @ColumnInfo(name = "date_time")
     private String dateTime;
 
-    @ColumnInfo(name = "note_text")
-    private String noteText;
+    @ColumnInfo(name = "reminder_text")
+    private String reminderText;
 
     @ColumnInfo(name = "image_path")
     private String imagePath;
@@ -31,14 +31,28 @@ public class Note implements Serializable {
     @ColumnInfo(name = "color")
     private String color;
 
-    @ColumnInfo(name = "web_link")
-    private String webLink;
+    @ColumnInfo(name = "year")
+    private int year;
 
+    @ColumnInfo(name = "month")
+    private int month;
+
+    @ColumnInfo(name = "day")
+    private int day;
+
+    @ColumnInfo(name = "hour")
+    private int hour;
+
+    @ColumnInfo(name = "minute")
+    private int minute;
+
+
+    @NonNull
     public String getIdFirebase() {
         return idFirebase;
     }
 
-    public void setIdFirebase(String idFirebase) {
+    public void setIdFirebase(@NonNull String idFirebase) {
         this.idFirebase = idFirebase;
     }
 
@@ -58,12 +72,12 @@ public class Note implements Serializable {
         this.dateTime = dateTime;
     }
 
-    public String getNoteText() {
-        return noteText;
+    public String getReminderText() {
+        return reminderText;
     }
 
-    public void setNoteText(String noteText) {
-        this.noteText = noteText;
+    public void setReminderText(String reminderText) {
+        this.reminderText = reminderText;
     }
 
     public String getImagePath() {
@@ -82,12 +96,44 @@ public class Note implements Serializable {
         this.color = color;
     }
 
-    public String getWebLink() {
-        return webLink;
+    public int getYear() {
+        return year;
     }
 
-    public void setWebLink(String webLink) {
-        this.webLink = webLink;
+    public void setYear(int year) {
+        this.year = year;
+    }
+
+    public int getMonth() {
+        return month;
+    }
+
+    public void setMonth(int month) {
+        this.month = month;
+    }
+
+    public int getDay() {
+        return day;
+    }
+
+    public void setDay(int day) {
+        this.day = day;
+    }
+
+    public int getHour() {
+        return hour;
+    }
+
+    public void setHour(int hour) {
+        this.hour = hour;
+    }
+
+    public int getMinute() {
+        return minute;
+    }
+
+    public void setMinute(int minute) {
+        this.minute = minute;
     }
 
     @NotNull
@@ -95,4 +141,5 @@ public class Note implements Serializable {
     public String toString() {
         return title + " : " + dateTime;
     }
+
 }

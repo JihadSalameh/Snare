@@ -1,4 +1,4 @@
-package com.example.snare;
+package com.example.snare.NotificationsPkg;
 
 import android.annotation.SuppressLint;
 import android.app.Notification;
@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.core.app.NotificationManagerCompat;
 
 import com.example.snare.Entities.Notifications;
+import com.example.snare.R;
 import com.example.snare.dao.NotificationsDao;
 import com.example.snare.dao.NotificationsDataBase;
 import com.google.firebase.messaging.FirebaseMessagingService;

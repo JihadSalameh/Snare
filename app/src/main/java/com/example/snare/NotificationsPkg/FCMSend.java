@@ -1,4 +1,4 @@
-package com.example.snare;
+package com.example.snare.NotificationsPkg;
 
 import android.content.Context;
 import android.os.StrictMode;

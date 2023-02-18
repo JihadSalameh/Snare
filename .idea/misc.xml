@@ -3,6 +3,9 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/drawable-ldpi/ic_clock.xml" value="0.1045" />
+        <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/drawable-ldpi/ic_notifications.xml" value="0.17" />
+        <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/drawable-ldpi/ic_place.xml" value="0.1045" />
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/drawable-xxxhdpi/background_add_button.xml" value="0.1555" />
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/drawable/ic_baseline_settings_24.xml" value="0.112" />
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/layout/activity_blocked_users.xml" value="0.22447916666666667" />

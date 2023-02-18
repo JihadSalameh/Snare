@@ -2,6 +2,11 @@ package com.example.snare.Activities;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.AlarmManager;
+import android.app.DatePickerDialog;
+import android.app.PendingIntent;
+import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -29,22 +34,24 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.example.snare.Entities.Note;
+import com.example.snare.Entities.Reminder;
 import com.example.snare.R;
 import com.example.snare.dao.NotesDataBase;
-import com.example.snare.Entities.Note;
+import com.example.snare.dao.ReminderDataBase;
+import com.example.snare.reminders.AlarmReceiver;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.UUID;
 
 public class CreateNoteActivity extends AppCompatActivity {
 
-    private static final int REQUEST_CODE_STORAGE_PERMISSION = 1;
-    private static final int SELECT_IMAGE_REQUEST_CODE = 2;
-    private ImageView imageBack;
     private ImageView imageSave;
     private EditText inputNoteTitle;
     private EditText inputNote;
@@ -61,8 +68,14 @@ public class CreateNoteActivity extends AppCompatActivity {
     private ImageView imageNote;
     private String selectedImagePath;
     private Note alreadyAvailableNote;
+    private Reminder alreadyAvailableReminder;
     private ImageView imageRemoveImage;
     private AlertDialog dialogDeleteNote;
+    private AlertDialog dialogReminder;
+    private int year = -1, month = -1, day =-1;
+    private int hour, minute;
+    private boolean isReminder = false;
+    private AlarmManager alarmManager;
 
 
     @Override
@@ -78,7 +91,6 @@ public class CreateNoteActivity extends AppCompatActivity {
     }
 
     private void initializeActivity() {
-        imageBack = findViewById(R.id.imageBack);
         imageSave = findViewById(R.id.imageSave);
         inputNoteTitle = findViewById(R.id.inputNoteTitle);
         inputNote = findViewById(R.id.inputNote);
@@ -96,6 +108,7 @@ public class CreateNoteActivity extends AppCompatActivity {
         imageRemoveImage = findViewById(R.id.imageRemoveImage);
         checkIfUpdateOrCreate();
         checkIfAddNoteFromQuickAction();
+        alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
     }
 
     private void setListeners() {
@@ -109,64 +122,48 @@ public class CreateNoteActivity extends AppCompatActivity {
         setImageColor5Listener();
         setAddImageListener();
         setRemoveImageListener();
+        setAddReminderListener();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == Constants.REQUEST_CODE_STORAGE_PERMISSION) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                selectImage();
+            } else {
+                Toast.makeText(this, "permission is required", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == Constants.SELECT_IMAGE_REQUEST_CODE && resultCode == RESULT_OK) {
+            // Get the selected image's URI
+            Uri selectedImageUri = data.getData();
+            if (selectedImageUri != null) {
+                InputStream inputStream;
+                try {
+                    inputStream = getContentResolver().openInputStream(selectedImageUri);
+                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                    imageNote.setImageBitmap(bitmap);
+                    imageNote.setVisibility(View.VISIBLE);
+                    imageRemoveImage.setVisibility(View.VISIBLE);
+                    selectedImagePath = getPathFromUri(selectedImageUri);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                Toast.makeText(this, "no image selectes", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     private void setImageBackListener() {
-        imageBack.setOnClickListener(view -> onBackPressed());
-    }
-
-    private void setImageSaveListener() {
-        imageSave.setOnClickListener(view -> {
-            setTimeDate();
-            Note note = new Note();
-            note.setTitle(inputNoteTitle.getText().toString());
-            note.setNoteText(inputNote.getText().toString());
-            note.setDateTime(textDateTime.getText().toString());
-            note.setColor(selectedNoteColor);
-            note.setImagePath(selectedImagePath);
-
-            if(alreadyAvailableNote != null) {
-                note.setId(alreadyAvailableNote.getId());
-            }
-            saveNote(note);
-        });
-
-    }
-
-    private void setTimeDate() {
-        textDateTime.setText(new SimpleDateFormat("EEEE, dd MMMM yyyy HH:mm a",
-                Locale.getDefault()).format(new Date()));
-    }
-
-    private void saveNote(Note note) {
-        if(isTitleEmpty()) {
-            Toast.makeText(this, "Note Title is Empty", Toast.LENGTH_LONG).show();
-            return;
-        }
-
-        @SuppressLint("StaticFieldLeak")
-        class SaveNoteTask extends AsyncTask<Void, Void, Void> {
-
-            @Override
-            protected Void doInBackground(Void... voids) {
-                NotesDataBase.getDatabase(getApplicationContext()).noteDao().insertNote(note);
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void avoid) {
-                super.onPostExecute(avoid);
-                Intent intent = new Intent();
-                setResult(RESULT_OK, intent);
-                finish();
-            }
-        }
-
-        new SaveNoteTask().execute();
-    }
-
-    private boolean isTitleEmpty() {
-        return inputNoteTitle.getText().toString().isEmpty();
+        findViewById(R.id.imageBack).setOnClickListener(view -> onBackPressed());
     }
 
     private void setBottomSheetBehaviorListener() {
@@ -184,6 +181,279 @@ public class CreateNoteActivity extends AppCompatActivity {
         gradientDrawable.setColor(Color.parseColor(selectedNoteColor));
     }
 
+    private void setAddReminderListener() {
+        LinearLayout layoutAddDateTime = findViewById(R.id.layoutAddDateTime);
+        layoutAddDateTime.setOnClickListener(view -> {
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            showReminderDialog();
+        });
+    }
+
+    private void showReminderDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        // Inflate the custom layout
+        LayoutInflater inflater = this.getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.layout_time_date_picker, findViewById(R.id.layoutReminderContainer));
+
+        // Set the custom layout as the view for the delete dialog
+        builder.setView(dialogView);
+
+        dialogReminder = builder.create();
+
+        if (dialogReminder.getWindow() != null) {
+            dialogReminder.getWindow().setBackgroundDrawable(new ColorDrawable(0));
+        }
+
+        dialogView.findViewById(R.id.addDate).setOnClickListener(view -> setAddDateListener());
+
+        dialogView.findViewById(R.id.addTime).setOnClickListener(view -> setAddTimeListener());
+
+        dialogView.findViewById(R.id.textSave).setOnClickListener(view -> setTextSaveListener());
+
+        dialogView.findViewById(R.id.textCancel).setOnClickListener(view -> dialogReminder.dismiss());
+
+        dialogReminder.show();
+    }
+
+    private void setAddTimeListener() {
+        Calendar calendar = Calendar.getInstance();
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(Calendar.MINUTE);
+
+        TimePickerDialog timePickerDialog = new TimePickerDialog(
+                CreateNoteActivity.this,
+                (timePicker, hour1, minute1) -> getTime(hour1, minute1),
+                hour,
+                minute,
+                true);
+        timePickerDialog.show();
+    }
+
+    private void getTime(int hour, int minute) {
+        this.hour = hour;
+        this.minute = minute;
+    }
+
+    private void setTextSaveListener() {
+        if (year != -1 && month != -1 && day != -1 && hour != 0 && minute != 0){
+            isReminder = true;
+        }else {
+            Toast.makeText(getApplicationContext(),"Choose Date and Time",Toast.LENGTH_SHORT).show();
+        }
+
+        dialogReminder.dismiss();
+    }
+
+    private void setAddDateListener() {
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(
+                CreateNoteActivity.this,
+                (datePicker, year1, month1, day1) -> getDate(year1, month1, day1),
+                year,
+                month,
+                day);
+        datePickerDialog.show();
+    }
+
+    private void getDate(int year, int month, int day) {
+        this.year = year;
+        this.month = month;
+        this.day = day;
+    }
+
+    private void saveReminder(Reminder reminder) {
+        if (isTitleEmpty()) {
+            Toast.makeText(this, "Reminder Title is Empty", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        class SaveReminderTask extends AsyncTask<Void, Void, Void> {
+
+            @Override
+            protected Void doInBackground(Void... voids) {
+                ReminderDataBase.getDatabase(getApplicationContext()).reminderDao().insertReminder(reminder);
+                setAlarm(reminder);
+                FirebaseReminders firebaseReminders = new FirebaseReminders();
+                firebaseReminders.save(reminder);
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void avoid) {
+                super.onPostExecute(avoid);
+                Intent intent = new Intent();
+                intent.putExtra("type","reminder");
+                setResult(RESULT_OK, intent);
+                finish();
+            }
+        }
+
+        new SaveReminderTask().execute();
+    }
+
+    private void setAlarm(Reminder reminder) {
+
+        Intent intent = new Intent(getApplicationContext(), AlarmReceiver.class);
+        intent.putExtra("title",reminder.getTitle());
+        intent.putExtra("description",reminder.getReminderText());
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(),0,intent,PendingIntent.FLAG_IMMUTABLE);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        calendar.set(Calendar.HOUR_OF_DAY, reminder.getHour());
+        calendar.set(Calendar.MINUTE, reminder.getMinute());
+        calendar.set(Calendar.YEAR, reminder.getYear());
+        calendar.set(Calendar.MONTH, reminder.getMonth());
+        calendar.set(Calendar.DAY_OF_MONTH, reminder.getDay());
+        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+    }
+
+    //////////////////////////////////////////////////////////
+    //1
+    private void setImageSaveListener() {
+        imageSave.setOnClickListener(view -> {
+            setTimeDate();
+
+            if(isReminder) {
+                isReminder = false;
+                Reminder reminder = new Reminder();
+                reminder.setIdFirebase(UUID.randomUUID().toString());
+                reminder.setTitle(inputNoteTitle.getText().toString());
+                reminder.setReminderText(inputNote.getText().toString());
+                reminder.setDateTime(textDateTime.getText().toString());
+                reminder.setColor(selectedNoteColor);
+                reminder.setImagePath(selectedImagePath);
+                reminder.setYear(year);
+                reminder.setMonth(month);
+                reminder.setDay(day);
+                reminder.setHour(hour);
+                reminder.setMinute(minute);
+                if(alreadyAvailableReminder != null) {
+                    reminder.setIdFirebase(alreadyAvailableReminder.getIdFirebase());
+                }
+                saveReminder(reminder);
+            } else {
+                Note note = new Note();
+                note.setIdFirebase(UUID.randomUUID().toString());
+                note.setTitle(inputNoteTitle.getText().toString());
+                note.setNoteText(inputNote.getText().toString());
+                note.setDateTime(textDateTime.getText().toString());
+                note.setColor(selectedNoteColor);
+                note.setImagePath(selectedImagePath);
+                if(alreadyAvailableNote != null) {
+                    note.setIdFirebase(alreadyAvailableNote.getIdFirebase());
+                }
+                saveNote(note);
+            }
+        });
+    }
+
+    private void setAddImageListener() {
+        layoutMiscellaneous.findViewById(R.id.layoutAddImage).setOnClickListener(view -> {
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+
+            if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE) !=
+                    PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(CreateNoteActivity.this,
+                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                        Constants.REQUEST_CODE_STORAGE_PERMISSION);
+            } else {
+                selectImage();
+            }
+        });
+    }
+
+    @SuppressLint("IntentReset")
+    private void selectImage() {
+        // Create an Intent to open the image picker
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        intent.setType("image/*");
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(intent, Constants.SELECT_IMAGE_REQUEST_CODE);
+        }
+    }
+
+    private void makeNoteWithImage() {
+        String imagePath = getIntent().getStringExtra("imagePath");
+        if (imagePath != null && !imagePath.trim().isEmpty()) {
+            imageNote.setImageBitmap(BitmapFactory.decodeFile(imagePath));
+            imageNote.setVisibility(View.VISIBLE);
+            imageRemoveImage.setVisibility(View.VISIBLE);
+            selectedImagePath = imagePath;
+        }
+
+    }
+
+    @SuppressLint("Range")
+    private String getPathFromUri(Uri imageUri) {
+        String filePath = null;
+        // Get the file path from the Uri
+        Cursor cursor = getContentResolver().query(imageUri, null, null, null, null);
+        if (cursor != null) {
+            cursor.moveToFirst();
+            filePath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+            cursor.close();
+        }
+
+        return filePath;
+    }
+
+    private void setRemoveImageListener() {
+        imageRemoveImage.setOnClickListener(view -> {
+            imageNote.setImageBitmap(null);
+            imageNote.setVisibility(View.GONE);
+            imageRemoveImage.setVisibility(View.GONE);
+            selectedImagePath = "";
+        });
+    }
+
+    //////////////////////////////////////////////////////////
+    private void setTimeDate() {
+        textDateTime.setText(new SimpleDateFormat("EEEE, dd MMMM yyyy HH:mm a",
+                Locale.getDefault()).format(new Date()));
+    }
+
+    private void saveNote(Note note) {
+
+        if (isTitleEmpty()) {
+            Toast.makeText(this, "Note Title is Empty", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        class SaveNoteTask extends AsyncTask<Void, Void, Void> {
+
+            @Override
+            protected Void doInBackground(Void... voids) {
+
+                NotesDataBase.getDatabase(getApplicationContext()).noteDao().insertNote(note);
+                FirebaseNotes firebaseNotes = new FirebaseNotes();
+                firebaseNotes.save(note);
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void avoid) {
+                super.onPostExecute(avoid);
+                Intent intent = new Intent();
+                intent.putExtra("type","note");
+                setResult(RESULT_OK, intent);
+                finish();
+            }
+        }
+
+        new SaveNoteTask().execute();
+
+    }
+
+    private boolean isTitleEmpty() {
+        return inputNoteTitle.getText().toString().isEmpty();
+    }
+
+    //////////////////////////////////////////////////////////
     private void setImageColor1Listener() {
         layoutMiscellaneous.findViewById(R.id.imageColor1).setOnClickListener(view -> {
             selectedNoteColor = "#333333";
@@ -244,111 +514,10 @@ public class CreateNoteActivity extends AppCompatActivity {
         });
     }
 
-    private void setAddImageListener() {
-        layoutMiscellaneous.findViewById(R.id.layoutAddImage).setOnClickListener(view -> {
-            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-
-            if(ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(CreateNoteActivity.this,
-                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                        REQUEST_CODE_STORAGE_PERMISSION);
-            } else {
-                selectImage();
-            }
-        });
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQUEST_CODE_STORAGE_PERMISSION) {
-            if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                selectImage();
-            } else {
-                Toast.makeText(this, "permission is required", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-    @SuppressLint("IntentReset")
-    private void selectImage() {
-        // Create an Intent to open the image picker
-        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        intent.setType("image/*");
-        if(intent.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(intent, SELECT_IMAGE_REQUEST_CODE);
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if(requestCode == SELECT_IMAGE_REQUEST_CODE && resultCode == RESULT_OK) {
-            // Get the selected image's URI
-            Uri selectedImageUri = data.getData();
-            if(selectedImageUri != null) {
-                InputStream inputStream;
-                try {
-                    inputStream = getContentResolver().openInputStream(selectedImageUri);
-                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                    imageNote.setImageBitmap(bitmap);
-                    imageNote.setVisibility(View.VISIBLE);
-                    imageRemoveImage.setVisibility(View.VISIBLE);
-                    selectedImagePath = getPathFromUri(selectedImageUri);
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                Toast.makeText(this, "no image selected", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-    @SuppressLint("Range")
-    private String getPathFromUri(Uri imageUri) {
-        String filePath = null;
-        // Get the file path from the Uri
-        Cursor cursor = getContentResolver().query(imageUri, null, null, null, null);
-        if(cursor != null) {
-            cursor.moveToFirst();
-            filePath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
-            cursor.close();
-        }
-
-        return filePath;
-    }
-
-    private void checkIfUpdateOrCreate() {
-        if(getIntent().getBooleanExtra("isViewOrUpdate", false)) {
-            alreadyAvailableNote = (Note) getIntent().getSerializableExtra("note");
-            setViewNote();
-            setViewColor();
-        }
-    }
-
-    private void checkIfAddNoteFromQuickAction() {
-        if(getIntent().getBooleanExtra("isFromQuickActionsBar", false)) {
-            if (getIntent().getStringExtra("quickActionBarType").equals("image")) {
-                makeNoteWithImage();
-            }
-        }
-    }
-
-    private void makeNoteWithImage() {
-        String imagePath = getIntent().getStringExtra("imagePath");
-        if(imagePath != null && !imagePath.trim().isEmpty()) {
-            imageNote.setImageBitmap(BitmapFactory.decodeFile(imagePath));
-            imageNote.setVisibility(View.VISIBLE);
-            imageRemoveImage.setVisibility(View.VISIBLE);
-            selectedImagePath = imagePath;
-        }
-
-    }
-
     private void setViewColor() {
-        if(alreadyAvailableNote != null && alreadyAvailableNote.getColor() != null && !alreadyAvailableNote.getColor().trim().isEmpty()) {
-            switch(alreadyAvailableNote.getColor()) {
+        if (alreadyAvailableNote != null && alreadyAvailableNote.getColor() != null && !alreadyAvailableNote.getColor().trim().isEmpty()) {
+
+            switch (alreadyAvailableNote.getColor()) {
                 case "#FDBE3B":
                     layoutMiscellaneous.findViewById(R.id.viewColor2).performClick();
                     break;
@@ -366,12 +535,52 @@ public class CreateNoteActivity extends AppCompatActivity {
         }
     }
 
+    ////////////////////////////////////////////////////////
+    private void checkIfUpdateOrCreate() {
+        if (getIntent().getBooleanExtra("isViewOrUpdate", false)) {
+            if(getIntent().getBooleanExtra("isReminder", false)){
+                alreadyAvailableReminder = (Reminder) getIntent().getSerializableExtra("reminder");
+                isReminder = true;
+                setViewReminder();
+                setViewColor();
+            }else{
+                alreadyAvailableNote = (Note) getIntent().getSerializableExtra("note");
+                setViewNote();
+                setViewColor();
+            }
+
+        }
+    }
+
+    private void setViewReminder() {
+        inputNoteTitle.setText(alreadyAvailableReminder.getTitle());
+        inputNote.setText(alreadyAvailableReminder.getReminderText());
+        textDateTime.setText(alreadyAvailableReminder.getDateTime());
+
+        if (alreadyAvailableReminder.getImagePath() != null && !alreadyAvailableReminder.getImagePath().trim().isEmpty()) {
+            imageNote.setImageBitmap(BitmapFactory.decodeFile(alreadyAvailableReminder.getImagePath()));
+            imageNote.setVisibility(View.VISIBLE);
+            imageRemoveImage.setVisibility(View.VISIBLE);
+            selectedImagePath = alreadyAvailableReminder.getImagePath();
+        }
+
+        setDeleteListener();
+    }
+
+    private void checkIfAddNoteFromQuickAction() {
+        if (getIntent().getBooleanExtra("isFromQuickActionsBar", false)) {
+            if (getIntent().getStringExtra("quickActionBarType").equals("image")) {
+                makeNoteWithImage();
+            }
+        }
+    }
+
     private void setViewNote() {
         inputNoteTitle.setText(alreadyAvailableNote.getTitle());
         inputNote.setText(alreadyAvailableNote.getNoteText());
         textDateTime.setText(alreadyAvailableNote.getDateTime());
 
-        if(alreadyAvailableNote.getImagePath() != null && !alreadyAvailableNote.getImagePath().trim().isEmpty()) {
+        if (alreadyAvailableNote.getImagePath() != null && !alreadyAvailableNote.getImagePath().trim().isEmpty()) {
             imageNote.setImageBitmap(BitmapFactory.decodeFile(alreadyAvailableNote.getImagePath()));
             imageNote.setVisibility(View.VISIBLE);
             imageRemoveImage.setVisibility(View.VISIBLE);
@@ -391,20 +600,20 @@ public class CreateNoteActivity extends AppCompatActivity {
         });
     }
 
-
+    //2
     private void showDeleteDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
         // Inflate the custom layout
         LayoutInflater inflater = this.getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.layout_delete_note, findViewById(R.id.layoutDeleteNoteContainer));
+        View dialogView = inflater.inflate(R.layout.layout_delete_note, (ViewGroup) findViewById(R.id.layoutDeleteNoteContainer));
 
         // Set the custom layout as the view for the delete dialog
         builder.setView(dialogView);
 
         dialogDeleteNote = builder.create();
 
-        if(dialogDeleteNote.getWindow() != null) {
+        if (dialogDeleteNote.getWindow() != null) {
             dialogDeleteNote.getWindow().setBackgroundDrawable(new ColorDrawable(0));
         }
 
@@ -412,20 +621,34 @@ public class CreateNoteActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                @SuppressLint("StaticFieldLeak")
                 class DeleteNoteTask extends AsyncTask<Void, Void, Void> {
 
                     @Override
                     protected Void doInBackground(Void... voids) {
-                        NotesDataBase.getDatabase(getApplicationContext()).noteDao().deleteNote(alreadyAvailableNote);
+                        if(isReminder){
+                            ReminderDataBase.getDatabase(getApplicationContext()).reminderDao().deleteReminder(alreadyAvailableReminder);
+                            FirebaseReminders firebaseReminders = new FirebaseReminders();
+                            firebaseReminders.delete(alreadyAvailableReminder);
+
+                        }else{
+                            NotesDataBase.getDatabase(getApplicationContext()).noteDao().deleteNote(alreadyAvailableNote);
+                            FirebaseNotes firebaseNotes = new FirebaseNotes();
+                            firebaseNotes.delete(alreadyAvailableNote);
+
+                        }
                         return null;
                     }
+
 
                     @Override
                     protected void onPostExecute(Void avoid) {
                         super.onPostExecute(avoid);
                         Intent intent = new Intent();
-                        intent.putExtra("isNoteDeleted", true);
+                        if(isReminder){
+                            intent.putExtra("isReminderDeleted", true);
+                        }else{
+                            intent.putExtra("isNoteDeleted", true);
+                        }
                         setResult(RESULT_OK, intent);
                         finish();
                     }
@@ -439,16 +662,6 @@ public class CreateNoteActivity extends AppCompatActivity {
         dialogView.findViewById(R.id.textCancel).setOnClickListener(view -> dialogDeleteNote.dismiss());
 
         dialogDeleteNote.show();
-    }
-
-
-    private void setRemoveImageListener() {
-        imageRemoveImage.setOnClickListener(view -> {
-            imageNote.setImageBitmap(null);
-            imageNote.setVisibility(View.GONE);
-            imageRemoveImage.setVisibility(View.GONE);
-            selectedImagePath = "";
-        });
     }
 
 }

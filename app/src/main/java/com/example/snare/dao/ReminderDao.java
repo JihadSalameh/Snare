@@ -7,19 +7,18 @@ import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 
-import com.example.snare.Entities.Note;
+import com.example.snare.Entities.Reminder;
 
 import java.util.List;
 
 @Dao
-public interface NoteDao {
-
-    @Query("Select * FROM notes")
-    List<Note> getAllNotes();
+public interface ReminderDao {
+    @Query("Select * FROM reminders")
+    List<Reminder> getAllReminders();
 
     @Insert(onConflict = REPLACE)
-    void insertNote(Note note);
+    void insertReminder(Reminder reminder);
 
     @Delete
-    void deleteNote(Note note);
+    void deleteReminder(Reminder reminder);
 }

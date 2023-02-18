@@ -12,6 +12,8 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
 
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -26,6 +28,10 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/map_key" />
 
+        <activity
+            android:name=".Activities.ReminderActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Snare" />
         <activity
             android:name=".Activities.PinnedLocationsActivity"
             android:exported="false"
@@ -90,7 +96,7 @@
         </activity>
 
         <service
-            android:name=".PushNotificationService"
+            android:name=".NotificationsPkg.PushNotificationService"
             android:exported="true">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />

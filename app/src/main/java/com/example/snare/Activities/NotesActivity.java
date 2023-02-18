@@ -76,6 +76,7 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notes);
 
+        ///////just to get the token to test notifications
         FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
             if(task.isComplete()){
                 GetToken(task);
@@ -94,7 +95,6 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
         userRef = FirebaseDatabase.getInstance().getReference("Users").child(user.getUid());
 
         fillNavDrawer();
-
         navOnClickAction();
     }
 
@@ -118,6 +118,9 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
                 startActivity(new Intent(NotesActivity.this, FriendsActivity.class));
             } else if(item.getTitle().toString().equals("Shouts")) {
                 startActivity(new Intent(NotesActivity.this, ShoutsActivity.class));
+                finish();
+            } else if(item.getTitle().toString().equals("Reminders")) {
+                startActivity(new Intent(NotesActivity.this, ReminderActivity.class));
                 finish();
             } else if(item.getTitle().toString().equals("Notifications")) {
                 startActivity(new Intent(NotesActivity.this, NotificationsActivity.class));
@@ -158,7 +161,6 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
 
     private void getAllNotes(int requestCode, boolean isNoteDeleted) {
 
-        @SuppressLint("StaticFieldLeak")
         class GetNotesTask extends AsyncTask<Void, Void, List<Note>> {
 
             @Override

@@ -62,6 +62,9 @@ public class ShoutsActivity extends AppCompatActivity {
             } else if(item.getTitle().toString().equals("Notes")) {
                 startActivity(new Intent(ShoutsActivity.this, NotesActivity.class));
                 finish();
+            } else if(item.getTitle().toString().equals("Reminders")) {
+                startActivity(new Intent(ShoutsActivity.this, ReminderActivity.class));
+                finish();
             } else if(item.getTitle().toString().equals("Notifications")) {
                 startActivity(new Intent(ShoutsActivity.this, NotificationsActivity.class));
             } else if(item.getTitle().toString().equals("Pinned Locations")) {

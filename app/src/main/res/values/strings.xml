@@ -15,4 +15,12 @@
     <string name="are_you_sure_you_want_to_delete_this_note">Are you sure you want to delete this note ?</string>
     <string name="delete_note_confirm">Delete Note</string>
     <string name="cancel">Cancel</string>
+    <string name="recording">Recording</string>
+    <string name="choose_a_date_time"><![CDATA[Choose a date & time]]></string>
+    <string name="choose_a_place">Choose a place</string>
+    <string name="collabrator">Collabrator</string>
+    <string name="collaborator">Collaborator</string>
+    <string name="select_a_time">Select a time ...</string>
+    <string name="save">Save</string>
+    <string name="select_a_date">Select a date ... </string>
 </resources>
