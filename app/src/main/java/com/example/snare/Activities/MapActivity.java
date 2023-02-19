@@ -45,11 +45,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     EditText locationName;
     Button save, cancel;
 
-    FirebaseAuth auth;
-    FirebaseUser user;
-    DatabaseReference ref;
-    private PinnedLocationsDao pinnedLocationsDao;
-
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private static final float DEFAULT_ZOOM = 15;
     Boolean locationPermissionGranted = false;
@@ -62,10 +57,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
-
-        auth = FirebaseAuth.getInstance();
-        user = auth.getCurrentUser();
-        ref = FirebaseDatabase.getInstance().getReference("PinnedLocations").child(user.getUid());
 
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.google_map);
@@ -86,17 +77,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         dialog.show();
 
         save.setOnClickListener(view -> {
-            places.put(locationName.getText().toString().trim(), loc);
-
-            ref.updateChildren(places);
-
-            pinnedLocationsDao = PinnedLocationsDataBase.getDatabase(this).pinnedLocationsDao();
             PinnedLocations location = new PinnedLocations();
             location.setName(locationName.getText().toString().trim());
             location.setLat(String.valueOf(loc.latitude));
             location.setLng(String.valueOf(loc.longitude));
 
-            new InsertAsyncTask(pinnedLocationsDao).execute(location);
+            savePinnedLocation(location);
 
             locationName.setText("");
             dialog.dismiss();
@@ -105,19 +91,20 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         cancel.setOnClickListener(view -> dialog.dismiss());
     }
 
-    private static class InsertAsyncTask extends AsyncTask<PinnedLocations, Void, Void> {
+    private void savePinnedLocation(PinnedLocations location) {
 
-        private final PinnedLocationsDao pinnedLocationsDao;
+        class SavePinnedLocationTask extends AsyncTask<Void, Void, Void> {
 
-        public InsertAsyncTask(PinnedLocationsDao pinnedLocationsDao1) {
-            this.pinnedLocationsDao = pinnedLocationsDao1;
+            @Override
+            protected Void doInBackground(Void... voids) {
+                PinnedLocationsDataBase.getDatabase(getApplicationContext()).pinnedLocationsDao().Insert(location);
+                FirebasePinnedLocations firebasePinnedLocations = new FirebasePinnedLocations();
+                firebasePinnedLocations.save(location);
+                return null;
+            }
         }
 
-        @Override
-        protected Void doInBackground(PinnedLocations... locations) {
-            pinnedLocationsDao.Insert(locations[0]);
-            return null;
-        }
+        new SavePinnedLocationTask().execute();
     }
 
     @Override

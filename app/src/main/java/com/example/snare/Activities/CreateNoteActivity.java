@@ -297,7 +297,6 @@ public class CreateNoteActivity extends AppCompatActivity {
     }
 
     private void setAlarm(Reminder reminder) {
-
         Intent intent = new Intent(getApplicationContext(), AlarmReceiver.class);
         intent.putExtra("title",reminder.getTitle());
         intent.putExtra("description",reminder.getReminderText());
@@ -428,7 +427,6 @@ public class CreateNoteActivity extends AppCompatActivity {
 
             @Override
             protected Void doInBackground(Void... voids) {
-
                 NotesDataBase.getDatabase(getApplicationContext()).noteDao().insertNote(note);
                 FirebaseNotes firebaseNotes = new FirebaseNotes();
                 firebaseNotes.save(note);
@@ -443,10 +441,10 @@ public class CreateNoteActivity extends AppCompatActivity {
                 setResult(RESULT_OK, intent);
                 finish();
             }
+
         }
 
         new SaveNoteTask().execute();
-
     }
 
     private boolean isTitleEmpty() {

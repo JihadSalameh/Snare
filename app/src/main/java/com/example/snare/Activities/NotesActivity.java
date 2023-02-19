@@ -171,6 +171,7 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
                 if(isNetworkAvailable(getApplicationContext())) {
                     FirebaseNotes firebaseNotes = new FirebaseNotes();
                     firebaseNotes.getAllNotes(new FirebaseNotes.NotesCallback() {
+                        @SuppressLint("NotifyDataSetChanged")
                         @Override
                         public void onNotesRetrieved(List<Note> notes) {
                             if(notes != null) {

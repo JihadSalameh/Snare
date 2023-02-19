@@ -1,5 +1,6 @@
 package com.example.snare.Entities;
 
+import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
@@ -7,9 +8,8 @@ import androidx.room.PrimaryKey;
 @Entity(tableName = "pinnedLocations")
 public class PinnedLocations {
 
-    @PrimaryKey(autoGenerate = true)
-    private int id;
-
+    @PrimaryKey
+    @NonNull
     @ColumnInfo(name = "name")
     private String name;
 
@@ -41,14 +41,6 @@ public class PinnedLocations {
 
     public void setLng(String lng) {
         this.lng = lng;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     @Override

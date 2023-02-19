@@ -8,7 +8,7 @@ import androidx.room.RoomDatabase;
 
 import com.example.snare.Entities.PinnedLocations;
 
-@Database(entities = PinnedLocations.class ,version = 1, exportSchema = false)
+@Database(entities = PinnedLocations.class ,version = 6, exportSchema = false)
 public abstract class PinnedLocationsDataBase extends RoomDatabase {
 
     private static PinnedLocationsDataBase pinnedLocationsDataBase;
@@ -19,7 +19,7 @@ public abstract class PinnedLocationsDataBase extends RoomDatabase {
                     context,
                     PinnedLocationsDataBase.class,
                     "pinnedLocations_db"
-            ).allowMainThreadQueries().build();
+            ).fallbackToDestructiveMigration()  .allowMainThreadQueries().build();
         }
 
         return pinnedLocationsDataBase;

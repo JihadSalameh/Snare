@@ -140,7 +140,6 @@ public class ReminderActivity extends AppCompatActivity implements RemindersList
             @Override
             protected List<Reminder> doInBackground(Void... voids) {
                 if (isNetworkAvailable(getApplicationContext())) {
-
                     FirebaseReminders firebaseReminders = new FirebaseReminders();
                     firebaseReminders.getAllReminders(new FirebaseReminders.RemindersCallback() {
                         @SuppressLint("NotifyDataSetChanged")

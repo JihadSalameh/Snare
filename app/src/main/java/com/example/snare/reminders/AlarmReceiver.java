@@ -20,7 +20,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         Intent openIntent = new Intent(context, NotesActivity.class);
         openIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, openIntent, 0);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, openIntent, PendingIntent.FLAG_IMMUTABLE);
 
         // Create a notification using the NotificationCompat class
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "channel_id")
