@@ -13,7 +13,7 @@ import java.util.List;
 
 @Dao
 public interface ReminderDao {
-    @Query("Select * FROM reminders")
+    @Query("Select * FROM reminders ORDER BY count DESC")
     List<Reminder> getAllReminders();
 
     @Insert(onConflict = REPLACE)

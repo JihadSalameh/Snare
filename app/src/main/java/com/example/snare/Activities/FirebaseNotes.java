@@ -12,39 +12,48 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class FirebaseNotes {
 
-    private DatabaseReference mDatabase;
-    private FirebaseAuth firebaseAuth;
-    private String userID ;
+    private final DatabaseReference mDatabase;
+    private final String userID ;
 
     public FirebaseNotes() {
         mDatabase = FirebaseDatabase.getInstance().getReference("notes");
-        firebaseAuth = FirebaseAuth.getInstance();
-        userID = firebaseAuth.getCurrentUser().getUid();
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        userID = Objects.requireNonNull(firebaseAuth.getCurrentUser()).getUid();
     }
 
     public void save(Note note) {
-        mDatabase.child(userID).child(note.getIdFirebase()).setValue(note);
+        mDatabase.child(userID).child(Objects.requireNonNull(mDatabase.getRef().push().getKey())).setValue(note);
     }
 
     public void update(Note note) {
-        mDatabase.child(userID).child(note.getIdFirebase()).setValue(note);
+        mDatabase.child(userID).child(Objects.requireNonNull(mDatabase.getRef().push().getKey())).setValue(note);
     }
 
     public void delete(Note note) {
-        mDatabase.child(userID).child(note.getIdFirebase()).removeValue();
+        mDatabase.child(userID).child(Objects.requireNonNull(mDatabase.getRef().push().getKey())).removeValue();
     }
 
     public void getAllNotes(final NotesCallback callback) {
         DatabaseReference notesRef = FirebaseDatabase.getInstance().getReference("notes").child(userID);
 
-        notesRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        notesRef.orderByKey().addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 ArrayList<Note> notes = new ArrayList<>();
-                for (DataSnapshot noteSnapshot : dataSnapshot.getChildren()) {
+                Iterable<DataSnapshot> children = dataSnapshot.getChildren();
+
+                // Reverse the order of the child nodes
+                ArrayList<DataSnapshot> reversedChildren = new ArrayList<>();
+                for (DataSnapshot child : children) {
+                    reversedChildren.add(0, child);
+                }
+
+                // Loop through each note in the reversed list of child nodes
+                for (DataSnapshot noteSnapshot : reversedChildren) {
                     Note note = noteSnapshot.getValue(Note.class);
                     notes.add(note);
                 }

@@ -178,33 +178,6 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/layoutAddVoiceNote"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/_35sdp"
-        android:layout_margin="@dimen/_10sdp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-
-        <ImageView
-            android:layout_width="@dimen/_22sdp"
-            android:layout_height="@dimen/_22sdp"
-            android:contentDescription="@string/app_name"
-            android:src="@drawable/ic_voice"
-            android:tint="@color/colorIcons"
-            tools:ignore="UseAppTint" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/_10sdp"
-            android:includeFontPadding="false"
-            android:text="@string/recording"
-            android:textColor="@color/colorIcons"
-            android:textSize="@dimen/_12ssp"/>
-
-    </LinearLayout>
-
-    <LinearLayout
         android:id="@+id/layoutAddDateTime"
         android:layout_width="match_parent"
         android:layout_height="@dimen/_35sdp"

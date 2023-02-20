@@ -8,11 +8,11 @@ import androidx.room.PrimaryKey;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 @Entity(tableName = "notes")
 public class Note implements Serializable {
 
-    @PrimaryKey
     @NonNull
     private String idFirebase;
 
@@ -31,14 +31,23 @@ public class Note implements Serializable {
     @ColumnInfo(name = "color")
     private String color;
 
-    @ColumnInfo(name = "web_link")
-    private String webLink;
+    @PrimaryKey(autoGenerate = true)
+    private int count;
 
+    public int getCount() {
+        return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
+    }
+
+    @NonNull
     public String getIdFirebase() {
         return idFirebase;
     }
 
-    public void setIdFirebase(String idFirebase) {
+    public void setIdFirebase(@NonNull String idFirebase) {
         this.idFirebase = idFirebase;
     }
 
@@ -82,17 +91,23 @@ public class Note implements Serializable {
         this.color = color;
     }
 
-    public String getWebLink() {
-        return webLink;
-    }
-
-    public void setWebLink(String webLink) {
-        this.webLink = webLink;
-    }
-
     @NotNull
     @Override
     public String toString() {
         return title + " : " + dateTime;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Note note = (Note) o;
+        return idFirebase.equals(note.idFirebase) && Objects.equals(title, note.title) && Objects.equals(dateTime, note.dateTime) && Objects.equals(noteText, note.noteText) && Objects.equals(imagePath, note.imagePath) && Objects.equals(color, note.color);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(idFirebase, title, dateTime, noteText, imagePath, color);
+    }
+
 }

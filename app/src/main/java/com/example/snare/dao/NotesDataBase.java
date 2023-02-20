@@ -7,10 +7,8 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
 import com.example.snare.Entities.Note;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
-@Database(entities = Note.class ,version = 2 ,exportSchema = false)
+@Database(entities = Note.class ,version = 3,exportSchema = false)
 public abstract class NotesDataBase extends RoomDatabase{
 
     private static NotesDataBase notesDataBase;

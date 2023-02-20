@@ -22,6 +22,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
@@ -55,14 +56,13 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
     public ActionBarDrawerToggle actionBarDrawerToggle;
     public NavigationView navigationView;
 
-    DatabaseReference userRef;
-    FirebaseAuth auth;
-    FirebaseUser user;
+    private DatabaseReference userRef;
+    private FirebaseAuth auth;
+    private FirebaseUser user;
 
     private RecyclerView noteRecycleView;
     private ImageView imageAddImage;
     private ImageView imageAddNote;
-    private ImageView imageAddVoice;
     private ImageView imageAddNoteMain;
     private List<Note> noteList;
     private NotesAdapter notesAdapter;
@@ -71,7 +71,6 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
     private static final int REQUEST_CODE_SHOW_NOTE = 3;
     private static final int REQUEST_CODE_SELECT_IMAGE = 4;
     private static final int REQUEST_CODE_STORAGE_PERMISSION = 5;
-
     private int onClickPosition = -1;
 
     @Override
@@ -92,10 +91,6 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
         actionBarDrawerToggle.syncState();
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
-
-        auth = FirebaseAuth.getInstance();
-        user = auth.getCurrentUser();
-        userRef = FirebaseDatabase.getInstance().getReference("Users").child(user.getUid());
 
         fillNavDrawer();
         navOnClickAction();
@@ -148,8 +143,10 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
         noteRecycleView = findViewById(R.id.noteRecycleView);
         imageAddImage = findViewById(R.id.imageAddImage);
         imageAddNote = findViewById(R.id.imageAddNote);
-        imageAddVoice = findViewById(R.id.imageAddVoice);
         imageAddNoteMain = findViewById(R.id.imageAddNoteMain);
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
+        userRef = FirebaseDatabase.getInstance().getReference("Users").child(user.getUid());
     }
 
     private void setListeners() {
@@ -159,74 +156,76 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
     }
 
     private void setImageAddNoteMainListener() {
-        imageAddNoteMain.setOnClickListener(view -> startActivityForResult(new Intent(getApplicationContext(), CreateNoteActivity.class), REQUEST_CODE_ADD_NOTE));
+        imageAddNoteMain.setOnClickListener(view -> startActivityForResult(new Intent(getApplicationContext(), CreateActivity.class), REQUEST_CODE_ADD_NOTE));
     }
 
     private void getAllNotes(int requestCode, boolean isNoteDeleted) {
+
+        if(isNetworkAvailable(getApplicationContext())) {
+            FirebaseNotes firebaseNotes = new FirebaseNotes();
+            firebaseNotes.getAllNotes(new FirebaseNotes.NotesCallback() {
+
+                @SuppressLint("NotifyDataSetChanged")
+                @Override
+                public void onNotesRetrieved(List<Note> notes) {
+                    if (notes != null) {
+                        if (requestCode == REQUEST_CODE_SHOW_NOTE) {
+                            noteList.addAll(notes);
+                            notesAdapter.notifyDataSetChanged();
+                        } else if (requestCode == REQUEST_CODE_ADD_NOTE) {
+
+                            noteList.add(0, notes.get(0));
+                            Log.d("h", notes.get(0).toString());
+                            notesAdapter.notifyItemInserted(0);
+                            noteRecycleView.smoothScrollToPosition(0);
+                        } else if (requestCode == REQUEST_CODE_UPDATE_NOTE) {
+                            noteList.remove(onClickPosition);
+                            if (isNoteDeleted) {
+                                notesAdapter.notifyItemRemoved(onClickPosition);
+                            } else {
+                                noteList.add(onClickPosition, notes.get(onClickPosition));
+                                notesAdapter.notifyItemChanged(onClickPosition);
+                            }
+                        }
+                    }
+                }
+
+                @Override
+                public void onNotesRetrieveError(String error) {
+                    System.out.println(error);
+                }
+
+            });
+
+            return;
+        }
 
         class GetNotesTask extends AsyncTask<Void, Void, List<Note>> {
 
             @Override
             protected List<Note> doInBackground(Void... voids) {
-                if(isNetworkAvailable(getApplicationContext())) {
-                    FirebaseNotes firebaseNotes = new FirebaseNotes();
-                    firebaseNotes.getAllNotes(new FirebaseNotes.NotesCallback() {
-                        @SuppressLint("NotifyDataSetChanged")
-                        @Override
-                        public void onNotesRetrieved(List<Note> notes) {
-                            if(notes != null) {
-                                if(requestCode == REQUEST_CODE_SHOW_NOTE) {
-                                    noteList.addAll(notes);
-                                    notesAdapter.notifyDataSetChanged();
-                                } else if(requestCode == REQUEST_CODE_ADD_NOTE) {
-                                    noteList.add(0, notes.get(0));
-                                    notesAdapter.notifyItemInserted(0);
-                                    noteRecycleView.smoothScrollToPosition(0);
-                                } else if(requestCode == REQUEST_CODE_UPDATE_NOTE) {
-                                    noteList.remove(onClickPosition);
-                                    if(isNoteDeleted) {
-                                        notesAdapter.notifyItemRemoved(onClickPosition);
-                                    } else {
-                                        noteList.add(onClickPosition, notes.get(onClickPosition));
-                                        notesAdapter.notifyItemChanged(onClickPosition);
-                                    }
-                                }
-                            }
-                        }
-
-                        @Override
-                        public void onNotesRetrieveError(String error) {
-                            System.out.println(error);
-                        }
-                    });
-
-                    return null;
-
-                } else {
-                    return NotesDataBase.getDatabase(getApplicationContext()).noteDao().getAllNotes();
-                }
+                return NotesDataBase.getDatabase(getApplicationContext()).noteDao().getAllNotes();
             }
 
             @SuppressLint("NotifyDataSetChanged")
             @Override
             protected void onPostExecute(List<Note> notes) {
                 super.onPostExecute(notes);
-                if(notes != null) {
-                    if(requestCode == REQUEST_CODE_SHOW_NOTE) {
-                        noteList.addAll(notes);
-                        notesAdapter.notifyDataSetChanged();
-                    } else if(requestCode == REQUEST_CODE_ADD_NOTE) {
-                        noteList.add(0, notes.get(0));
-                        notesAdapter.notifyItemInserted(0);
-                        noteRecycleView.smoothScrollToPosition(0);
-                    } else if(requestCode == REQUEST_CODE_UPDATE_NOTE) {
-                        noteList.remove(onClickPosition);
-                        if(isNoteDeleted) {
-                            notesAdapter.notifyItemRemoved(onClickPosition);
-                        } else {
-                            noteList.add(onClickPosition, notes.get(onClickPosition));
-                            notesAdapter.notifyItemChanged(onClickPosition);
-                        }
+
+                if(requestCode == REQUEST_CODE_SHOW_NOTE) {
+                    noteList.addAll(notes);
+                    notesAdapter.notifyDataSetChanged();
+                } else if(requestCode == REQUEST_CODE_ADD_NOTE) {
+                    noteList.add(0, notes.get(0));
+                    notesAdapter.notifyItemInserted(0);
+                    noteRecycleView.smoothScrollToPosition(0);
+                } else if(requestCode == REQUEST_CODE_UPDATE_NOTE) {
+                    noteList.remove(onClickPosition);
+                    if(isNoteDeleted) {
+                        notesAdapter.notifyItemRemoved(onClickPosition);
+                    } else {
+                        noteList.add(onClickPosition, notes.get(onClickPosition));
+                        notesAdapter.notifyItemChanged(onClickPosition);
                     }
                 }
             }
@@ -266,12 +265,11 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
             if(selectedImageUri != null) {
                 try {
                     String selectedImagePath = getPathFromUri(selectedImageUri);
-                    Intent intent = new Intent(getApplicationContext(),CreateNoteActivity.class);
+                    Intent intent = new Intent(getApplicationContext(), CreateActivity.class);
                     intent.putExtra("isFromQuickActionsBar",true);
                     intent.putExtra("quickActionBarType","image");
                     intent.putExtra("imagePath",selectedImagePath);
                     startActivityForResult(intent,REQUEST_CODE_ADD_NOTE);
-
                 } catch(Exception e) {
                     e.printStackTrace();
                 }
@@ -284,7 +282,7 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
     @Override
     public void onNoteClick(Note note, int position) {
         onClickPosition = position;
-        Intent intent = new Intent(getApplicationContext(), CreateNoteActivity.class);
+        Intent intent = new Intent(getApplicationContext(), CreateActivity.class);
         intent.putExtra("isViewOrUpdate", true);
         intent.putExtra("note", note);
         startActivityForResult(intent, REQUEST_CODE_UPDATE_NOTE);
@@ -341,11 +339,11 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
     }
 
     private void setImageAddNoteListener() {
-        imageAddNote.setOnClickListener(view -> startActivityForResult(new Intent(getApplicationContext(), CreateNoteActivity.class), REQUEST_CODE_ADD_NOTE));
+        imageAddNote.setOnClickListener(view -> startActivityForResult(new Intent(getApplicationContext(), CreateActivity.class), REQUEST_CODE_ADD_NOTE));
     }
 
     private void fillNavDrawer() {
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid());
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(Objects.requireNonNull(user).getUid());
         databaseReference.get().addOnSuccessListener(snapshot -> {
             ImageView imageView = findViewById(R.id.profileImg);
             TextView name = findViewById(R.id.nameTxt);
@@ -353,7 +351,7 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
 
             Picasso.get().load(snapshot.child("profilePic").getValue(String.class)).into(imageView);
             name.setText(snapshot.child("name").getValue(String.class));
-            email.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
+            email.setText(user.getEmail());
         });
     }
 
@@ -373,7 +371,7 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
     }
 
     private void logout() {
-        FirebaseAuth.getInstance().signOut();
+        auth.signOut();
         Toast.makeText(NotesActivity.this, "Signed out!", Toast.LENGTH_SHORT).show();
         startActivity(new Intent(NotesActivity.this, LoginActivity.class));
         finish();

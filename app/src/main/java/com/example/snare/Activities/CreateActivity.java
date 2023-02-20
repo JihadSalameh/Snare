@@ -19,6 +19,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,7 +51,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.UUID;
 
-public class CreateNoteActivity extends AppCompatActivity {
+public class CreateActivity extends AppCompatActivity {
 
     private ImageView imageSave;
     private EditText inputNoteTitle;
@@ -86,6 +87,7 @@ public class CreateNoteActivity extends AppCompatActivity {
     }
 
     private void setActivity() {
+        Log.d("add","2");
         initializeActivity();
         setListeners();
     }
@@ -157,7 +159,7 @@ public class CreateNoteActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             } else {
-                Toast.makeText(this, "no image selectes", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "no image selected", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -222,7 +224,7 @@ public class CreateNoteActivity extends AppCompatActivity {
         int minute = calendar.get(Calendar.MINUTE);
 
         TimePickerDialog timePickerDialog = new TimePickerDialog(
-                CreateNoteActivity.this,
+                CreateActivity.this,
                 (timePicker, hour1, minute1) -> getTime(hour1, minute1),
                 hour,
                 minute,
@@ -252,7 +254,7 @@ public class CreateNoteActivity extends AppCompatActivity {
         int day = calendar.get(Calendar.DAY_OF_MONTH);
 
         DatePickerDialog datePickerDialog = new DatePickerDialog(
-                CreateNoteActivity.this,
+                CreateActivity.this,
                 (datePicker, year1, month1, day1) -> getDate(year1, month1, day1),
                 year,
                 month,
@@ -357,7 +359,7 @@ public class CreateNoteActivity extends AppCompatActivity {
 
             if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE) !=
                     PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(CreateNoteActivity.this,
+                ActivityCompat.requestPermissions(CreateActivity.this,
                         new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                         Constants.REQUEST_CODE_STORAGE_PERMISSION);
             } else {
@@ -437,7 +439,6 @@ public class CreateNoteActivity extends AppCompatActivity {
             protected void onPostExecute(Void avoid) {
                 super.onPostExecute(avoid);
                 Intent intent = new Intent();
-                intent.putExtra("type","note");
                 setResult(RESULT_OK, intent);
                 finish();
             }
@@ -535,18 +536,18 @@ public class CreateNoteActivity extends AppCompatActivity {
 
     ////////////////////////////////////////////////////////
     private void checkIfUpdateOrCreate() {
-        if (getIntent().getBooleanExtra("isViewOrUpdate", false)) {
-            if(getIntent().getBooleanExtra("isReminder", false)){
+        Log.d("add","5");
+        if(getIntent().getBooleanExtra("isViewOrUpdate", false)) {
+            if(getIntent().getBooleanExtra("isReminder", false)) {
                 alreadyAvailableReminder = (Reminder) getIntent().getSerializableExtra("reminder");
                 isReminder = true;
                 setViewReminder();
                 setViewColor();
-            }else{
+            } else {
                 alreadyAvailableNote = (Note) getIntent().getSerializableExtra("note");
                 setViewNote();
                 setViewColor();
             }
-
         }
     }
 
@@ -554,8 +555,11 @@ public class CreateNoteActivity extends AppCompatActivity {
         inputNoteTitle.setText(alreadyAvailableReminder.getTitle());
         inputNote.setText(alreadyAvailableReminder.getReminderText());
         textDateTime.setText(alreadyAvailableReminder.getDateTime());
+        getDate(alreadyAvailableReminder.getYear(),alreadyAvailableReminder.getMonth(),alreadyAvailableReminder.getDay());
+        getTime(alreadyAvailableReminder.getHour(),alreadyAvailableReminder.getMinute());
+        selectedNoteColor = alreadyAvailableReminder.getColor();
 
-        if (alreadyAvailableReminder.getImagePath() != null && !alreadyAvailableReminder.getImagePath().trim().isEmpty()) {
+        if(alreadyAvailableReminder.getImagePath() != null && !alreadyAvailableReminder.getImagePath().trim().isEmpty()) {
             imageNote.setImageBitmap(BitmapFactory.decodeFile(alreadyAvailableReminder.getImagePath()));
             imageNote.setVisibility(View.VISIBLE);
             imageRemoveImage.setVisibility(View.VISIBLE);
@@ -566,7 +570,8 @@ public class CreateNoteActivity extends AppCompatActivity {
     }
 
     private void checkIfAddNoteFromQuickAction() {
-        if (getIntent().getBooleanExtra("isFromQuickActionsBar", false)) {
+        Log.d("add","6");
+        if(getIntent().getBooleanExtra("isFromQuickActionsBar", false)) {
             if (getIntent().getStringExtra("quickActionBarType").equals("image")) {
                 makeNoteWithImage();
             }
@@ -577,8 +582,9 @@ public class CreateNoteActivity extends AppCompatActivity {
         inputNoteTitle.setText(alreadyAvailableNote.getTitle());
         inputNote.setText(alreadyAvailableNote.getNoteText());
         textDateTime.setText(alreadyAvailableNote.getDateTime());
+        selectedNoteColor = alreadyAvailableNote.getColor();
 
-        if (alreadyAvailableNote.getImagePath() != null && !alreadyAvailableNote.getImagePath().trim().isEmpty()) {
+        if(alreadyAvailableNote.getImagePath() != null && !alreadyAvailableNote.getImagePath().trim().isEmpty()) {
             imageNote.setImageBitmap(BitmapFactory.decodeFile(alreadyAvailableNote.getImagePath()));
             imageNote.setVisibility(View.VISIBLE);
             imageRemoveImage.setVisibility(View.VISIBLE);
@@ -586,7 +592,6 @@ public class CreateNoteActivity extends AppCompatActivity {
         }
 
         setDeleteListener();
-
     }
 
     private void setDeleteListener() {
@@ -660,6 +665,16 @@ public class CreateNoteActivity extends AppCompatActivity {
         dialogView.findViewById(R.id.textCancel).setOnClickListener(view -> dialogDeleteNote.dismiss());
 
         dialogDeleteNote.show();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        // Dismiss the dialog if it's still showing
+        if (dialogDeleteNote != null && dialogDeleteNote.isShowing()) {
+            dialogDeleteNote.dismiss();
+        }
     }
 
 }

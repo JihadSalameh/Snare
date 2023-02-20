@@ -11,7 +11,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/noteRecycleView"
             android:layout_width="match_parent"
@@ -53,18 +52,6 @@
                 android:src="@drawable/ic_add_circle"
                 android:tint="@color/colorIcons"
                 tools:ignore="UseAppTint" />
-
-
-            <ImageView
-                android:id="@+id/imageAddVoice"
-                android:layout_width="@dimen/_23sdp"
-                android:layout_height="@dimen/_23sdp"
-                android:layout_marginStart="@dimen/_10sdp"
-                android:contentDescription="@string/app_name"
-                android:src="@drawable/ic_voice"
-                android:tint="@color/colorIcons"
-                tools:ignore="UseAppTint" />
-
 
         </LinearLayout>
 

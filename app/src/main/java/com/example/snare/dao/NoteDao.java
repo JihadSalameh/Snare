@@ -14,7 +14,7 @@ import java.util.List;
 @Dao
 public interface NoteDao {
 
-    @Query("Select * FROM notes")
+    @Query("Select * FROM notes ORDER BY count DESC")
     List<Note> getAllNotes();
 
     @Insert(onConflict = REPLACE)

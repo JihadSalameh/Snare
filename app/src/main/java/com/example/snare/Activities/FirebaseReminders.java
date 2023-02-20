@@ -12,29 +12,29 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class FirebaseReminders {
 
-    private DatabaseReference mDatabase;
-    private FirebaseAuth firebaseAuth;
-    private String userID ;
+    private final DatabaseReference mDatabase;
+    private final String userID ;
 
     public FirebaseReminders() {
         mDatabase = FirebaseDatabase.getInstance().getReference("reminders");
-        firebaseAuth = FirebaseAuth.getInstance();
-        userID = firebaseAuth.getCurrentUser().getUid();
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        userID = Objects.requireNonNull(firebaseAuth.getCurrentUser()).getUid();
     }
 
     public void save(Reminder reminder) {
-        mDatabase.child(userID).child(reminder.getIdFirebase()).setValue(reminder);
+        mDatabase.child(userID).child(Objects.requireNonNull(mDatabase.getRef().push().getKey())).setValue(reminder);
     }
 
     public void update(Reminder reminder) {
-        mDatabase.child(userID).child(reminder.getIdFirebase()).setValue(reminder);
+        mDatabase.child(userID).child(Objects.requireNonNull(mDatabase.getRef().push().getKey())).setValue(reminder);
     }
 
     public void delete(Reminder reminder) {
-        mDatabase.child(userID).child(reminder.getIdFirebase()).removeValue();
+        mDatabase.child(userID).child(Objects.requireNonNull(mDatabase.getRef().push().getKey())).removeValue();
     }
 
     public void getAllReminders(RemindersCallback callback) {
@@ -44,7 +44,17 @@ public class FirebaseReminders {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 ArrayList<Reminder> reminders = new ArrayList<>();
-                for (DataSnapshot noteSnapshot : dataSnapshot.getChildren()) {
+                // Get a list of the child nodes
+                Iterable<DataSnapshot> children = dataSnapshot.getChildren();
+
+                // Reverse the order of the child nodes
+                ArrayList<DataSnapshot> reversedChildren = new ArrayList<>();
+                for (DataSnapshot child : children) {
+                    reversedChildren.add(0, child);
+                }
+
+                // Loop through each note in the reversed list of child nodes
+                for (DataSnapshot noteSnapshot : reversedChildren) {
                     Reminder reminder = noteSnapshot.getValue(Reminder.class);
                     reminders.add(reminder);
                 }

@@ -12,7 +12,6 @@ import java.io.Serializable;
 @Entity(tableName = "reminders")
 public class Reminder implements Serializable {
 
-    @PrimaryKey
     @NonNull
     private String idFirebase;
 
@@ -46,6 +45,16 @@ public class Reminder implements Serializable {
     @ColumnInfo(name = "minute")
     private int minute;
 
+    @PrimaryKey(autoGenerate = true)
+    private int count;
+
+    public int getCount() {
+        return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
+    }
 
     @NonNull
     public String getIdFirebase() {
