@@ -13,17 +13,17 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class FirebasePinnedLocations {
 
-    private DatabaseReference mDatabase;
-    private FirebaseAuth firebaseAuth;
-    private String userID;
+    private final DatabaseReference mDatabase;
+    private final String userID;
 
     public FirebasePinnedLocations() {
         mDatabase = FirebaseDatabase.getInstance().getReference("PinnedLocations");
-        firebaseAuth = FirebaseAuth.getInstance();
-        userID = firebaseAuth.getCurrentUser().getUid();
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        userID = Objects.requireNonNull(firebaseAuth.getCurrentUser()).getUid();
     }
 
     public void save(PinnedLocations location) {

@@ -1,5 +1,6 @@
 package com.example.snare.adapters;
 
+import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -27,6 +28,7 @@ public class PinnedLocationsAdapter extends RecyclerView.Adapter<PinnedLocations
                 R.layout.activity_pinned_locations_view, parent, false));
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull PinnedLocationsViewHolder holder, int position) {
         holder.name.setText(pinnedLocationsList.get(position).getName());

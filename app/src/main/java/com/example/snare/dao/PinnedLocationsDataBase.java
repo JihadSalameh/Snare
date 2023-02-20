@@ -19,7 +19,7 @@ public abstract class PinnedLocationsDataBase extends RoomDatabase {
                     context,
                     PinnedLocationsDataBase.class,
                     "pinnedLocations_db"
-            ).fallbackToDestructiveMigration()  .allowMainThreadQueries().build();
+            ).allowMainThreadQueries().build();
         }
 
         return pinnedLocationsDataBase;
