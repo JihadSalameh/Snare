@@ -42,11 +42,10 @@
         app:layout_constraintTop_toBottomOf="@+id/email_Txt" />
 
     <ImageView
-        android:id="@+id/googleSignIn"
+        android:id="@+id/googleImageView"
         android:layout_width="55dp"
         android:layout_height="55dp"
         android:layout_marginTop="12dp"
-        android:onClick="Google_Sign_in"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView"

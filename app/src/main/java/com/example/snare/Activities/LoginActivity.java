@@ -7,8 +7,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.snare.R;
@@ -28,32 +30,53 @@ import java.util.Objects;
 public class LoginActivity extends AppCompatActivity {
 
     private static final int RC_SIGN_IN = 100;
-
     private EditText email;
     private EditText password;
-
-    GoogleSignInClient mGoogleSignInClient;
-
+    private GoogleSignInClient mGoogleSignInClient;
     private FirebaseAuth auth;
-    public FirebaseUser user;
-
-    SharedPreferences sharedPreferences;
+    private FirebaseUser user;
+    private ImageView googleImageView ;
+    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        setActivity();
+    }
 
-        email = findViewById(R.id.email_Txt);
-        password = findViewById(R.id.password_Txt);
+    private void setActivity() {
+        initializeActivity();
+        setListeners();
+        isUserLogin();
+    }
 
-        auth = FirebaseAuth.getInstance();
-        user = auth.getCurrentUser();
+    private void setListeners() {
+        setGoogleSignInListener();
+    }
 
+    private void setGoogleSignInListener() {
+        googleImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                signInGoogle();
+            }
+        });
+    }
+
+    private void isUserLogin(){
         if(user != null) {
             startActivity(new Intent(LoginActivity.this, NotesActivity.class));
             finish();
         }
+    }
+
+    private void initializeActivity() {
+        email = findViewById(R.id.email_Txt);
+        password = findViewById(R.id.password_Txt);
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
+        googleImageView = findViewById(R.id.googleImageView);
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
@@ -78,6 +101,7 @@ public class LoginActivity extends AppCompatActivity {
                 firebaseAuthWithGoogle(account);
             } catch (ApiException e) {
                 Toast.makeText(this, e.toString(), Toast.LENGTH_SHORT).show();
+                e.printStackTrace();
             }
         }
     }
@@ -124,10 +148,6 @@ public class LoginActivity extends AppCompatActivity {
         } else {
             LoginUser(email_txt, password_txt);
         }
-    }
-
-    public void Google_Sign_in(View view) {
-        signInGoogle();
     }
 
     public void GoToRegister(View view) {

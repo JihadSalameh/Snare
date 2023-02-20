@@ -175,7 +175,6 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
                         } else if (requestCode == REQUEST_CODE_ADD_NOTE) {
 
                             noteList.add(0, notes.get(0));
-                            Log.d("h", notes.get(0).toString());
                             notesAdapter.notifyItemInserted(0);
                             noteRecycleView.smoothScrollToPosition(0);
                         } else if (requestCode == REQUEST_CODE_UPDATE_NOTE) {
