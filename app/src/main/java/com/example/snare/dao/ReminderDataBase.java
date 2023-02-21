@@ -20,7 +20,7 @@ public abstract class ReminderDataBase extends RoomDatabase {
                     context,
                     ReminderDataBase.class,
                     "reminders_db"
-            ).build();
+            ).allowMainThreadQueries().build();
         }
 
         return reminderDataBase;

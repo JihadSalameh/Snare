@@ -20,7 +20,7 @@ public abstract class NotesDataBase extends RoomDatabase{
                     context,
                     NotesDataBase.class,
                     "notes_db"
-                ).build();
+                ).allowMainThreadQueries().build();
         }
 
         return notesDataBase;

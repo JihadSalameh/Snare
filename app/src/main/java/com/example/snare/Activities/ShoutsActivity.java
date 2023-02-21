@@ -4,8 +4,13 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.room.DatabaseConfiguration;
+import androidx.room.InvalidationTracker;
+import androidx.room.RoomDatabase;
+import androidx.sqlite.db.SupportSQLiteOpenHelper;
 
 import com.example.snare.R;
+import com.example.snare.dao.NotesDataBase;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
@@ -98,6 +103,13 @@ public class ShoutsActivity extends AppCompatActivity {
 
     private void logout() {
         FirebaseAuth.getInstance().signOut();
+
+        //delete all tables
+        deleteDatabase("notes_db");
+        deleteDatabase("notifications_db");
+        deleteDatabase("pinnedLocations_db");
+        deleteDatabase("reminders_db");
+
         Toast.makeText(ShoutsActivity.this, "Signed out!", Toast.LENGTH_SHORT).show();
         startActivity(new Intent(ShoutsActivity.this, LoginActivity.class));
         finish();

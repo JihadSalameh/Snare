@@ -11,7 +11,13 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.snare.Entities.Note;
+import com.example.snare.Entities.PinnedLocations;
+import com.example.snare.Entities.Reminder;
 import com.example.snare.R;
+import com.example.snare.dao.NotesDataBase;
+import com.example.snare.dao.PinnedLocationsDataBase;
+import com.example.snare.dao.ReminderDataBase;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -23,6 +29,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
+import java.util.List;
 import java.util.Objects;
 
 public class LoginActivity extends AppCompatActivity {
@@ -99,6 +106,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void updateUI() {
         Toast.makeText(LoginActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
+        updateTables();
         startActivity(new Intent(LoginActivity.this, NotesActivity.class));
         finish();
     }
@@ -106,11 +114,71 @@ public class LoginActivity extends AppCompatActivity {
     private void LoginUser(String email_txt, String password_txt) {
         sharedPreferences = getSharedPreferences("User", 0);
 
-        auth.signInWithEmailAndPassword(email_txt, password_txt).addOnSuccessListener(authResult -> {
-            Toast.makeText(LoginActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(LoginActivity.this, NotesActivity.class));
-            finish();
-        }).addOnFailureListener(e -> Toast.makeText(LoginActivity.this, "Wrong Username Or Password!", Toast.LENGTH_SHORT).show());
+        auth.signInWithEmailAndPassword(email_txt, password_txt).addOnSuccessListener(authResult -> updateUI()).addOnFailureListener(e -> Toast.makeText(LoginActivity.this, "Wrong Username Or Password!", Toast.LENGTH_SHORT).show());
+    }
+
+    private void updateTables() {
+        List<Note> notes = NotesDataBase.getDatabase(getApplicationContext()).noteDao().getAllNotes();
+        List<Reminder> reminders = ReminderDataBase.getDatabase(getApplicationContext()).reminderDao().getAllReminders();
+        List<PinnedLocations> locations = PinnedLocationsDataBase.getDatabase(getApplicationContext()).pinnedLocationsDao().GetAllPinnedLocations();
+        FirebaseReminders firebaseReminders = new FirebaseReminders();
+        FirebaseNotes firebaseNotes = new FirebaseNotes();
+        FirebasePinnedLocations firebasePinnedLocations = new FirebasePinnedLocations();
+
+        for(Reminder reminder: reminders) {
+            firebaseReminders.save(reminder);
+        }
+
+        for(Note note: notes) {
+            firebaseNotes.save(note);
+        }
+
+        for(PinnedLocations pinnedLocations: locations) {
+            firebasePinnedLocations.save(pinnedLocations);
+        }
+
+        firebaseNotes.getAllNotes(new FirebaseNotes.NotesCallback() {
+            @Override
+            public void onNotesRetrieved(List<Note> notes) {
+                for(Note note: notes) {
+                    NotesDataBase.getDatabase(getApplicationContext()).noteDao().insertNote(note);
+                }
+            }
+
+            @Override
+            public void onNotesRetrieveError(String error) {
+                System.out.println(error);
+            }
+        });
+
+        firebaseReminders.getAllReminders(new FirebaseReminders.RemindersCallback() {
+            @Override
+            public void onRemindersRetrieved(List<Reminder> reminders) {
+                for(Reminder reminder: reminders) {
+                    ReminderDataBase.getDatabase(getApplicationContext()).reminderDao().insertReminder(reminder);
+                }
+            }
+
+            @Override
+            public void onRemindersRetrieveError(String error) {
+                System.out.println(error);
+            }
+        });
+
+        firebasePinnedLocations.getAllPinnedLocations(new FirebasePinnedLocations.PinnedLocationsCallback() {
+            @Override
+            public void onPinnedLocationsRetrieved(List<PinnedLocations> pinnedLocations) {
+                for(PinnedLocations pinnedLocations1: pinnedLocations) {
+                    PinnedLocationsDataBase.getDatabase(getApplicationContext()).pinnedLocationsDao().Insert(pinnedLocations1);
+                }
+            }
+
+            @Override
+            public void onPinnedLocationsRetrieveError(String error) {
+                System.out.println(error);
+            }
+        });
+
     }
 
     public void Sign_in(View view) {

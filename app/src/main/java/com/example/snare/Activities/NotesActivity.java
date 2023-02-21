@@ -31,9 +31,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.snare.Entities.Note;
+import com.example.snare.Entities.PinnedLocations;
+import com.example.snare.Entities.Reminder;
 import com.example.snare.R;
 import com.example.snare.adapters.NotesAdapter;
 import com.example.snare.dao.NotesDataBase;
+import com.example.snare.dao.PinnedLocationsDataBase;
+import com.example.snare.dao.ReminderDataBase;
 import com.example.snare.listeners.NotesListeners;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
@@ -372,6 +376,13 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
 
     private void logout() {
         auth.signOut();
+
+        //delete all tables
+        deleteDatabase("notes_db");
+        deleteDatabase("notifications_db");
+        deleteDatabase("pinnedLocations_db");
+        deleteDatabase("reminders_db");
+
         Toast.makeText(NotesActivity.this, "Signed out!", Toast.LENGTH_SHORT).show();
         startActivity(new Intent(NotesActivity.this, LoginActivity.class));
         finish();

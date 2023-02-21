@@ -27,10 +27,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
+import androidx.room.RoomDatabase;
 
 import com.example.snare.Entities.Reminder;
 import com.example.snare.R;
 import com.example.snare.adapters.ReminderAdapter;
+import com.example.snare.dao.NotesDataBase;
 import com.example.snare.dao.ReminderDataBase;
 import com.example.snare.listeners.RemindersListeners;
 import com.google.android.material.navigation.NavigationView;
@@ -313,6 +315,13 @@ public class ReminderActivity extends AppCompatActivity implements RemindersList
 
     private void logout() {
         FirebaseAuth.getInstance().signOut();
+
+        //delete all tables
+        deleteDatabase("notes_db");
+        deleteDatabase("notifications_db");
+        deleteDatabase("pinnedLocations_db");
+        deleteDatabase("reminders_db");
+
         Toast.makeText(getApplicationContext(), "Signed out!", Toast.LENGTH_SHORT).show();
         startActivity(new Intent(this, LoginActivity.class));
         finish();
