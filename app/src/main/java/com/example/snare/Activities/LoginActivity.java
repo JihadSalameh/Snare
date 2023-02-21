@@ -142,24 +142,9 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void updateTables() {
-        List<Note> notes = NotesDataBase.getDatabase(getApplicationContext()).noteDao().getAllNotes();
-        List<Reminder> reminders = ReminderDataBase.getDatabase(getApplicationContext()).reminderDao().getAllReminders();
-        List<PinnedLocations> locations = PinnedLocationsDataBase.getDatabase(getApplicationContext()).pinnedLocationsDao().GetAllPinnedLocations();
         FirebaseReminders firebaseReminders = new FirebaseReminders();
         FirebaseNotes firebaseNotes = new FirebaseNotes();
         FirebasePinnedLocations firebasePinnedLocations = new FirebasePinnedLocations();
-
-        for(Reminder reminder: reminders) {
-            firebaseReminders.save(reminder);
-        }
-
-        for(Note note: notes) {
-            firebaseNotes.save(note);
-        }
-
-        for(PinnedLocations pinnedLocations: locations) {
-            firebasePinnedLocations.save(pinnedLocations);
-        }
 
         firebaseNotes.getAllNotes(new FirebaseNotes.NotesCallback() {
             @Override
