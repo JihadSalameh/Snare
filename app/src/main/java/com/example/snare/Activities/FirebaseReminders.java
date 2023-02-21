@@ -26,15 +26,15 @@ public class FirebaseReminders {
     }
 
     public void save(Reminder reminder) {
-        mDatabase.child(userID).child(Objects.requireNonNull(mDatabase.getRef().push().getKey())).setValue(reminder);
+        mDatabase.child(userID).child(reminder.getIdFirebase()).setValue(reminder);
     }
 
     public void update(Reminder reminder) {
-        mDatabase.child(userID).child(Objects.requireNonNull(mDatabase.getRef().push().getKey())).setValue(reminder);
+        mDatabase.child(userID).child(reminder.getIdFirebase()).setValue(reminder);
     }
 
     public void delete(Reminder reminder) {
-        mDatabase.child(userID).child(Objects.requireNonNull(mDatabase.getRef().push().getKey())).removeValue();
+        mDatabase.child(userID).child(reminder.getIdFirebase()).removeValue();
     }
 
     public void getAllReminders(RemindersCallback callback) {

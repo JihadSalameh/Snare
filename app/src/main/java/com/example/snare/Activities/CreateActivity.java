@@ -42,6 +42,8 @@ import com.example.snare.dao.NotesDataBase;
 import com.example.snare.dao.ReminderDataBase;
 import com.example.snare.reminders.AlarmReceiver;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -87,7 +89,6 @@ public class CreateActivity extends AppCompatActivity {
     }
 
     private void setActivity() {
-        Log.d("add","2");
         initializeActivity();
         setListeners();
     }
@@ -302,7 +303,7 @@ public class CreateActivity extends AppCompatActivity {
         Intent intent = new Intent(getApplicationContext(), AlarmReceiver.class);
         intent.putExtra("title",reminder.getTitle());
         intent.putExtra("description",reminder.getReminderText());
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(),0,intent,PendingIntent.FLAG_IMMUTABLE);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(),reminder.hashCode(),intent,PendingIntent.FLAG_IMMUTABLE);
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
         calendar.set(Calendar.HOUR_OF_DAY, reminder.getHour());
@@ -322,7 +323,8 @@ public class CreateActivity extends AppCompatActivity {
             if(isReminder) {
                 isReminder = false;
                 Reminder reminder = new Reminder();
-                reminder.setIdFirebase(UUID.randomUUID().toString());
+                DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference("reminders");
+                reminder.setIdFirebase(mDatabase.getRef().push().getKey());
                 reminder.setTitle(inputNoteTitle.getText().toString());
                 reminder.setReminderText(inputNote.getText().toString());
                 reminder.setDateTime(textDateTime.getText().toString());
@@ -335,11 +337,13 @@ public class CreateActivity extends AppCompatActivity {
                 reminder.setMinute(minute);
                 if(alreadyAvailableReminder != null) {
                     reminder.setIdFirebase(alreadyAvailableReminder.getIdFirebase());
+                    reminder.setCount(alreadyAvailableReminder.getCount());
                 }
                 saveReminder(reminder);
             } else {
                 Note note = new Note();
-                note.setIdFirebase(UUID.randomUUID().toString());
+                DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference("notes");
+                note.setIdFirebase(mDatabase.getRef().push().getKey());
                 note.setTitle(inputNoteTitle.getText().toString());
                 note.setNoteText(inputNote.getText().toString());
                 note.setDateTime(textDateTime.getText().toString());
@@ -347,6 +351,7 @@ public class CreateActivity extends AppCompatActivity {
                 note.setImagePath(selectedImagePath);
                 if(alreadyAvailableNote != null) {
                     note.setIdFirebase(alreadyAvailableNote.getIdFirebase());
+                    note.setCount(alreadyAvailableNote.getCount());
                 }
                 saveNote(note);
             }
@@ -536,7 +541,6 @@ public class CreateActivity extends AppCompatActivity {
 
     ////////////////////////////////////////////////////////
     private void checkIfUpdateOrCreate() {
-        Log.d("add","5");
         if(getIntent().getBooleanExtra("isViewOrUpdate", false)) {
             if(getIntent().getBooleanExtra("isReminder", false)) {
                 alreadyAvailableReminder = (Reminder) getIntent().getSerializableExtra("reminder");

@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "681228228573",
+    "firebase_url": "https://snare-e1afc-default-rtdb.firebaseio.com",
+    "project_id": "snare-e1afc",
+    "storage_bucket": "snare-e1afc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:681228228573:android:cd42f042af752da1c64834",
+        "android_client_info": {
+          "package_name": "com.example.snare"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "681228228573-535567m9pj4are2lkudckm3pr85qt0fj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.snare",
+            "certificate_hash": "004dafb6c29b98747275272ba1e24a9af3cbf07a"
+          }
+        },
+        {
+          "client_id": "681228228573-65t0rc9regvaek9r2e5globqjml6ui4d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB_MIcjV76H5xDR7uSj4rJjzpPK0krt5w0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "681228228573-65t0rc9regvaek9r2e5globqjml6ui4d.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.media.AudioAttributes;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -147,12 +148,11 @@ public class ReminderActivity extends AppCompatActivity implements RemindersList
                         @SuppressLint("NotifyDataSetChanged")
                         @Override
                         public void onRemindersRetrieved(List<Reminder> reminders) {
-                            if(reminders != null) {
+                            if (reminders != null) {
                                 if (requestCode == REQUEST_CODE_SHOW_REMINDER) {
                                     remindersList.addAll(reminders);
                                     reminderAdapter.notifyDataSetChanged();
-                                }
-                                else if (requestCode == REQUEST_CODE_ADD_REMINDER) {
+                                } else if (requestCode == REQUEST_CODE_ADD_REMINDER) {
                                     remindersList.add(0, reminders.get(0));
                                     reminderAdapter.notifyItemInserted(0);
                                     reminderRecycleView.smoothScrollToPosition(0);
@@ -176,7 +176,7 @@ public class ReminderActivity extends AppCompatActivity implements RemindersList
 
                     return null;
 
-                }else{
+                } else {
                     return ReminderDataBase.getDatabase(getApplicationContext()).reminderDao().getAllReminders();
                 }
             }
@@ -189,8 +189,7 @@ public class ReminderActivity extends AppCompatActivity implements RemindersList
                     if (requestCode == REQUEST_CODE_SHOW_REMINDER) {
                         remindersList.addAll(reminders);
                         reminderAdapter.notifyDataSetChanged();
-                    }
-                    else if (requestCode == REQUEST_CODE_ADD_REMINDER) {
+                    } else if (requestCode == REQUEST_CODE_ADD_REMINDER) {
                         remindersList.add(0, reminders.get(0));
                         reminderAdapter.notifyItemInserted(0);
                         reminderRecycleView.smoothScrollToPosition(0);
@@ -211,7 +210,7 @@ public class ReminderActivity extends AppCompatActivity implements RemindersList
         new GetRemindersTask().execute();
     }
 
-    public  boolean isNetworkAvailable(Context context) {
+    public boolean isNetworkAvailable(Context context) {
         ConnectivityManager connectivityManager =
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
@@ -230,19 +229,19 @@ public class ReminderActivity extends AppCompatActivity implements RemindersList
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == REQUEST_CODE_ADD_REMINDER & resultCode == RESULT_OK) {
+        if (requestCode == REQUEST_CODE_ADD_REMINDER & resultCode == RESULT_OK) {
             getAllReminders(REQUEST_CODE_ADD_REMINDER, false);
-        } else if(requestCode == REQUEST_CODE_UPDATE_REMINDER && resultCode == RESULT_OK) {
-            if(data != null) {
+        } else if (requestCode == REQUEST_CODE_UPDATE_REMINDER && resultCode == RESULT_OK) {
+            if (data != null) {
                 getAllReminders(REQUEST_CODE_UPDATE_REMINDER, data.getBooleanExtra("isReminderDeleted", false));
             }
-        } else if(requestCode == REQUEST_CODE_SELECT_IMAGE && resultCode == RESULT_OK) {
+        } else if (requestCode == REQUEST_CODE_SELECT_IMAGE && resultCode == RESULT_OK) {
             // Get the selected image's URI
             Uri selectedImageUri = null;
-            if(data != null) {
+            if (data != null) {
                 selectedImageUri = data.getData();
             }
-            if(selectedImageUri != null) {
+            if (selectedImageUri != null) {
                 try {
                     String selectedImagePath = getPathFromUri(selectedImageUri);
                     Intent intent = new Intent(getApplicationContext(), CreateActivity.class);
@@ -359,15 +358,15 @@ public class ReminderActivity extends AppCompatActivity implements RemindersList
                 startActivity(new Intent(getApplicationContext(), ProfileActivity.class));
             } else if (item.getTitle().toString().equals("Friends")) {
                 startActivity(new Intent(getApplicationContext(), FriendsActivity.class));
-            } else if(item.getTitle().toString().equals("Notes")){
+            } else if (item.getTitle().toString().equals("Notes")) {
                 startActivity(new Intent(getApplicationContext(), NotesActivity.class));
                 finish();
-            }else if (item.getTitle().toString().equals("Shouts")) {
+            } else if (item.getTitle().toString().equals("Shouts")) {
                 startActivity(new Intent(getApplicationContext(), ShoutsActivity.class));
                 finish();
-            } else if(item.getTitle().toString().equals("Notifications")) {
+            } else if (item.getTitle().toString().equals("Notifications")) {
                 startActivity(new Intent(ReminderActivity.this, NotificationsActivity.class));
-            } else if(item.getTitle().toString().equals("Pinned Locations")) {
+            } else if (item.getTitle().toString().equals("Pinned Locations")) {
                 startActivity(new Intent(ReminderActivity.this, PinnedLocationsActivity.class));
             }
             return true;

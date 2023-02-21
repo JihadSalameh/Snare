@@ -8,6 +8,7 @@ import androidx.room.PrimaryKey;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 @Entity(tableName = "reminders")
 public class Reminder implements Serializable {
@@ -151,4 +152,16 @@ public class Reminder implements Serializable {
         return title + " : " + dateTime;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Reminder reminder = (Reminder) o;
+        return year == reminder.year && month == reminder.month && day == reminder.day && hour == reminder.hour && minute == reminder.minute && count == reminder.count && idFirebase.equals(reminder.idFirebase) && Objects.equals(title, reminder.title) && Objects.equals(dateTime, reminder.dateTime) && Objects.equals(reminderText, reminder.reminderText) && Objects.equals(imagePath, reminder.imagePath) && Objects.equals(color, reminder.color);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(idFirebase, title, dateTime, reminderText, imagePath, color, year, month, day, hour, minute, count);
+    }
 }

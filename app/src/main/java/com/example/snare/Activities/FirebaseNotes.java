@@ -26,7 +26,7 @@ public class FirebaseNotes {
     }
 
     public void save(Note note) {
-        mDatabase.child(userID).child(Objects.requireNonNull(mDatabase.getRef().push().getKey())).setValue(note);
+        mDatabase.child(userID).child(note.getIdFirebase()).setValue(note);
     }
 
     public void update(Note note) {
@@ -34,7 +34,7 @@ public class FirebaseNotes {
     }
 
     public void delete(Note note) {
-        mDatabase.child(userID).child(Objects.requireNonNull(mDatabase.getRef().push().getKey())).removeValue();
+        mDatabase.child(userID).child(note.getIdFirebase()).removeValue();
     }
 
     public void getAllNotes(final NotesCallback callback) {
