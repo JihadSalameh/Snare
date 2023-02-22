@@ -6,6 +6,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Binder;
@@ -17,13 +18,17 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 
+import com.example.snare.R;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.Priority;
 
 import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class LocationForegroundService extends Service {
 
@@ -51,20 +56,45 @@ public class LocationForegroundService extends Service {
     }
 
     private void requestLocationUpdates() {
-        LocationRequest request = new LocationRequest();
-        request.setInterval(1000);
-        request.setFastestInterval(3000);
-        request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        LocationRequest request = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 1000)
+                .setMinUpdateIntervalMillis(3000)
+                .setMaxUpdateDelayMillis(1000)
+                .setWaitForAccurateLocation(true)
+                .build();
         FusedLocationProviderClient client = LocationServices.getFusedLocationProviderClient(getBaseContext());
         int permission = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
         if(permission == PackageManager.PERMISSION_GRANTED) {
             client.requestLocationUpdates(request, new LocationCallback() {
                 @Override
                 public void onLocationResult(@NonNull LocationResult locationResult) {
-                    String location = "Latitude : " + Objects.requireNonNull(locationResult.getLastLocation()).getLatitude() +
-                            "\nLongitude : " + locationResult.getLastLocation().getLongitude();
+                    String location = Objects.requireNonNull(locationResult.getLastLocation()).getLatitude() +
+                            "\n" + locationResult.getLastLocation().getLongitude();
 
-                    Toast.makeText(LocationForegroundService.this, location, Toast.LENGTH_SHORT).show();
+                    int delay = 5000; // delay for 5 sec.
+                    int period = 1000; // repeat every sec.
+                    final int[] count = {0};
+                    Timer timer = new Timer();
+                    timer.scheduleAtFixedRate(new TimerTask()
+                    {
+                        public void run()
+                        {
+                            // Your code to execute when having the location data
+
+                            //just to make sure you have the data when app is in the background
+                            //you should keep receiving notifications with the location
+                            NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), "channel_id")
+                                    .setSmallIcon(R.drawable.ic_notifications)
+                                    .setContentTitle("example")
+                                    .setContentText(location)
+                                    .setPriority(NotificationCompat.PRIORITY_HIGH)
+                                    .setAutoCancel(true);
+
+                            NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+                            notificationManager.notify(0, builder.build());
+
+                            count[0]++;
+                        }
+                    }, delay, period);
                 }
             }, null);
         } else {
