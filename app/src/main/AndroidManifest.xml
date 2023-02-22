@@ -119,6 +119,14 @@
             </intent-filter>
         </service>
 
+        <service
+
+            android:name=".LocationService.LocationForegroundService"
+
+            android:enabled="true"
+
+            android:exported="false"/>
+
     </application>
 
 </manifest>
