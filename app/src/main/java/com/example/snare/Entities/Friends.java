@@ -16,6 +16,7 @@ public class Friends {
 
     }
 
+
     public String getProfilePic() {
         return profilePic;
     }

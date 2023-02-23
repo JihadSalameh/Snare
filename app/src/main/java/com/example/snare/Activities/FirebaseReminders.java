@@ -26,14 +26,50 @@ public class FirebaseReminders {
     }
 
     public void save(Reminder reminder) {
+        List<String> ids = reminder.getGroup();
+
+        if(ids != null && ids.size() !=0){
+            if(!ids.contains(userID)){
+                ids.add(userID);
+            }
+            for(int i=0 ; i< reminder.getGroup().size() ; i++){
+                mDatabase.child(reminder.getGroup().get(i)).child(reminder.getIdFirebase()).setValue(reminder);
+            }
+            return;
+        }
+
         mDatabase.child(userID).child(reminder.getIdFirebase()).setValue(reminder);
     }
 
     public void update(Reminder reminder) {
+        List<String> ids = reminder.getGroup();
+
+        if(ids != null && ids.size() !=0){
+            if(!ids.contains(userID)){
+                ids.add(userID);
+            }
+            for(int i=0 ; i< reminder.getGroup().size() ; i++){
+                mDatabase.child(reminder.getGroup().get(i)).child(reminder.getIdFirebase()).setValue(reminder);
+            }
+            return;
+        }
+
         mDatabase.child(userID).child(reminder.getIdFirebase()).setValue(reminder);
     }
 
     public void delete(Reminder reminder) {
+        List<String> ids = reminder.getGroup();
+
+        if(ids != null && ids.size() !=0){
+            if(!ids.contains(userID)){
+                ids.add(userID);
+            }
+            for(int i=0 ; i< reminder.getGroup().size() ; i++){
+                mDatabase.child(reminder.getGroup().get(i)).child(reminder.getIdFirebase()).removeValue();
+            }
+            return;
+        }
+
         mDatabase.child(userID).child(reminder.getIdFirebase()).removeValue();
     }
 

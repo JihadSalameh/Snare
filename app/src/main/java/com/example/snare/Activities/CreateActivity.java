@@ -15,6 +15,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -23,6 +25,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -37,9 +41,11 @@ import androidx.core.content.ContextCompat;
 
 import com.example.snare.Entities.Note;
 import com.example.snare.Entities.Reminder;
+import com.example.snare.Entities.WrappingFriends;
 import com.example.snare.R;
 import com.example.snare.dao.NotesDataBase;
 import com.example.snare.dao.ReminderDataBase;
+import com.example.snare.listeners.GroupListeners;
 import com.example.snare.reminders.AlarmReceiver;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.firebase.database.DatabaseReference;
@@ -48,12 +54,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
-import java.util.UUID;
 
-public class CreateActivity extends AppCompatActivity {
+public class CreateActivity extends AppCompatActivity implements GroupListeners {
 
     private ImageView imageSave;
     private EditText inputNoteTitle;
@@ -79,6 +86,8 @@ public class CreateActivity extends AppCompatActivity {
     private int hour, minute;
     private boolean isReminder = false;
     private AlarmManager alarmManager;
+    private List<String> group ;
+    private GroupLayout popup;
 
 
     @Override
@@ -126,6 +135,7 @@ public class CreateActivity extends AppCompatActivity {
         setAddImageListener();
         setRemoveImageListener();
         setAddReminderListener();
+        setCollaborateListener();
     }
 
     @Override
@@ -335,9 +345,14 @@ public class CreateActivity extends AppCompatActivity {
                 reminder.setDay(day);
                 reminder.setHour(hour);
                 reminder.setMinute(minute);
+                if(group == null){
+                    group = new ArrayList<>();
+                }
+                reminder.setGroup(group);
                 if(alreadyAvailableReminder != null) {
                     reminder.setIdFirebase(alreadyAvailableReminder.getIdFirebase());
                     reminder.setCount(alreadyAvailableReminder.getCount());
+                    reminder.setGroup(alreadyAvailableReminder.getGroup());
                 }
                 saveReminder(reminder);
             } else {
@@ -349,9 +364,14 @@ public class CreateActivity extends AppCompatActivity {
                 note.setDateTime(textDateTime.getText().toString());
                 note.setColor(selectedNoteColor);
                 note.setImagePath(selectedImagePath);
+                if(group == null){
+                    group = new ArrayList<>();
+                }
+                note.setGroup(group);
                 if(alreadyAvailableNote != null) {
                     note.setIdFirebase(alreadyAvailableNote.getIdFirebase());
                     note.setCount(alreadyAvailableNote.getCount());
+                    note.setGroup(alreadyAvailableNote.getGroup());
                 }
                 saveNote(note);
             }
@@ -671,6 +691,37 @@ public class CreateActivity extends AppCompatActivity {
         dialogDeleteNote.show();
     }
 
+    private void setCollaborateListener() {
+        layoutMiscellaneous.findViewById(R.id.layoutAddCollaborator).setOnClickListener(view -> {
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            if(!isNetworkAvailable(getApplicationContext())){
+                Toast.makeText(getApplicationContext(),"No internet",Toast.LENGTH_SHORT).show();
+                return;
+            }
+            popup = new GroupLayout(CreateActivity.this);
+            popup.setDialog(CreateActivity.this);
+            Window window = popup.getWindow();
+            if (window != null) {
+                WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
+                layoutParams.copyFrom(window.getAttributes());
+                layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT;
+                layoutParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
+                window.setAttributes(layoutParams);
+            }
+            popup.show();
+        });
+    }
+
+    @Override
+    public void onFriendClick(WrappingFriends friend, int position) {
+        if(group == null){
+            group = new ArrayList<>();
+        }
+
+        group.add(friend.getId());
+        popup.dismiss();
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -680,5 +731,13 @@ public class CreateActivity extends AppCompatActivity {
             dialogDeleteNote.dismiss();
         }
     }
+
+    public  boolean isNetworkAvailable(Context context) {
+        ConnectivityManager connectivityManager =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
 
 }

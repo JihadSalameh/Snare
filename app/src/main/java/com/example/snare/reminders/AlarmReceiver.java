@@ -1,5 +1,6 @@
 package com.example.snare.reminders;
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -25,7 +26,6 @@ public class AlarmReceiver extends BroadcastReceiver {
         Intent openIntent = new Intent(context, ReminderActivity.class);
        // openIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, openIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
         // Create a notification using the NotificationCompat class
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "channel_id")
                 .setSmallIcon(R.drawable.ic_notifications)

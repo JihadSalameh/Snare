@@ -4,10 +4,14 @@ import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+import androidx.room.TypeConverters;
+
+import com.example.snare.Activities.ConverterType;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Objects;
 
 @Entity(tableName = "reminders")
@@ -144,6 +148,17 @@ public class Reminder implements Serializable {
 
     public void setMinute(int minute) {
         this.minute = minute;
+    }
+
+    @TypeConverters(ConverterType.class)
+    private List<String> group ;
+
+    public List<String> getGroup() {
+        return group;
+    }
+
+    public void setGroup(List<String> group) {
+        this.group = group;
     }
 
     @NotNull

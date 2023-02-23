@@ -26,15 +26,54 @@ public class FirebaseNotes {
     }
 
     public void save(Note note) {
+
+        List<String> ids = note.getGroup();
+
+        if(ids != null && ids.size() !=0){
+            if(!ids.contains(userID)){
+                ids.add(userID);
+            }
+            for(int i=0 ; i< note.getGroup().size() ; i++){
+                mDatabase.child(note.getGroup().get(i)).child(note.getIdFirebase()).setValue(note);
+            }
+            return;
+        }
+
         mDatabase.child(userID).child(note.getIdFirebase()).setValue(note);
     }
 
     public void update(Note note) {
-        mDatabase.child(userID).child(Objects.requireNonNull(mDatabase.getRef().push().getKey())).setValue(note);
+        List<String> ids = note.getGroup();
+
+        if(ids.size() !=0){
+            if(!ids.contains(userID)){
+                ids.add(userID);
+            }
+            for(int i=0 ; i< note.getGroup().size() ; i++){
+                mDatabase.child(note.getGroup().get(i)).child(note.getIdFirebase()).setValue(note);
+            }
+            return;
+        }
+
+        mDatabase.child(userID).child(note.getIdFirebase()).setValue(note);
     }
 
     public void delete(Note note) {
+
+        List<String> ids = note.getGroup();
+
+        if(ids != null && ids.size() !=0){
+            if(!ids.contains(userID)){
+                ids.add(userID);
+            }
+            for(int i=0 ; i< note.getGroup().size() ; i++){
+                mDatabase.child(note.getGroup().get(i)).child(note.getIdFirebase()).removeValue();
+            }
+            return;
+        }
+
         mDatabase.child(userID).child(note.getIdFirebase()).removeValue();
+
     }
 
     public void getAllNotes(final NotesCallback callback) {
