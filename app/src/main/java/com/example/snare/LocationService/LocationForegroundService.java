@@ -1,19 +1,17 @@
 package com.example.snare.LocationService;
 
-import static android.content.ContentValues.TAG;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Binder;
 import android.os.IBinder;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,6 +20,7 @@ import androidx.core.content.ContextCompat;
 
 import com.example.snare.Entities.PinnedLocations;
 import com.example.snare.Entities.Reminder;
+import com.example.snare.R;
 import com.example.snare.dao.PinnedLocationsDataBase;
 import com.example.snare.dao.ReminderDataBase;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -59,10 +58,22 @@ public class LocationForegroundService extends Service {
     public void onCreate() {
         super.onCreate();
 
+        filter();
+
+        buildNotification();
+
+        requestLocationUpdates();
+    }
+
+    private void filter() {
+        list2.clear();
+
         //experimentation
         List<PinnedLocations> list = PinnedLocationsDataBase.getDatabase(this).pinnedLocationsDao().GetAllPinnedLocations();
+        System.out.println(list);
 
         List<Reminder> reminders = ReminderDataBase.getDatabase(this).reminderDao().getAllReminders();
+        System.out.println(reminders);
 
         for(Reminder reminder: reminders) {
             for(PinnedLocations pinnedLocations: list) {
@@ -71,10 +82,7 @@ public class LocationForegroundService extends Service {
                 }
             }
         }
-
-        buildNotification();
-
-        requestLocationUpdates();
+        System.out.println(list2);
     }
 
     private void requestLocationUpdates() {
@@ -97,6 +105,9 @@ public class LocationForegroundService extends Service {
                     {
                         public void run()
                         {
+                            //filtering list2
+                            filter();
+
                             // Your code to execute when having the location data
 
                             //if any of the pinned locations on the device is closer than 1Km it will
@@ -106,12 +117,12 @@ public class LocationForegroundService extends Service {
                                 pinned.setLatitude(Double.parseDouble(pinnedLocations.getLat()));
                                 pinned.setLongitude(Double.parseDouble(pinnedLocations.getLng()));
                                 float v = Objects.requireNonNull(locationResult.getLastLocation()).distanceTo(pinned);
-                                if(v < 500) {
-                                    Log.d(TAG, pinnedLocations.getName() + "******************" + locationResult.getLastLocation().distanceTo(pinned) + "********************");
-                                    System.out.println(pinnedLocations.getName() + "******************" + locationResult.getLastLocation().distanceTo(pinned) + "********************");
+                                if(v < 2000) {
+                                    //Log.d(TAG, pinnedLocations.getName() + "******************" + locationResult.getLastLocation().distanceTo(pinned) + "********************");
+                                    //System.out.println(pinnedLocations.getName() + "******************" + locationResult.getLastLocation().distanceTo(pinned) + "********************");
 
                                     //check if it's working
-                                    /*NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), "channel_id")
+                                    NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), "channel_id")
                                             .setSmallIcon(R.drawable.ic_notifications)
                                             .setContentTitle(pinnedLocations.getName())
                                             .setContentText("You're near this location")
@@ -119,7 +130,7 @@ public class LocationForegroundService extends Service {
                                             .setAutoCancel(true);
 
                                     NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
-                                    notificationManager.notify(0, builder.build());*/
+                                    notificationManager.notify(0, builder.build());
                                 }
                             }
 
@@ -153,6 +164,12 @@ public class LocationForegroundService extends Service {
         manager.createNotificationChannel(channel);
 
         startForeground(1, builder.build());
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        list2.clear();
     }
 
     public class MyBinder extends Binder {

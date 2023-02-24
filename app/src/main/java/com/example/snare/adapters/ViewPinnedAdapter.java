@@ -12,14 +12,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.bitmap.CenterCrop;
-import com.bumptech.glide.request.RequestOptions;
-import com.example.snare.Entities.Friends;
 import com.example.snare.Entities.PinnedLocations;
-import com.example.snare.Entities.WrappingFriends;
 import com.example.snare.R;
-import com.example.snare.listeners.GroupListeners;
 import com.example.snare.listeners.PinnedLocationListener;
 import com.makeramen.roundedimageview.RoundedImageView;
 

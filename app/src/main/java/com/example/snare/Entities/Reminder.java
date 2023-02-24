@@ -175,7 +175,7 @@ public class Reminder implements Serializable {
     @NotNull
     @Override
     public String toString() {
-        return title + " : " + dateTime;
+        return title + " : " + dateTime + " -> " + location;
     }
 
     @Override
