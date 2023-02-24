@@ -459,7 +459,7 @@ public class CreateActivity extends AppCompatActivity implements GroupListeners 
 
             @Override
             protected Void doInBackground(Void... voids) {
-                NotesDataBase.getDatabase(getApplicationContext()).noteDao().insertNote(note);
+                //NotesDataBase.getDatabase(getApplicationContext()).noteDao().insertNote(note);
                 FirebaseNotes firebaseNotes = new FirebaseNotes();
                 firebaseNotes.save(note);
                 return null;

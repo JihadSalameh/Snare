@@ -12,10 +12,11 @@
         android:layout_height="match_parent">
 
         <Button
-            android:id="@+id/startService"
+            android:id="@+id/shoutAll"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Start Location Service"
+            android:text="Shout To All Users"
+            android:onClick="shoutToAll"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

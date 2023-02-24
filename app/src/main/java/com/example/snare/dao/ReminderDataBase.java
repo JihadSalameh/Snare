@@ -8,7 +8,7 @@ import androidx.room.RoomDatabase;
 
 import com.example.snare.Entities.Reminder;
 
-@Database(entities = Reminder.class ,version = 4,exportSchema = false)
+@Database(entities = Reminder.class ,version = 5,exportSchema = false)
 public abstract class ReminderDataBase extends RoomDatabase {
 
     private static ReminderDataBase reminderDataBase;
@@ -20,7 +20,7 @@ public abstract class ReminderDataBase extends RoomDatabase {
                     context,
                     ReminderDataBase.class,
                     "reminders_db"
-            ).allowMainThreadQueries().build();
+            ).fallbackToDestructiveMigration().allowMainThreadQueries().build();
         }
 
         return reminderDataBase;
