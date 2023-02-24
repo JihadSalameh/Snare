@@ -53,6 +53,17 @@ public class Reminder implements Serializable {
     @PrimaryKey(autoGenerate = true)
     private int count;
 
+    @ColumnInfo(name = "location")
+    private PinnedLocations location;
+
+    public PinnedLocations getLocation() {
+        return location;
+    }
+
+    public void setLocation(PinnedLocations location) {
+        this.location = location;
+    }
+
     public int getCount() {
         return count;
     }

@@ -60,7 +60,7 @@ public class ShoutsActivity extends AppCompatActivity {
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
         databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid());
-        databaseReference.get().addOnSuccessListener(dataSnapshot -> name = dataSnapshot.child("name").toString());
+        databaseReference.get().addOnSuccessListener(dataSnapshot -> name = dataSnapshot.child("name").getValue().toString());
 
         fillNavDrawer();
         navOnClickAction();

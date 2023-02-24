@@ -21,22 +21,17 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 
 import com.example.snare.Entities.PinnedLocations;
-import com.example.snare.Entities.User;
-import com.example.snare.NotificationsPkg.FCMSend;
+import com.example.snare.Entities.Reminder;
 import com.example.snare.dao.PinnedLocationsDataBase;
+import com.example.snare.dao.ReminderDataBase;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.Priority;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Timer;
@@ -47,8 +42,7 @@ public class LocationForegroundService extends Service {
     private final IBinder iBinder = new MyBinder();
     private static final String CHANNEL_ID = "2";
 
-    //experimentation
-    private List<PinnedLocations> list;
+    private final List<PinnedLocations> list2 = new ArrayList<>();
 
     @Nullable
     @Override
@@ -65,7 +59,18 @@ public class LocationForegroundService extends Service {
     public void onCreate() {
         super.onCreate();
 
-        list = PinnedLocationsDataBase.getDatabase(this).pinnedLocationsDao().GetAllPinnedLocations();
+        //experimentation
+        List<PinnedLocations> list = PinnedLocationsDataBase.getDatabase(this).pinnedLocationsDao().GetAllPinnedLocations();
+
+        List<Reminder> reminders = ReminderDataBase.getDatabase(this).reminderDao().getAllReminders();
+
+        for(Reminder reminder: reminders) {
+            for(PinnedLocations pinnedLocations: list) {
+                if(reminder.getLocation().getName().equals(pinnedLocations.getName())) {
+                    list2.add(pinnedLocations);
+                }
+            }
+        }
 
         buildNotification();
 
@@ -96,12 +101,12 @@ public class LocationForegroundService extends Service {
 
                             //if any of the pinned locations on the device is closer than 1Km it will
                             //do what's inside the if statement
-                            for(PinnedLocations pinnedLocations: list) {
+                            for(PinnedLocations pinnedLocations: list2) {
                                 Location pinned = new Location("");
                                 pinned.setLatitude(Double.parseDouble(pinnedLocations.getLat()));
                                 pinned.setLongitude(Double.parseDouble(pinnedLocations.getLng()));
                                 float v = Objects.requireNonNull(locationResult.getLastLocation()).distanceTo(pinned);
-                                if(v < 1000) {
+                                if(v < 500) {
                                     Log.d(TAG, pinnedLocations.getName() + "******************" + locationResult.getLastLocation().distanceTo(pinned) + "********************");
                                     System.out.println(pinnedLocations.getName() + "******************" + locationResult.getLastLocation().distanceTo(pinned) + "********************");
 
