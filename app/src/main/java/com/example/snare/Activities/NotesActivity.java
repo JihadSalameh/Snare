@@ -22,7 +22,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
@@ -31,27 +30,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.snare.Entities.Note;
-import com.example.snare.Entities.PinnedLocations;
-import com.example.snare.Entities.Reminder;
+import com.example.snare.NotificationsPkg.PushNotificationService;
 import com.example.snare.R;
 import com.example.snare.adapters.NotesAdapter;
 import com.example.snare.dao.NotesDataBase;
-import com.example.snare.dao.PinnedLocationsDataBase;
-import com.example.snare.dao.ReminderDataBase;
 import com.example.snare.listeners.NotesListeners;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.messaging.FirebaseMessaging;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 public class NotesActivity extends AppCompatActivity implements NotesListeners {
@@ -82,13 +74,6 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notes);
 
-        ///////just to get the token to test notifications
-        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
-            if(task.isComplete()){
-                GetToken(task);
-            }
-        });
-
         setActivity();
 
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.nav_open, R.string.nav_close);
@@ -96,18 +81,11 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
         actionBarDrawerToggle.syncState();
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
+        NotificationsThread thread = new NotificationsThread();
+        thread.start();
+
         fillNavDrawer();
         navOnClickAction();
-    }
-
-    private void GetToken(Task<String> task) {
-        String token = task.getResult();
-
-        Map<String, Object> update = new HashMap<>();
-        update.put("token", token);
-        userRef.updateChildren(update);
-
-        System.out.println("token = " + token);
     }
 
     private void navOnClickAction() {
@@ -177,7 +155,6 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
                             noteList.addAll(notes);
                             notesAdapter.notifyDataSetChanged();
                         } else if (requestCode == REQUEST_CODE_ADD_NOTE) {
-
                             noteList.add(0, notes.get(0));
                             notesAdapter.notifyItemInserted(0);
                             noteRecycleView.smoothScrollToPosition(0);
@@ -346,8 +323,7 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
     }
 
     private void fillNavDrawer() {
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(Objects.requireNonNull(user).getUid());
-        databaseReference.get().addOnSuccessListener(snapshot -> {
+        userRef.get().addOnSuccessListener(snapshot -> {
             ImageView imageView = findViewById(R.id.profileImg);
             TextView name = findViewById(R.id.nameTxt);
             TextView email = findViewById(R.id.emailTxtNav);
@@ -411,4 +387,12 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
 
         return true;
     }
+
+    class NotificationsThread extends Thread {
+        @Override
+        public void run() {
+            startService(new Intent(NotesActivity.this, PushNotificationService.class));
+        }
+    }
+
 }

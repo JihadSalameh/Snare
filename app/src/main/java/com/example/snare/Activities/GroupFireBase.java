@@ -20,15 +20,13 @@ public class GroupFireBase {
     private final String userID ;
 
     public GroupFireBase() {
-        mDatabase = FirebaseDatabase.getInstance().getReference("Friends");
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         userID = Objects.requireNonNull(firebaseAuth.getCurrentUser()).getUid();
+        mDatabase = FirebaseDatabase.getInstance().getReference("Friends").child(userID);
     }
 
     public void getAllFriends(final GroupCallback callback) {
-        DatabaseReference friendsRef = FirebaseDatabase.getInstance().getReference("Friends").child(userID);
-
-        friendsRef.orderByKey().addListenerForSingleValueEvent(new ValueEventListener() {
+        mDatabase.orderByKey().addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 ArrayList<WrappingFriends> friends = new ArrayList<>();

@@ -1,31 +1,43 @@
 package com.example.snare.LocationService;
 
+import static android.content.ContentValues.TAG;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Binder;
 import android.os.IBinder;
-import android.widget.Toast;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 
-import com.example.snare.R;
+import com.example.snare.Entities.PinnedLocations;
+import com.example.snare.Entities.User;
+import com.example.snare.NotificationsPkg.FCMSend;
+import com.example.snare.dao.PinnedLocationsDataBase;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.Priority;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -34,6 +46,9 @@ public class LocationForegroundService extends Service {
 
     private final IBinder iBinder = new MyBinder();
     private static final String CHANNEL_ID = "2";
+
+    //experimentation
+    private List<PinnedLocations> list;
 
     @Nullable
     @Override
@@ -50,15 +65,17 @@ public class LocationForegroundService extends Service {
     public void onCreate() {
         super.onCreate();
 
+        list = PinnedLocationsDataBase.getDatabase(this).pinnedLocationsDao().GetAllPinnedLocations();
+
         buildNotification();
 
         requestLocationUpdates();
     }
 
     private void requestLocationUpdates() {
-        LocationRequest request = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 1000)
-                .setMinUpdateIntervalMillis(3000)
-                .setMaxUpdateDelayMillis(1000)
+        LocationRequest request = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 5000)
+                .setMinUpdateIntervalMillis(15000)
+                .setMaxUpdateDelayMillis(15000)
                 .setWaitForAccurateLocation(true)
                 .build();
         FusedLocationProviderClient client = LocationServices.getFusedLocationProviderClient(getBaseContext());
@@ -67,11 +84,8 @@ public class LocationForegroundService extends Service {
             client.requestLocationUpdates(request, new LocationCallback() {
                 @Override
                 public void onLocationResult(@NonNull LocationResult locationResult) {
-                    String location = Objects.requireNonNull(locationResult.getLastLocation()).getLatitude() +
-                            "\n" + locationResult.getLastLocation().getLongitude();
-
-                    int delay = 5000; // delay for 5 sec.
-                    int period = 1000; // repeat every sec.
+                    int delay = 1000; // delay for 1 sec.
+                    int period = 15000; // repeat every 15 sec.
                     final int[] count = {0};
                     Timer timer = new Timer();
                     timer.scheduleAtFixedRate(new TimerTask()
@@ -80,17 +94,28 @@ public class LocationForegroundService extends Service {
                         {
                             // Your code to execute when having the location data
 
-                            //just to make sure you have the data when app is in the background
-                            //you should keep receiving notifications with the location
-                            NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), "channel_id")
-                                    .setSmallIcon(R.drawable.ic_notifications)
-                                    .setContentTitle("example")
-                                    .setContentText(location)
-                                    .setPriority(NotificationCompat.PRIORITY_HIGH)
-                                    .setAutoCancel(true);
+                            //if any of the pinned locations on the device is closer than 1Km it will do what's inside the if statement
+                            for(PinnedLocations pinnedLocations: list) {
+                                Location pinned = new Location("");
+                                pinned.setLatitude(Double.parseDouble(pinnedLocations.getLat()));
+                                pinned.setLongitude(Double.parseDouble(pinnedLocations.getLng()));
+                                float v = Objects.requireNonNull(locationResult.getLastLocation()).distanceTo(pinned);
+                                if(v < 1000) {
+                                    Log.d(TAG, pinnedLocations.getName() + "******************" + locationResult.getLastLocation().distanceTo(pinned) + "********************");
+                                    System.out.println(pinnedLocations.getName() + "******************" + locationResult.getLastLocation().distanceTo(pinned) + "********************");
 
-                            NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
-                            notificationManager.notify(0, builder.build());
+                                    //check if it's working
+                                    /*NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), "channel_id")
+                                            .setSmallIcon(R.drawable.ic_notifications)
+                                            .setContentTitle(pinnedLocations.getName())
+                                            .setContentText("You're near this location")
+                                            .setPriority(NotificationCompat.PRIORITY_HIGH)
+                                            .setAutoCancel(true);
+
+                                    NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+                                    notificationManager.notify(0, builder.build());*/
+                                }
+                            }
 
                             count[0]++;
                         }

@@ -17,7 +17,4 @@ public interface NotificationsDao {
     @Query("SELECT * FROM notifications")
     List<Notifications> GetAllNotifications();
 
-    @Query("DELETE FROM notifications")
-    void DeleteAllNotifications();
-
 }

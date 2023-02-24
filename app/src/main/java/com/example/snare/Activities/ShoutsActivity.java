@@ -6,9 +6,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.snare.LocationService.LocationForegroundService;
+import com.example.snare.NotificationsPkg.FCMSend;
 import com.example.snare.R;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.squareup.picasso.Picasso;
@@ -30,6 +33,9 @@ public class ShoutsActivity extends AppCompatActivity {
     public NavigationView navigationView;
 
     private LocationThread thread;
+    private DatabaseReference mDatabase;
+    private FirebaseAuth auth;
+    private FirebaseUser user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +47,18 @@ public class ShoutsActivity extends AppCompatActivity {
         Button service = findViewById(R.id.startService);
 
         service.setOnClickListener(view -> {
+
+            mDatabase = FirebaseDatabase.getInstance().getReference("Users");
+            auth = FirebaseAuth.getInstance();
+            user = auth.getCurrentUser();
+            mDatabase.get().addOnSuccessListener(dataSnapshot -> {
+                for(DataSnapshot tokens: dataSnapshot.getChildren()) {
+                    if(!Objects.equals(tokens.getKey(), user.getUid())) {
+                        FCMSend.pushNotification(ShoutsActivity.this, Objects.requireNonNull(tokens.child("token").getValue()).toString(), "Shout", "example");
+                    }
+                }
+            });
+
             thread = new LocationThread();
             thread.start();
         });
