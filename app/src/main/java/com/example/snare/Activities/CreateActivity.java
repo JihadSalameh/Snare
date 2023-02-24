@@ -40,12 +40,14 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.example.snare.Entities.Note;
+import com.example.snare.Entities.PinnedLocations;
 import com.example.snare.Entities.Reminder;
 import com.example.snare.Entities.WrappingFriends;
 import com.example.snare.R;
 import com.example.snare.dao.NotesDataBase;
 import com.example.snare.dao.ReminderDataBase;
 import com.example.snare.listeners.GroupListeners;
+import com.example.snare.listeners.PinnedLocationListener;
 import com.example.snare.reminders.AlarmReceiver;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.firebase.database.DatabaseReference;
@@ -60,7 +62,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class CreateActivity extends AppCompatActivity implements GroupListeners {
+public class CreateActivity extends AppCompatActivity implements GroupListeners , PinnedLocationListener {
 
     private ImageView imageSave;
     private EditText inputNoteTitle;
@@ -87,7 +89,9 @@ public class CreateActivity extends AppCompatActivity implements GroupListeners 
     private boolean isReminder = false;
     private AlarmManager alarmManager;
     private List<String> group ;
-    private GroupLayout popup;
+    private List<PinnedLocations> pinnedLocations;
+    private GroupLayout popupGroup;
+    private PinnedLocationDialog pinnedLocationDialog ;
 
 
     @Override
@@ -136,6 +140,7 @@ public class CreateActivity extends AppCompatActivity implements GroupListeners 
         setRemoveImageListener();
         setAddReminderListener();
         setCollaborateListener();
+        setAddPinnedListener();
     }
 
     @Override
@@ -698,9 +703,9 @@ public class CreateActivity extends AppCompatActivity implements GroupListeners 
                 Toast.makeText(getApplicationContext(),"No internet",Toast.LENGTH_SHORT).show();
                 return;
             }
-            popup = new GroupLayout(CreateActivity.this);
-            popup.setDialog(CreateActivity.this);
-            Window window = popup.getWindow();
+            popupGroup = new GroupLayout(CreateActivity.this);
+            popupGroup.setDialog(CreateActivity.this);
+            Window window = popupGroup.getWindow();
             if (window != null) {
                 WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
                 layoutParams.copyFrom(window.getAttributes());
@@ -708,7 +713,7 @@ public class CreateActivity extends AppCompatActivity implements GroupListeners 
                 layoutParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
                 window.setAttributes(layoutParams);
             }
-            popup.show();
+            popupGroup.show();
         });
     }
 
@@ -719,7 +724,7 @@ public class CreateActivity extends AppCompatActivity implements GroupListeners 
         }
 
         group.add(friend.getId());
-        popup.dismiss();
+        popupGroup.dismiss();
     }
 
     @Override
@@ -739,5 +744,36 @@ public class CreateActivity extends AppCompatActivity implements GroupListeners 
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
+    private void setAddPinnedListener() {
+        layoutMiscellaneous.findViewById(R.id.layoutAddPlace).setOnClickListener(view -> {
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            if(!isNetworkAvailable(getApplicationContext())){
+                Toast.makeText(getApplicationContext(),"No internet",Toast.LENGTH_SHORT).show();
+                return;
+            }
+            pinnedLocationDialog = new PinnedLocationDialog(CreateActivity.this);
+            pinnedLocationDialog.setDialog(CreateActivity.this);
+            Window window = pinnedLocationDialog.getWindow();
+            if (window != null) {
+                WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
+                layoutParams.copyFrom(window.getAttributes());
+                layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT;
+                layoutParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
+                window.setAttributes(layoutParams);
+            }
+            pinnedLocationDialog.show();
+        });
+    }
 
+    @Override
+    public void onPinnedClick(PinnedLocations pinnedLocation, int position) {
+
+        if(pinnedLocations == null){
+            pinnedLocations = new ArrayList<>();
+        }
+
+        pinnedLocations.add(pinnedLocation);
+        pinnedLocationDialog.dismiss();
+
+    }
 }

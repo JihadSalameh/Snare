@@ -23,6 +23,13 @@
         android:supportsRtl="true"
         tools:targetApi="31">
         <activity
+            android:name=".PinnedLocationDialg"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
             android:name=".Activities.GroupLayout"
             android:exported="false">
             <meta-data
