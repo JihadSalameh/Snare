@@ -66,7 +66,7 @@ public class LocationForegroundService extends Service {
 
         for(Reminder reminder: reminders) {
             for(PinnedLocations pinnedLocations: list) {
-                if(reminder.getLocation().getName().equals(pinnedLocations.getName())) {
+                if(reminder.getLocation().equals(pinnedLocations.getName())) {
                     list2.add(pinnedLocations);
                 }
             }

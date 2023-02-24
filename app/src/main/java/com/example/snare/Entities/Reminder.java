@@ -54,13 +54,13 @@ public class Reminder implements Serializable {
     private int count;
 
     @ColumnInfo(name = "location")
-    private PinnedLocations location;
+    private String location;
 
-    public PinnedLocations getLocation() {
+    public String getLocation() {
         return location;
     }
 
-    public void setLocation(PinnedLocations location) {
+    public void setLocation(String location) {
         this.location = location;
     }
 
