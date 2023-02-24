@@ -94,7 +94,8 @@ public class LocationForegroundService extends Service {
                         {
                             // Your code to execute when having the location data
 
-                            //if any of the pinned locations on the device is closer than 1Km it will do what's inside the if statement
+                            //if any of the pinned locations on the device is closer than 1Km it will
+                            //do what's inside the if statement
                             for(PinnedLocations pinnedLocations: list) {
                                 Location pinned = new Location("");
                                 pinned.setLatitude(Double.parseDouble(pinnedLocations.getLat()));

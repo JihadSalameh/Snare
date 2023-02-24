@@ -5,7 +5,6 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 
-import com.example.snare.LocationService.LocationForegroundService;
 import com.example.snare.NotificationsPkg.FCMSend;
 import com.example.snare.R;
 import com.google.android.material.navigation.NavigationView;
@@ -16,10 +15,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.squareup.picasso.Picasso;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,14 +30,21 @@ import java.util.Objects;
 
 public class ShoutsActivity extends AppCompatActivity {
 
+    AlertDialog.Builder dialogBuilder;
+    private AlertDialog dialog;
+    EditText shoutText;
+    Button send, cancel;
+
     public DrawerLayout drawerLayout;
     public ActionBarDrawerToggle actionBarDrawerToggle;
     public NavigationView navigationView;
 
-    private LocationThread thread;
+    private DatabaseReference databaseReference;
     private DatabaseReference mDatabase;
     private FirebaseAuth auth;
     private FirebaseUser user;
+
+    private String name = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,29 +53,14 @@ public class ShoutsActivity extends AppCompatActivity {
 
         drawerLayout = findViewById(R.id.my_drawer_layout);
         navigationView = findViewById(R.id.nav_menu);
-        Button service = findViewById(R.id.startService);
-
-        service.setOnClickListener(view -> {
-
-            mDatabase = FirebaseDatabase.getInstance().getReference("Users");
-            auth = FirebaseAuth.getInstance();
-            user = auth.getCurrentUser();
-            mDatabase.get().addOnSuccessListener(dataSnapshot -> {
-                for(DataSnapshot tokens: dataSnapshot.getChildren()) {
-                    if(!Objects.equals(tokens.getKey(), user.getUid())) {
-                        FCMSend.pushNotification(ShoutsActivity.this, Objects.requireNonNull(tokens.child("token").getValue()).toString(), "Shout", "example");
-                    }
-                }
-            });
-
-            thread = new LocationThread();
-            thread.start();
-        });
 
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.nav_open, R.string.nav_close);
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
         actionBarDrawerToggle.syncState();
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+
+        databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid());
+        databaseReference.get().addOnSuccessListener(dataSnapshot -> name = dataSnapshot.child("name").toString());
 
         fillNavDrawer();
         navOnClickAction();
@@ -104,7 +98,6 @@ public class ShoutsActivity extends AppCompatActivity {
     }
 
     private void fillNavDrawer() {
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid());
         databaseReference.get().addOnSuccessListener(snapshot -> {
             ImageView imageView = findViewById(R.id.profileImg);
             TextView name = findViewById(R.id.nameTxt);
@@ -112,7 +105,7 @@ public class ShoutsActivity extends AppCompatActivity {
 
             Picasso.get().load(snapshot.child("profilePic").getValue(String.class)).into(imageView);
             name.setText(snapshot.child("name").getValue(String.class));
-            email.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
+            email.setText(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getEmail());
         });
     }
 
@@ -138,11 +131,39 @@ public class ShoutsActivity extends AppCompatActivity {
         finish();
     }
 
-    class LocationThread extends Thread {
-        @Override
-        public void run() {
-            startService(new Intent(ShoutsActivity.this, LocationForegroundService.class));
-        }
+    public void shoutToAll(View view) {
+        createNewShoutDialog();
+    }
+
+    private void createNewShoutDialog() {
+        dialogBuilder = new AlertDialog.Builder(this);
+        final View ShoutPopUp = getLayoutInflater().inflate(R.layout.shout, null);
+
+        shoutText = (EditText) ShoutPopUp.findViewById(R.id.shout_text);
+        send = (Button) ShoutPopUp.findViewById(R.id.send);
+        cancel = (Button) ShoutPopUp.findViewById(R.id.cancel);
+
+        dialogBuilder.setView(ShoutPopUp);
+        dialog = dialogBuilder.create();
+        dialog.show();
+
+        send.setOnClickListener(view -> {
+            mDatabase = FirebaseDatabase.getInstance().getReference("Users");
+            auth = FirebaseAuth.getInstance();
+            user = auth.getCurrentUser();
+            mDatabase.get().addOnSuccessListener(dataSnapshot -> {
+                for(DataSnapshot tokens: dataSnapshot.getChildren()) {
+                    if(!Objects.requireNonNull(tokens.getKey()).equals(user.getUid())) {
+                        FCMSend.pushNotification(ShoutsActivity.this, Objects.requireNonNull(tokens.child("token").getValue()).toString(), "Shout from " + name, shoutText.getText().toString());
+                    }
+                }
+            });
+
+            shoutText.setText("");
+            dialog.dismiss();
+        });
+
+        cancel.setOnClickListener(view -> dialog.dismiss());
     }
 
 }

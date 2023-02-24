@@ -30,7 +30,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.snare.Entities.Note;
-import com.example.snare.NotificationsPkg.PushNotificationService;
+import com.example.snare.LocationService.LocationForegroundService;
 import com.example.snare.R;
 import com.example.snare.adapters.NotesAdapter;
 import com.example.snare.dao.NotesDataBase;
@@ -45,8 +45,11 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class NotesActivity extends AppCompatActivity implements NotesListeners {
+
+    private LocationThread thread;
 
     public DrawerLayout drawerLayout;
     public ActionBarDrawerToggle actionBarDrawerToggle;
@@ -81,8 +84,10 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
         actionBarDrawerToggle.syncState();
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
-        NotificationsThread thread = new NotificationsThread();
-        thread.start();
+        thread = new LocationThread();
+        if(!thread.running.get()) {
+            thread.start();
+        }
 
         fillNavDrawer();
         navOnClickAction();
@@ -358,6 +363,8 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
         deleteDatabase("pinnedLocations_db");
         deleteDatabase("reminders_db");
 
+        thread.stopThread();
+
         Toast.makeText(NotesActivity.this, "Signed out!", Toast.LENGTH_SHORT).show();
         startActivity(new Intent(NotesActivity.this, LoginActivity.class));
         finish();
@@ -388,10 +395,20 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
         return true;
     }
 
-    class NotificationsThread extends Thread {
+    class LocationThread extends Thread {
+
+        private final AtomicBoolean running = new AtomicBoolean(false);
+
+        public void stopThread() {
+            running.set(false);
+        }
+
         @Override
         public void run() {
-            startService(new Intent(NotesActivity.this, PushNotificationService.class));
+            running.set(true);
+            while(running.get()) {
+                startService(new Intent(NotesActivity.this, LocationForegroundService.class));
+            }
         }
     }
 
