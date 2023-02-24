@@ -354,10 +354,16 @@ public class CreateActivity extends AppCompatActivity implements GroupListeners 
                     group = new ArrayList<>();
                 }
                 reminder.setGroup(group);
+
+                if(pinnedLocations == null){
+                    pinnedLocations = new ArrayList<>();
+                }
+                reminder.setLocation(pinnedLocations.get(0).getName());
                 if(alreadyAvailableReminder != null) {
                     reminder.setIdFirebase(alreadyAvailableReminder.getIdFirebase());
                     reminder.setCount(alreadyAvailableReminder.getCount());
                     reminder.setGroup(alreadyAvailableReminder.getGroup());
+                    reminder.setLocation(alreadyAvailableReminder.getLocation());
                 }
                 saveReminder(reminder);
             } else {
