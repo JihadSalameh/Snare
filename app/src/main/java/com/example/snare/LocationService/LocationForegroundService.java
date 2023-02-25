@@ -1,5 +1,6 @@
 package com.example.snare.LocationService;
 
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
@@ -41,7 +42,7 @@ public class LocationForegroundService extends Service {
     private final IBinder iBinder = new MyBinder();
     private static final String CHANNEL_ID = "2";
 
-    private final List<PinnedLocations> list2 = new ArrayList<>();
+    private List<PinnedLocations> list2 = new ArrayList<>();
 
     @Nullable
     @Override
@@ -75,14 +76,17 @@ public class LocationForegroundService extends Service {
         List<Reminder> reminders = ReminderDataBase.getDatabase(this).reminderDao().getAllReminders();
         System.out.println(reminders);
 
-        for(Reminder reminder: reminders) {
-            for(PinnedLocations pinnedLocations: list) {
-                if(reminder.getLocation().equals(pinnedLocations.getName())) {
+        for (Reminder reminder : reminders) {
+            for (PinnedLocations pinnedLocations : list) {
+                if (reminder.getLocation().equals(pinnedLocations.getName())) {
                     list2.add(pinnedLocations);
                 }
             }
         }
         System.out.println(list2);
+
+        list.clear();
+        reminders.clear();
     }
 
     private void requestLocationUpdates() {
