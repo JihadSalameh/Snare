@@ -13,6 +13,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Binder;
 import android.os.IBinder;
+import android.os.Looper;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -112,8 +113,6 @@ public class LocationForegroundService extends Service {
                             //filtering list2
                             filter();
 
-                            // Your code to execute when having the location data
-
                             //if any of the pinned locations on the device is closer than 1Km it will
                             //do what's inside the if statement
                             for(PinnedLocations pinnedLocations: list2) {
@@ -125,7 +124,6 @@ public class LocationForegroundService extends Service {
                                     //Log.d(TAG, pinnedLocations.getName() + "******************" + locationResult.getLastLocation().distanceTo(pinned) + "********************");
                                     //System.out.println(pinnedLocations.getName() + "******************" + locationResult.getLastLocation().distanceTo(pinned) + "********************");
 
-                                    //check if it's working
                                     NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), "channel_id")
                                             .setSmallIcon(R.drawable.ic_notifications)
                                             .setContentTitle(pinnedLocations.getName())
