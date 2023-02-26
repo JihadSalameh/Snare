@@ -231,9 +231,9 @@ public class MembersActivity extends AppCompatActivity implements FriendListener
 
             @Override
             public boolean onQueryTextChange(String newText) {
-               /* if (groups.size() != 0) {
-                    groupAdapter.searchGroups(newText);
-                }*/
+                if (friends.size() != 0) {
+                    friendsAdapter.searchGroups(newText);
+                }
 
                 return false;
             }
