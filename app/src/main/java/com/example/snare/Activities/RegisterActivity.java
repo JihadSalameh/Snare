@@ -10,7 +10,6 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.snare.R;
-import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -20,8 +19,6 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText txt_email;
     private EditText txt_password;
     private EditText txt_confirmPassword;
-
-    private FirebaseAuth auth;
 
     private static final String PASSWORD_PATTERN = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#&()–[{}]:;',?/*~$^+=<>]).{8,20}$";
     private static final Pattern pattern = Pattern.compile(PASSWORD_PATTERN);
@@ -34,25 +31,6 @@ public class RegisterActivity extends AppCompatActivity {
         txt_email = findViewById(R.id.emailTxt);
         txt_password = findViewById(R.id.passwordTxt);
         txt_confirmPassword = findViewById(R.id.confirmPasswordTxt);
-
-        auth = FirebaseAuth.getInstance();
-    }
-
-    private void registerUser(String email, String password) {
-        auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(RegisterActivity.this, task -> {
-            if(task.isSuccessful()) {
-                Toast.makeText(RegisterActivity.this, "User registered successfully!", Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(RegisterActivity.this, RegistrationContActivity.class));
-                finish();
-            } else {
-                Toast.makeText(RegisterActivity.this, "Registration failed!", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    public void HaveAccount(View view) {
-        startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
-        finish();
     }
 
     public void Register(View view) {
@@ -69,7 +47,11 @@ public class RegisterActivity extends AppCompatActivity {
         } else if(!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             Toast.makeText(this, "Wrong Email Format!", Toast.LENGTH_SHORT).show();
         } else {
-            registerUser(email, password);
+            Intent intent = new Intent(RegisterActivity.this, RegistrationContActivity.class);
+            intent.putExtra("email", email);
+            intent.putExtra("password", password);
+            startActivity(intent);
+            finish();
         }
     }
 

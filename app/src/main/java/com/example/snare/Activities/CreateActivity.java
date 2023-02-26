@@ -665,17 +665,16 @@ public class CreateActivity extends AppCompatActivity implements FriendListeners
 
                     @Override
                     protected Void doInBackground(Void... voids) {
-                        if(isReminder){
+                        if(isReminder) {
                             ReminderDataBase.getDatabase(getApplicationContext()).reminderDao().deleteReminder(alreadyAvailableReminder);
                             FirebaseReminders firebaseReminders = new FirebaseReminders();
                             firebaseReminders.delete(alreadyAvailableReminder);
-
-                        }else{
+                        } else {
                             NotesDataBase.getDatabase(getApplicationContext()).noteDao().deleteNote(alreadyAvailableNote);
                             FirebaseNotes firebaseNotes = new FirebaseNotes();
                             firebaseNotes.delete(alreadyAvailableNote);
-
                         }
+
                         return null;
                     }
 
@@ -684,11 +683,13 @@ public class CreateActivity extends AppCompatActivity implements FriendListeners
                     protected void onPostExecute(Void avoid) {
                         super.onPostExecute(avoid);
                         Intent intent = new Intent();
-                        if(isReminder){
+
+                        if(isReminder) {
                             intent.putExtra("isReminderDeleted", true);
-                        }else{
+                        } else {
                             intent.putExtra("isNoteDeleted", true);
                         }
+
                         setResult(RESULT_OK, intent);
                         finish();
                     }

@@ -79,23 +79,25 @@ public class FirebaseReminders {
         notesRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                ArrayList<Reminder> reminders = new ArrayList<>();
-                // Get a list of the child nodes
-                Iterable<DataSnapshot> children = dataSnapshot.getChildren();
+                if(!(dataSnapshot == null)) {
+                    ArrayList<Reminder> reminders = new ArrayList<>();
+                    // Get a list of the child nodes
+                    Iterable<DataSnapshot> children = dataSnapshot.getChildren();
 
-                // Reverse the order of the child nodes
-                ArrayList<DataSnapshot> reversedChildren = new ArrayList<>();
-                for (DataSnapshot child : children) {
-                    reversedChildren.add(0, child);
+                    // Reverse the order of the child nodes
+                    ArrayList<DataSnapshot> reversedChildren = new ArrayList<>();
+                    for (DataSnapshot child : children) {
+                        reversedChildren.add(0, child);
+                    }
+
+                    // Loop through each note in the reversed list of child nodes
+                    for (DataSnapshot noteSnapshot : reversedChildren) {
+                        Reminder reminder = noteSnapshot.getValue(Reminder.class);
+                        reminders.add(reminder);
+                    }
+
+                    callback.onRemindersRetrieved(reminders);
                 }
-
-                // Loop through each note in the reversed list of child nodes
-                for (DataSnapshot noteSnapshot : reversedChildren) {
-                    Reminder reminder = noteSnapshot.getValue(Reminder.class);
-                    reminders.add(reminder);
-                }
-
-                callback.onRemindersRetrieved(reminders);
             }
 
             @Override
