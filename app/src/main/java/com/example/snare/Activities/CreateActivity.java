@@ -46,7 +46,9 @@ import com.example.snare.Entities.WrappingFriends;
 import com.example.snare.R;
 import com.example.snare.dao.NotesDataBase;
 import com.example.snare.dao.ReminderDataBase;
-import com.example.snare.listeners.GroupListeners;
+import com.example.snare.firebase.FirebaseNotes;
+import com.example.snare.firebase.FirebaseReminders;
+import com.example.snare.listeners.FriendListeners;
 import com.example.snare.listeners.PinnedLocationListener;
 import com.example.snare.reminders.AlarmReceiver;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
@@ -62,7 +64,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class CreateActivity extends AppCompatActivity implements GroupListeners , PinnedLocationListener {
+public class CreateActivity extends AppCompatActivity implements FriendListeners, PinnedLocationListener {
 
     private ImageView imageSave;
     private EditText inputNoteTitle;
@@ -465,7 +467,7 @@ public class CreateActivity extends AppCompatActivity implements GroupListeners 
 
             @Override
             protected Void doInBackground(Void... voids) {
-                //NotesDataBase.getDatabase(getApplicationContext()).noteDao().insertNote(note);
+                NotesDataBase.getDatabase(getApplicationContext()).noteDao().insertNote(note);
                 FirebaseNotes firebaseNotes = new FirebaseNotes();
                 firebaseNotes.save(note);
                 return null;

@@ -1,7 +1,10 @@
 package com.example.snare.adapters;
 
 import android.annotation.SuppressLint;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.GradientDrawable;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,42 +13,45 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.bitmap.CenterCrop;
-import com.bumptech.glide.request.RequestOptions;
-import com.example.snare.Entities.Friends;
-import com.example.snare.Entities.WrappingFriends;
+import com.example.snare.Entities.Group;
+import com.example.snare.Entities.Note;
 import com.example.snare.R;
-import com.example.snare.listeners.GroupListeners;
+import com.example.snare.listeners.GroupListener;
 import com.makeramen.roundedimageview.RoundedImageView;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.GroupViewHolder> {
 
-    private List<WrappingFriends> friends;
-    private final GroupListeners groupListeners;
+    private List<Group> groups;
+    private List<Group> groupsSource;
+    private final GroupListener groupListener;
 
-    public GroupAdapter(List<WrappingFriends> friends, GroupListeners groupListeners) {
-        this.friends = friends;
-        this.groupListeners = groupListeners;
+    public GroupAdapter(List<Group> groups, GroupListener groupListener) {
+        this.groups = groups;
+        this.groupListener = groupListener;
+        this.groupsSource = groups;
     }
 
     @NonNull
     @Override
     public GroupViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new GroupViewHolder(LayoutInflater.from(parent.getContext()).inflate(
-                R.layout.item_container_friend, parent, false));
+                R.layout.item_container_group, parent, false));
     }
 
     @Override
     public void onBindViewHolder(@NonNull GroupViewHolder holder, @SuppressLint("RecyclerView") int position) {
-        holder.setFriend(friends.get(position).getFriends());
-        holder.layoutGroup.setOnClickListener(view -> groupListeners.onFriendClick(friends.get(position), position));
+        holder.setGroup(groups.get(position));
+        holder.layoutViewGroup.setOnClickListener(view -> groupListener.onGroupClick(groups.get(position), position));
     }
 
     @Override
     public int getItemCount() {
-        return friends.size();
+        return groups.size();
     }
 
     @Override
@@ -53,30 +59,57 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.GroupViewHol
         return position;
     }
 
+    public void searchGroups(String searchKeyword) {
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @SuppressLint("NotifyDataSetChanged")
+            @Override
+            public void run() {
+                if (searchKeyword.trim().isEmpty()) {
+                    groups = groupsSource;
+                } else {
+                    ArrayList<Group> temp = new ArrayList<>();
+                    for (Group group : groupsSource) {
+                        if (group.getName().toLowerCase().contains(searchKeyword.toLowerCase())){
+                            temp.add(group);
+                        }
+                    }
+                    groups = temp;
+                }
+
+                new Handler(Looper.getMainLooper()).post(() -> notifyDataSetChanged());
+
+            }
+        }, 500);
+    }
 
     static class GroupViewHolder extends RecyclerView.ViewHolder {
 
-        private final LinearLayout layoutGroup;
-        private final TextView name;
-        private ImageView profilePicture;
-        private final RoundedImageView friendItem;
+        private final LinearLayout layoutViewGroup;
+        private final TextView groupName;
+        private final RoundedImageView groupItem;
+        private final TextView count;
 
         public GroupViewHolder(@NonNull View itemView) {
             super(itemView);
-            name = itemView.findViewById(R.id.name);
-            layoutGroup = itemView.findViewById(R.id.layoutGroup);
-            friendItem = itemView.findViewById(R.id.friendItem);
-            profilePicture = itemView.findViewById(R.id.profilePicture);
+            groupName = itemView.findViewById(R.id.groupName);
+            layoutViewGroup = itemView.findViewById(R.id.layoutViewGroup);
+            groupItem = itemView.findViewById(R.id.groupItem);
+            count = itemView.findViewById(R.id.count);
         }
 
-        void setFriend(Friends friends) {
-            name.setText(friends.getName());
-            Glide.with(itemView)
-                    .load(friends.getProfilePic())
-                    .apply(RequestOptions.bitmapTransform(new CenterCrop()))
-                    .into(profilePicture);
-
-            GradientDrawable gradientDrawable = (GradientDrawable) layoutGroup.getBackground();
+        void setGroup(Group group) {
+            groupName.setText(group.getName());
+            if (group.getImagePath() != null) {
+                groupItem.setImageBitmap(BitmapFactory.decodeFile(group.getImagePath()));
+                groupItem.setVisibility(View.VISIBLE);
+            } else {
+                groupItem.setVisibility(View.GONE);
+            }
+            if(group.getGroupMembers() != null){
+                count.setText(group.getGroupMembers().size()+"");
+            }
+            GradientDrawable gradientDrawable = (GradientDrawable) layoutViewGroup.getBackground();
         }
     }
 

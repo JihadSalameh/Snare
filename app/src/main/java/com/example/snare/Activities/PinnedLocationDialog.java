@@ -1,21 +1,15 @@
 package com.example.snare.Activities;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.os.Bundle;
 
 import com.example.snare.Entities.PinnedLocations;
-import com.example.snare.Entities.WrappingFriends;
 import com.example.snare.R;
-import com.example.snare.adapters.GroupAdapter;
-import com.example.snare.adapters.PinnedLocationsAdapter;
 import com.example.snare.adapters.ViewPinnedAdapter;
-import com.example.snare.listeners.GroupListeners;
 import com.example.snare.listeners.PinnedLocationListener;
 
 import java.util.ArrayList;

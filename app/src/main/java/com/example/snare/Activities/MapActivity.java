@@ -20,18 +20,14 @@ import android.widget.SearchView;
 
 import com.example.snare.Entities.PinnedLocations;
 import com.example.snare.R;
-import com.example.snare.dao.PinnedLocationsDao;
 import com.example.snare.dao.PinnedLocationsDataBase;
+import com.example.snare.firebase.FirebasePinnedLocations;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.IOException;
 import java.util.HashMap;

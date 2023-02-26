@@ -34,6 +34,7 @@ import com.example.snare.LocationService.LocationForegroundService;
 import com.example.snare.R;
 import com.example.snare.adapters.NotesAdapter;
 import com.example.snare.dao.NotesDataBase;
+import com.example.snare.firebase.FirebaseNotes;
 import com.example.snare.listeners.NotesListeners;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -111,6 +112,8 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
                 startActivity(new Intent(NotesActivity.this, NotificationsActivity.class));
             } else if(item.getTitle().toString().equals("Pinned Locations")) {
                 startActivity(new Intent(NotesActivity.this, PinnedLocationsActivity.class));
+            }else if(item.getTitle().toString().equals("Groups")) {
+                startActivity(new Intent(NotesActivity.this, GroupActivity.class));
             }
 
             return true;

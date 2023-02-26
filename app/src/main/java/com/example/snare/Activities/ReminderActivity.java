@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.media.AudioAttributes;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -28,13 +27,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
-import androidx.room.RoomDatabase;
 
 import com.example.snare.Entities.Reminder;
 import com.example.snare.R;
 import com.example.snare.adapters.ReminderAdapter;
-import com.example.snare.dao.NotesDataBase;
 import com.example.snare.dao.ReminderDataBase;
+import com.example.snare.firebase.FirebaseReminders;
 import com.example.snare.listeners.RemindersListeners;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -368,6 +366,8 @@ public class ReminderActivity extends AppCompatActivity implements RemindersList
                 startActivity(new Intent(ReminderActivity.this, NotificationsActivity.class));
             } else if (item.getTitle().toString().equals("Pinned Locations")) {
                 startActivity(new Intent(ReminderActivity.this, PinnedLocationsActivity.class));
+            }else if(item.getTitle().toString().equals("Groups")) {
+                startActivity(new Intent(ReminderActivity.this, GroupActivity.class));
             }
             return true;
         });

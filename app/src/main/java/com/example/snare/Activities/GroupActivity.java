@@ -1,0 +1,362 @@
+package com.example.snare.Activities;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
+
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.Uri;
+import android.os.Bundle;
+import android.provider.MediaStore;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.SearchView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.example.snare.Entities.Group;
+import com.example.snare.R;
+import com.example.snare.adapters.GroupAdapter;
+import com.example.snare.firebase.GroupFirebase;
+import com.example.snare.listeners.GroupListener;
+import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+public class GroupActivity extends AppCompatActivity implements GroupListener {
+
+    private AlertDialog.Builder dialogBuilder;
+    private AlertDialog dialog;
+    private EditText groupName;
+    private Button create, cancel , addImage;
+    private static final int REQUEST_CODE_SELECT_IMAGE = 4;
+    private static final int REQUEST_CODE_STORAGE_PERMISSION = 5;
+    private static final int REQUEST_CODE_SHOW_GROUPS = 3;
+    public DrawerLayout drawerLayout;
+    public ActionBarDrawerToggle actionBarDrawerToggle;
+    public NavigationView navigationView;
+    private DatabaseReference userRef;
+    private FirebaseAuth auth;
+    private FirebaseUser user;
+    private RecyclerView groupRecycleView;
+    private ImageView imageAddGroupMain;
+    private String imagePath ;
+    private List<Group> groups = new ArrayList<>();
+    private GroupAdapter groupAdapter;
+    private int onClickPosition = -1;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_group);
+        setActivity();
+    }
+
+    private void setActivity() {
+        initializeActivity();
+        setListeners();
+        fillNavDrawer();
+        navOnClickAction();
+        getAllGroups(REQUEST_CODE_SHOW_GROUPS, false);
+        setRecycleView();
+
+    }
+
+    private void initializeActivity() {
+        imageAddGroupMain = findViewById(R.id.imageAddGroupMain);
+        drawerLayout = findViewById(R.id.group_drawer_layout);
+        navigationView = findViewById(R.id.group_nav_menu);
+        actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.nav_open, R.string.nav_close);
+        drawerLayout.addDrawerListener(actionBarDrawerToggle);
+        actionBarDrawerToggle.syncState();
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+        groupRecycleView = findViewById(R.id.groupRecycleView);
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
+        userRef = FirebaseDatabase.getInstance().getReference("Users").child(user.getUid());
+    }
+
+    private void fillNavDrawer() {
+        userRef.get().addOnSuccessListener(snapshot -> {
+            ImageView imageView = findViewById(R.id.profileImg);
+            TextView name = findViewById(R.id.nameTxt);
+            TextView email = findViewById(R.id.emailTxtNav);
+
+            Picasso.get().load(snapshot.child("profilePic").getValue(String.class)).into(imageView);
+            name.setText(snapshot.child("name").getValue(String.class));
+            email.setText(user.getEmail());
+        });
+    }
+
+    private void navOnClickAction() {
+        navigationView.setNavigationItemSelectedListener(item -> {
+            if(item.getTitle().toString().equals("Logout")) {
+                logout();
+            } else if(item.getTitle().toString().equals("Profile")) {
+                startActivity(new Intent(GroupActivity.this, ProfileActivity.class));
+            } else if(item.getTitle().toString().equals("Friends")) {
+                startActivity(new Intent(GroupActivity.this, FriendsActivity.class));
+            } else if(item.getTitle().toString().equals("Shouts")) {
+                startActivity(new Intent(GroupActivity.this, ShoutsActivity.class));
+                finish();
+            } else if(item.getTitle().toString().equals("Reminders")) {
+                startActivity(new Intent(GroupActivity.this, ReminderActivity.class));
+                finish();
+            } else if(item.getTitle().toString().equals("Notifications")) {
+                startActivity(new Intent(GroupActivity.this, NotificationsActivity.class));
+            } else if(item.getTitle().toString().equals("Pinned Locations")) {
+                startActivity(new Intent(GroupActivity.this, PinnedLocationsActivity.class));
+            }else if(item.getTitle().toString().equals("Groups")) {
+                startActivity(new Intent(GroupActivity.this, GroupActivity.class));
+            }else if(item.getTitle().toString().equals("Notes")) {
+                startActivity(new Intent(GroupActivity.this, NotesActivity.class));
+            }
+
+            return true;
+        });
+    }
+
+    private void setListeners() {
+        setImageAddGroupMainListener();
+    }
+
+    private void setImageAddGroupMainListener() {
+       imageAddGroupMain.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+               createNewGroupDialog();
+           }
+       });
+    }
+
+    private void logout() {
+        auth.signOut();
+
+        //delete all tables
+        deleteDatabase("notes_db");
+        deleteDatabase("notifications_db");
+        deleteDatabase("pinnedLocations_db");
+        deleteDatabase("reminders_db");
+
+        Toast.makeText(GroupActivity.this, "Signed out!", Toast.LENGTH_SHORT).show();
+        startActivity(new Intent(GroupActivity.this, LoginActivity.class));
+        finish();
+    }
+
+    @SuppressLint("IntentReset")
+    private void selectImage() {
+        // Create an Intent to open the image picker
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        intent.setType("image/*");
+        if(intent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(intent, REQUEST_CODE_SELECT_IMAGE);
+        }
+    }
+
+    @SuppressLint("Range")
+    private String getPathFromUri(Uri imageUri) {
+        String filePath = null;
+        // Get the file path from the Uri
+        Cursor cursor = getContentResolver().query(imageUri, null, null, null, null);
+        if(cursor != null) {
+            cursor.moveToFirst();
+            filePath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+            cursor.close();
+        }
+
+        return filePath;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_CODE_STORAGE_PERMISSION) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                selectImage();
+            } else {
+                Toast.makeText(this, "permission is required", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void createNewGroupDialog() {
+        dialogBuilder = new AlertDialog.Builder(this);
+        final View groupPopUp = getLayoutInflater().inflate(R.layout.group, null);
+
+        groupName = groupPopUp.findViewById(R.id.groupName);
+        create = groupPopUp.findViewById(R.id.create);
+        cancel = groupPopUp.findViewById(R.id.cancel);
+        addImage = groupPopUp.findViewById(R.id.addImage);
+
+        dialogBuilder.setView(groupPopUp);
+        dialog = dialogBuilder.create();
+        dialog.show();
+
+        create.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                String groupSelectedName = groupName.getText().toString().trim();
+                if(groupSelectedName.isEmpty()){
+                    Toast.makeText(GroupActivity.this, "select name", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                Group newGroup = new Group();
+                newGroup.setName(groupSelectedName);
+
+                if(imagePath != null){
+                    newGroup.setImagePath(imagePath);
+                }
+
+                GroupFirebase groupFirebase = new GroupFirebase();
+                groupFirebase.save(newGroup);
+                groups.add(0,newGroup);
+                groupAdapter.notifyItemInserted(0);
+
+                dialog.dismiss();
+
+            }
+        });
+
+        addImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE) !=
+                        PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(GroupActivity.this,
+                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                            REQUEST_CODE_STORAGE_PERMISSION);
+                } else {
+                    selectImage();
+                }
+            }
+        });
+
+        cancel.setOnClickListener(view -> dialog.dismiss());
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.search_menu, menu);
+        MenuItem menuItem = menu.findItem(R.id.search);
+        SearchView searchView = (SearchView) menuItem.getActionView();
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                if (groups.size() != 0) {
+                    groupAdapter.searchGroups(newText);
+                }
+
+                return false;
+            }
+        });
+
+        return true;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == REQUEST_CODE_SELECT_IMAGE && resultCode == RESULT_OK) {
+            // Get the selected image's URI
+            assert data != null;
+            Uri selectedImageUri = data.getData();
+            if(selectedImageUri != null) {
+                try {
+                    imagePath = getPathFromUri(selectedImageUri);
+                    Toast.makeText(this, "image selected", Toast.LENGTH_SHORT).show();
+                } catch(Exception e) {
+                    e.printStackTrace();
+                }
+            } else {
+                Toast.makeText(this, "no image selected", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void getAllGroups(int requestCode, boolean isNoteDeleted) {
+
+        if(isNetworkAvailable(getApplicationContext())) {
+            GroupFirebase groupFirebase = new GroupFirebase();
+            groupFirebase.getAllGroups(new GroupFirebase.GroupCallback() {
+                @Override
+                public void onGroupRetrieved(List<Group> groups) {
+                    GroupActivity.this.groups.addAll(groups);
+                    groupAdapter.notifyDataSetChanged();
+                }
+
+                @Override
+                public void onGroupRetrieveError(String error) {
+
+                }
+            });
+
+        }else{
+            Toast.makeText(this, "No Internet", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public  boolean isNetworkAvailable(Context context) {
+        ConnectivityManager connectivityManager =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+    private void setRecycleView() {
+        groupRecycleView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
+        groupAdapter = new GroupAdapter(groups,this);
+        groupRecycleView.setAdapter(groupAdapter);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if(actionBarDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onGroupClick(Group group, int position) {
+        onClickPosition = position;
+        Intent intent = new Intent(getApplicationContext(), MembersActivity.class);
+        intent.putExtra("group", group);
+        startActivity(intent);
+        finish();
+    }
+}

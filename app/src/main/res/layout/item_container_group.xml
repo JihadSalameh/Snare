@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layoutViewGroup"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/_8sdp"
+    android:background="@drawable/background_note"
+    android:orientation="vertical">
+
+    <com.makeramen.roundedimageview.RoundedImageView
+        android:id="@+id/groupItem"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:visibility="gone"
+        app:riv_corner_radius_top_left="@dimen/_10sdp"
+        app:riv_corner_radius_top_right="@dimen/_10sdp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/groupName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_8sdp"
+            android:layout_marginBottom="@dimen/_5sdp"
+            android:includeFontPadding="false"
+            android:textAlignment="center"
+            android:layout_marginVertical="@dimen/_20sdp"
+            android:textColor="@color/colorWhite"
+            android:textSize="@dimen/_20ssp" />
+
+        <TextView
+            android:id="@+id/count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_8sdp"
+            android:layout_marginBottom="@dimen/_5sdp"
+            android:includeFontPadding="false"
+            android:textAlignment="center"
+            android:text="@string/count"
+            android:layout_marginEnd="@dimen/_10sdp"
+            android:layout_marginVertical="@dimen/_20sdp"
+            android:textColor="@color/colorWhite"
+            android:textSize="@dimen/_20ssp" />
+
+        <ImageView
+            android:id="@+id/member"
+            android:layout_width="@dimen/_20sdp"
+            android:layout_height="@dimen/_20sdp"
+            android:contentDescription="@string/app_name"
+            android:src="@drawable/ic_collaborator"
+            android:tint="@color/colorIcons"
+            android:layout_marginVertical="@dimen/_20sdp"
+            tools:ignore="UseAppTint" />
+
+    </LinearLayout>
+
+
+</LinearLayout>

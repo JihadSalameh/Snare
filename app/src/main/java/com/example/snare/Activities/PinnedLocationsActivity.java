@@ -14,11 +14,10 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.example.snare.Entities.PinnedLocations;
-import com.example.snare.Entities.Reminder;
 import com.example.snare.R;
 import com.example.snare.adapters.PinnedLocationsAdapter;
-import com.example.snare.dao.PinnedLocationsDao;
 import com.example.snare.dao.PinnedLocationsDataBase;
+import com.example.snare.firebase.FirebasePinnedLocations;
 
 import java.util.ArrayList;
 import java.util.List;
