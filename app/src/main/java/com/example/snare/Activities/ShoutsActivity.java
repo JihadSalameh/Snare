@@ -139,9 +139,9 @@ public class ShoutsActivity extends AppCompatActivity {
         dialogBuilder = new AlertDialog.Builder(this);
         final View ShoutPopUp = getLayoutInflater().inflate(R.layout.shout, null);
 
-        shoutText = (EditText) ShoutPopUp.findViewById(R.id.shout_text);
-        send = (Button) ShoutPopUp.findViewById(R.id.send);
-        cancel = (Button) ShoutPopUp.findViewById(R.id.cancel);
+        shoutText = ShoutPopUp.findViewById(R.id.shout_text);
+        send = ShoutPopUp.findViewById(R.id.send);
+        cancel = ShoutPopUp.findViewById(R.id.cancel);
 
         dialogBuilder.setView(ShoutPopUp);
         dialog = dialogBuilder.create();
@@ -151,10 +151,17 @@ public class ShoutsActivity extends AppCompatActivity {
             mDatabase = FirebaseDatabase.getInstance().getReference("Users");
             auth = FirebaseAuth.getInstance();
             user = auth.getCurrentUser();
+
             mDatabase.get().addOnSuccessListener(dataSnapshot -> {
-                for(DataSnapshot tokens: dataSnapshot.getChildren()) {
-                    if(!Objects.requireNonNull(tokens.getKey()).equals(user.getUid())) {
-                        FCMSend.pushNotification(ShoutsActivity.this, Objects.requireNonNull(tokens.child("token").getValue()).toString(), "Shout from " + name, shoutText.getText().toString());
+                for(DataSnapshot users: dataSnapshot.getChildren()) {
+                    if(!Objects.requireNonNull(users.getKey()).equals(user.getUid())) {
+                        FCMSend.pushNotification(ShoutsActivity.this, Objects.requireNonNull(users.child("token").getValue()).toString(), "Shout from " + name, shoutText.getText().toString());
+                    }
+
+                    try {
+                        Thread.sleep(100); // Delay for 0.1 second
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
                 }
             });

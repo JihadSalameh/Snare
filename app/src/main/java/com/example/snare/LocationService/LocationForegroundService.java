@@ -1,6 +1,5 @@
 package com.example.snare.LocationService;
 
-
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
@@ -13,7 +12,6 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Binder;
 import android.os.IBinder;
-import android.os.Looper;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -100,12 +98,14 @@ public class LocationForegroundService extends Service {
         int permission = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
         if(permission == PackageManager.PERMISSION_GRANTED) {
             client.requestLocationUpdates(request, new LocationCallback() {
+
+                int delay = 1000; // delay for 1 sec.
+                int period = 15000; // repeat every 15 sec.
+                final int[] count = {0};
+                Timer timer = new Timer();
+
                 @Override
                 public void onLocationResult(@NonNull LocationResult locationResult) {
-                    int delay = 1000; // delay for 1 sec.
-                    int period = 15000; // repeat every 15 sec.
-                    final int[] count = {0};
-                    Timer timer = new Timer();
                     timer.scheduleAtFixedRate(new TimerTask()
                     {
                         public void run()
