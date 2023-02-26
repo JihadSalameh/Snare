@@ -35,7 +35,10 @@ public class WrappingFriends implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        return id.equals(((String)o).toString());
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        WrappingFriends that = (WrappingFriends) o;
+        return Objects.equals(friends, that.friends) && Objects.equals(id, that.id);
     }
 
     @Override

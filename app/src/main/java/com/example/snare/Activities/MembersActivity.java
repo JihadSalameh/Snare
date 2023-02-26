@@ -3,33 +3,28 @@ package com.example.snare.Activities;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import android.app.AlertDialog;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.Toast;
 
-import com.example.snare.Entities.Friends;
 import com.example.snare.Entities.Group;
 import com.example.snare.Entities.WrappingFriends;
 import com.example.snare.R;
 import com.example.snare.adapters.FriendsAdapter;
 import com.example.snare.firebase.FriendsFireBase;
 import com.example.snare.firebase.GroupFirebase;
-import com.example.snare.firebase.MemberFirebase;
 import com.example.snare.listeners.FriendListeners;
 
 import java.util.ArrayList;
@@ -123,7 +118,9 @@ public class MembersActivity extends AppCompatActivity implements FriendListener
     }
 
     private void getMembersByIds(Group group) {
-        friendsID = group.getGroupMembers();
+        if(group.getGroupMembers() != null){
+            friendsID = group.getGroupMembers();
+        }
         FriendsFireBase friendsFireBase = new FriendsFireBase();
         friendsFireBase.getAllFriends(new FriendsFireBase.GroupCallback() {
             @Override
@@ -173,7 +170,7 @@ public class MembersActivity extends AppCompatActivity implements FriendListener
 
         if(!isNew){
 
-            createDeleteMemberDialog();
+            createDeleteMemberDialog(friend,position);
 
         }else{
 
@@ -191,7 +188,7 @@ public class MembersActivity extends AppCompatActivity implements FriendListener
 
     }
 
-    private void createDeleteMemberDialog() {
+    private void createDeleteMemberDialog(WrappingFriends friend, int position) {
         dialogBuilder = new AlertDialog.Builder(this);
         final View groupPopUp = getLayoutInflater().inflate(R.layout.member, null);
 
@@ -206,8 +203,14 @@ public class MembersActivity extends AppCompatActivity implements FriendListener
             @Override
             public void onClick(View v) {
 
+                friends.remove(position);
+                friendsAdapter.notifyItemRemoved(position);
+                friendsID.remove(friend.getId());
+                GroupFirebase groupFirebase = new GroupFirebase();
+                group.setGroupMembers(friendsID);
+                groupFirebase.save(group);
+                Toast.makeText(getApplicationContext(),"Removed",Toast.LENGTH_SHORT).show();
                 dialog.dismiss();
-
             }
         });
 
