@@ -22,7 +22,6 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -36,7 +35,7 @@ import android.widget.Toast;
 import com.example.snare.Entities.Group;
 import com.example.snare.R;
 import com.example.snare.adapters.GroupAdapter;
-import com.example.snare.firebase.GroupFirebase;
+import com.example.snare.firebaseRef.GroupFirebase;
 import com.example.snare.listeners.GroupListener;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -51,10 +50,8 @@ import java.util.Objects;
 
 public class GroupActivity extends AppCompatActivity implements GroupListener {
 
-    private AlertDialog.Builder dialogBuilder;
     private AlertDialog dialog;
     private EditText groupName;
-    private Button create, cancel , addImage;
     private static final int REQUEST_CODE_SELECT_IMAGE = 4;
     private static final int REQUEST_CODE_STORAGE_PERMISSION = 5;
     private static final int REQUEST_CODE_SHOW_GROUPS = 3;
@@ -147,12 +144,7 @@ public class GroupActivity extends AppCompatActivity implements GroupListener {
     }
 
     private void setImageAddGroupMainListener() {
-       imageAddGroupMain.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View v) {
-               createNewGroupDialog();
-           }
-       });
+       imageAddGroupMain.setOnClickListener(v -> createNewGroupDialog());
     }
 
     private void logout() {
@@ -206,56 +198,50 @@ public class GroupActivity extends AppCompatActivity implements GroupListener {
     }
 
     private void createNewGroupDialog() {
-        dialogBuilder = new AlertDialog.Builder(this);
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
         final View groupPopUp = getLayoutInflater().inflate(R.layout.group, null);
 
         groupName = groupPopUp.findViewById(R.id.groupName);
-        create = groupPopUp.findViewById(R.id.create);
-        cancel = groupPopUp.findViewById(R.id.cancel);
-        addImage = groupPopUp.findViewById(R.id.addImage);
+        Button create = groupPopUp.findViewById(R.id.create);
+        Button cancel = groupPopUp.findViewById(R.id.cancel);
+        Button addImage = groupPopUp.findViewById(R.id.addImage);
 
         dialogBuilder.setView(groupPopUp);
         dialog = dialogBuilder.create();
         dialog.show();
 
-        create.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        create.setOnClickListener(v -> {
+            String groupSelectedName = groupName.getText().toString().trim();
 
-                String groupSelectedName = groupName.getText().toString().trim();
-                if(groupSelectedName.isEmpty()){
-                    Toast.makeText(GroupActivity.this, "select name", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                Group newGroup = new Group();
-                newGroup.setName(groupSelectedName);
-
-                if(imagePath != null){
-                    newGroup.setImagePath(imagePath);
-                }
-
-                GroupFirebase groupFirebase = new GroupFirebase();
-                groupFirebase.save(newGroup);
-                groups.add(0,newGroup);
-                groupAdapter.notifyItemInserted(0);
-
-                dialog.dismiss();
-
+            if(groupSelectedName.isEmpty()) {
+                Toast.makeText(GroupActivity.this, "select name", Toast.LENGTH_SHORT).show();
+                return;
             }
+
+            Group newGroup = new Group();
+            newGroup.setName(groupSelectedName);
+
+            if(imagePath != null){
+                newGroup.setImagePath(imagePath);
+            }
+
+            GroupFirebase groupFirebase = new GroupFirebase();
+            groupFirebase.save(newGroup);
+            groups.add(0,newGroup);
+            groupAdapter.notifyItemInserted(0);
+
+            dialog.dismiss();
+
         });
 
-        addImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE) !=
-                        PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(GroupActivity.this,
-                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                            REQUEST_CODE_STORAGE_PERMISSION);
-                } else {
-                    selectImage();
-                }
+        addImage.setOnClickListener(v -> {
+            if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE) !=
+                    PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(GroupActivity.this,
+                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                        REQUEST_CODE_STORAGE_PERMISSION);
+            } else {
+                selectImage();
             }
         });
 
@@ -313,6 +299,7 @@ public class GroupActivity extends AppCompatActivity implements GroupListener {
         if(isNetworkAvailable(getApplicationContext())) {
             GroupFirebase groupFirebase = new GroupFirebase();
             groupFirebase.getAllGroups(new GroupFirebase.GroupCallback() {
+                @SuppressLint("NotifyDataSetChanged")
                 @Override
                 public void onGroupRetrieved(List<Group> groups) {
                     GroupActivity.this.groups.addAll(groups);

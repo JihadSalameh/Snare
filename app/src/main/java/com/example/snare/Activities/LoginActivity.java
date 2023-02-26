@@ -19,9 +19,9 @@ import com.example.snare.R;
 import com.example.snare.dao.NotesDataBase;
 import com.example.snare.dao.PinnedLocationsDataBase;
 import com.example.snare.dao.ReminderDataBase;
-import com.example.snare.firebase.FirebaseNotes;
-import com.example.snare.firebase.FirebasePinnedLocations;
-import com.example.snare.firebase.FirebaseReminders;
+import com.example.snare.firebaseRef.FirebaseNotes;
+import com.example.snare.firebaseRef.FirebasePinnedLocations;
+import com.example.snare.firebaseRef.FirebaseReminders;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -44,8 +44,7 @@ public class LoginActivity extends AppCompatActivity {
     private GoogleSignInClient mGoogleSignInClient;
     private FirebaseAuth auth;
     private FirebaseUser user;
-    private ImageView googleImageView ;
-    private SharedPreferences sharedPreferences;
+    private ImageView googleImageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,12 +64,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void setGoogleSignInListener() {
-        googleImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                signInGoogle();
-            }
-        });
+        googleImageView.setOnClickListener(v -> signInGoogle());
     }
 
     private void isUserLogin(){
@@ -138,7 +132,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void LoginUser(String email_txt, String password_txt) {
-        sharedPreferences = getSharedPreferences("User", 0);
+        SharedPreferences sharedPreferences = getSharedPreferences("User", 0);
 
         auth.signInWithEmailAndPassword(email_txt, password_txt).addOnSuccessListener(authResult -> updateUI()).addOnFailureListener(e -> Toast.makeText(LoginActivity.this, "Wrong Username Or Password!", Toast.LENGTH_SHORT).show());
     }

@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 
@@ -20,13 +21,10 @@ public class PinnedLocationDialog extends Dialog {
     private RecyclerView pinnedRecycleView;
     private List<PinnedLocations> pinnedLocations;
     private ViewPinnedAdapter pinnedLocationsAdapter;
-    public static String partner ;
 
     public PinnedLocationDialog(@NonNull Context context) {
         super(context);
         setContentView(R.layout.activity_pinned_location_dialg);
-
-
     }
 
     public void setDialog(PinnedLocationListener pinnedLocationListener){
@@ -42,6 +40,7 @@ public class PinnedLocationDialog extends Dialog {
         PinnedLocationFirebase pinnedLocationFirebase = new PinnedLocationFirebase();
         pinnedLocationFirebase.getAllLocations(new PinnedLocationFirebase.PinnedCallback() {
 
+            @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onPinnedRetrieved(List<PinnedLocations> pinnedLocations) {
                 PinnedLocationDialog.this.pinnedLocations.addAll(pinnedLocations);

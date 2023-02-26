@@ -2,9 +2,7 @@ package com.example.snare.Activities;
 
 import androidx.annotation.NonNull;
 
-import com.example.snare.Entities.Friends;
 import com.example.snare.Entities.PinnedLocations;
-import com.example.snare.Entities.WrappingFriends;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -17,11 +15,10 @@ import java.util.List;
 import java.util.Objects;
 
 public class PinnedLocationFirebase {
-    private final DatabaseReference mDatabase;
+
     private final String userID ;
 
     public PinnedLocationFirebase() {
-        mDatabase = FirebaseDatabase.getInstance().getReference("Friends");
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         userID = Objects.requireNonNull(firebaseAuth.getCurrentUser()).getUid();
     }
@@ -61,4 +58,5 @@ public class PinnedLocationFirebase {
         void onPinnedRetrieved(List<PinnedLocations> pinnedLocations);
         void onPinnedRetrieveError(String error);
     }
+
 }

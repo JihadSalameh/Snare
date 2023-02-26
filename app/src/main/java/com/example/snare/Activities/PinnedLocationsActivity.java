@@ -17,7 +17,7 @@ import com.example.snare.Entities.PinnedLocations;
 import com.example.snare.R;
 import com.example.snare.adapters.PinnedLocationsAdapter;
 import com.example.snare.dao.PinnedLocationsDataBase;
-import com.example.snare.firebase.FirebasePinnedLocations;
+import com.example.snare.firebaseRef.FirebasePinnedLocations;
 
 import java.util.ArrayList;
 import java.util.List;

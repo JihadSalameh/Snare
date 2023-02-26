@@ -1,6 +1,4 @@
-package com.example.snare.firebase;
-
-import android.util.Log;
+package com.example.snare.firebaseRef;
 
 import androidx.annotation.NonNull;
 

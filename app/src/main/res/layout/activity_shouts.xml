@@ -15,8 +15,22 @@
             android:id="@+id/shoutAll"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Shout To All Users"
+            android:layout_marginTop="64dp"
             android:onClick="shoutToAll"
+            android:text="Shout To All Users"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.497"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/shoutGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="64dp"
+            android:onClick="shoutToGroups"
+            android:text="Shout To Groups"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

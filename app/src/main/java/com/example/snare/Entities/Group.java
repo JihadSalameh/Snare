@@ -1,7 +1,5 @@
 package com.example.snare.Entities;
 
-import com.example.snare.Entities.WrappingFriends;
-
 import java.io.Serializable;
 import java.util.List;
 

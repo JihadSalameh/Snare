@@ -23,8 +23,8 @@ import com.example.snare.Entities.Group;
 import com.example.snare.Entities.WrappingFriends;
 import com.example.snare.R;
 import com.example.snare.adapters.FriendsAdapter;
-import com.example.snare.firebase.FriendsFireBase;
-import com.example.snare.firebase.GroupFirebase;
+import com.example.snare.firebaseRef.FriendsFireBase;
+import com.example.snare.firebaseRef.GroupFirebase;
 import com.example.snare.listeners.FriendListeners;
 
 import java.util.ArrayList;
@@ -40,9 +40,7 @@ public class MembersActivity extends AppCompatActivity implements FriendListener
     private FriendsAdapter friendsAdapter;
     private Group group ;
     private boolean isNew = false;
-    private AlertDialog.Builder dialogBuilder;
     private AlertDialog dialog;
-    private Button delete, cancel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,12 +66,9 @@ public class MembersActivity extends AppCompatActivity implements FriendListener
     }
 
     private void setImageAddMemberMainListener() {
-        imageAddMemberMain.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                isNew = true;
-                addFriend();
-            }
+        imageAddMemberMain.setOnClickListener(v -> {
+            isNew = true;
+            addFriend();
         });
     }
 
@@ -189,29 +184,25 @@ public class MembersActivity extends AppCompatActivity implements FriendListener
     }
 
     private void createDeleteMemberDialog(WrappingFriends friend, int position) {
-        dialogBuilder = new AlertDialog.Builder(this);
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
         final View groupPopUp = getLayoutInflater().inflate(R.layout.member, null);
 
-        cancel = groupPopUp.findViewById(R.id.cancel);
-        delete = groupPopUp.findViewById(R.id.delete);
+        Button cancel = groupPopUp.findViewById(R.id.cancel);
+        Button delete = groupPopUp.findViewById(R.id.delete);
 
         dialogBuilder.setView(groupPopUp);
         dialog = dialogBuilder.create();
         dialog.show();
 
-        delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                friends.remove(position);
-                friendsAdapter.notifyItemRemoved(position);
-                friendsID.remove(friend.getId());
-                GroupFirebase groupFirebase = new GroupFirebase();
-                group.setGroupMembers(friendsID);
-                groupFirebase.save(group);
-                Toast.makeText(getApplicationContext(),"Removed",Toast.LENGTH_SHORT).show();
-                dialog.dismiss();
-            }
+        delete.setOnClickListener(v -> {
+            friends.remove(position);
+            friendsAdapter.notifyItemRemoved(position);
+            friendsID.remove(friend.getId());
+            GroupFirebase groupFirebase = new GroupFirebase();
+            group.setGroupMembers(friendsID);
+            groupFirebase.save(group);
+            Toast.makeText(getApplicationContext(),"Removed",Toast.LENGTH_SHORT).show();
+            dialog.dismiss();
         });
 
         cancel.setOnClickListener(view -> dialog.dismiss());
@@ -231,10 +222,6 @@ public class MembersActivity extends AppCompatActivity implements FriendListener
 
             @Override
             public boolean onQueryTextChange(String newText) {
-               /* if (groups.size() != 0) {
-                    groupAdapter.searchGroups(newText);
-                }*/
-
                 return false;
             }
         });

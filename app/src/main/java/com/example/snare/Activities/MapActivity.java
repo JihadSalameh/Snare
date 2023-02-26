@@ -21,7 +21,7 @@ import android.widget.SearchView;
 import com.example.snare.Entities.PinnedLocations;
 import com.example.snare.R;
 import com.example.snare.dao.PinnedLocationsDataBase;
-import com.example.snare.firebase.FirebasePinnedLocations;
+import com.example.snare.firebaseRef.FirebasePinnedLocations;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -64,9 +64,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         dialogBuilder = new AlertDialog.Builder(this);
         final View locationPopUp = getLayoutInflater().inflate(R.layout.popup, null);
 
-        locationName = (EditText) locationPopUp.findViewById(R.id.locationName);
-        save = (Button) locationPopUp.findViewById(R.id.save);
-        cancel = (Button) locationPopUp.findViewById(R.id.cancel);
+        locationName = locationPopUp.findViewById(R.id.locationName);
+        save = locationPopUp.findViewById(R.id.save);
+        cancel = locationPopUp.findViewById(R.id.cancel);
 
         dialogBuilder.setView(locationPopUp);
         dialog = dialogBuilder.create();

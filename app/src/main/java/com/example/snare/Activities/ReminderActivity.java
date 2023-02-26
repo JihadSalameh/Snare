@@ -32,7 +32,7 @@ import com.example.snare.Entities.Reminder;
 import com.example.snare.R;
 import com.example.snare.adapters.ReminderAdapter;
 import com.example.snare.dao.ReminderDataBase;
-import com.example.snare.firebase.FirebaseReminders;
+import com.example.snare.firebaseRef.FirebaseReminders;
 import com.example.snare.listeners.RemindersListeners;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;

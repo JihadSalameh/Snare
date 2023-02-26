@@ -24,7 +24,6 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
@@ -39,16 +38,18 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.example.snare.Entities.Group;
 import com.example.snare.Entities.Note;
 import com.example.snare.Entities.PinnedLocations;
 import com.example.snare.Entities.Reminder;
 import com.example.snare.Entities.WrappingFriends;
+import com.example.snare.firebaseRef.FirebaseNotes;
+import com.example.snare.firebaseRef.FirebaseReminders;
 import com.example.snare.R;
 import com.example.snare.dao.NotesDataBase;
 import com.example.snare.dao.ReminderDataBase;
-import com.example.snare.firebase.FirebaseNotes;
-import com.example.snare.firebase.FirebaseReminders;
 import com.example.snare.listeners.FriendListeners;
+import com.example.snare.listeners.GroupListener;
 import com.example.snare.listeners.PinnedLocationListener;
 import com.example.snare.reminders.AlarmReceiver;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
@@ -63,8 +64,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
-public class CreateActivity extends AppCompatActivity implements FriendListeners, PinnedLocationListener {
+public class CreateActivity extends AppCompatActivity implements GroupListener, PinnedLocationListener {
 
     private ImageView imageSave;
     private EditText inputNoteTitle;
@@ -90,11 +92,10 @@ public class CreateActivity extends AppCompatActivity implements FriendListeners
     private int hour, minute;
     private boolean isReminder = false;
     private AlarmManager alarmManager;
-    private List<String> group ;
+    private List<String> groupIDs;
     private List<PinnedLocations> pinnedLocations;
     private GroupLayout popupGroup;
     private PinnedLocationDialog pinnedLocationDialog ;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -341,7 +342,7 @@ public class CreateActivity extends AppCompatActivity implements FriendListeners
                 isReminder = false;
                 Reminder reminder = new Reminder();
                 DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference("reminders");
-                reminder.setIdFirebase(mDatabase.getRef().push().getKey());
+                reminder.setIdFirebase(Objects.requireNonNull(mDatabase.getRef().push().getKey()));
                 reminder.setTitle(inputNoteTitle.getText().toString());
                 reminder.setReminderText(inputNote.getText().toString());
                 reminder.setDateTime(textDateTime.getText().toString());
@@ -352,10 +353,10 @@ public class CreateActivity extends AppCompatActivity implements FriendListeners
                 reminder.setDay(day);
                 reminder.setHour(hour);
                 reminder.setMinute(minute);
-                if(group == null){
-                    group = new ArrayList<>();
+                if(groupIDs  == null){
+                    groupIDs  = new ArrayList<>();
                 }
-                reminder.setGroup(group);
+                reminder.setGroup(groupIDs );
 
                 if(pinnedLocations == null){
                     pinnedLocations = new ArrayList<>();
@@ -371,16 +372,16 @@ public class CreateActivity extends AppCompatActivity implements FriendListeners
             } else {
                 Note note = new Note();
                 DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference("notes");
-                note.setIdFirebase(mDatabase.getRef().push().getKey());
+                note.setIdFirebase(Objects.requireNonNull(mDatabase.getRef().push().getKey()));
                 note.setTitle(inputNoteTitle.getText().toString());
                 note.setNoteText(inputNote.getText().toString());
                 note.setDateTime(textDateTime.getText().toString());
                 note.setColor(selectedNoteColor);
                 note.setImagePath(selectedImagePath);
-                if(group == null){
-                    group = new ArrayList<>();
+                if(groupIDs  == null){
+                    groupIDs  = new ArrayList<>();
                 }
-                note.setGroup(group);
+                note.setGroup(groupIDs );
                 if(alreadyAvailableNote != null) {
                     note.setIdFirebase(alreadyAvailableNote.getIdFirebase());
                     note.setCount(alreadyAvailableNote.getCount());
@@ -450,7 +451,6 @@ public class CreateActivity extends AppCompatActivity implements FriendListeners
         });
     }
 
-    //////////////////////////////////////////////////////////
     private void setTimeDate() {
         textDateTime.setText(new SimpleDateFormat("EEEE, dd MMMM yyyy HH:mm a",
                 Locale.getDefault()).format(new Date()));
@@ -572,7 +572,6 @@ public class CreateActivity extends AppCompatActivity implements FriendListeners
         }
     }
 
-    ////////////////////////////////////////////////////////
     private void checkIfUpdateOrCreate() {
         if(getIntent().getBooleanExtra("isViewOrUpdate", false)) {
             if(getIntent().getBooleanExtra("isReminder", false)) {
@@ -646,7 +645,7 @@ public class CreateActivity extends AppCompatActivity implements FriendListeners
 
         // Inflate the custom layout
         LayoutInflater inflater = this.getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.layout_delete_note, (ViewGroup) findViewById(R.id.layoutDeleteNoteContainer));
+        View dialogView = inflater.inflate(R.layout.layout_delete_note, findViewById(R.id.layoutDeleteNoteContainer));
 
         // Set the custom layout as the view for the delete dialog
         builder.setView(dialogView);
@@ -727,12 +726,12 @@ public class CreateActivity extends AppCompatActivity implements FriendListeners
     }
 
     @Override
-    public void onFriendClick(WrappingFriends friend, int position) {
-        if(group == null){
-            group = new ArrayList<>();
+    public void onGroupClick(Group group, int position) {
+        if(groupIDs == null){
+            groupIDs = new ArrayList<>();
         }
 
-        group.add(friend.getId());
+        groupIDs.addAll(group.getGroupMembers());
         popupGroup.dismiss();
     }
 
@@ -746,7 +745,7 @@ public class CreateActivity extends AppCompatActivity implements FriendListeners
         }
     }
 
-    public  boolean isNetworkAvailable(Context context) {
+    public boolean isNetworkAvailable(Context context) {
         ConnectivityManager connectivityManager =
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();

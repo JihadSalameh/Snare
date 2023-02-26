@@ -1,7 +1,5 @@
 package com.example.snare.Entities;
 
-import java.io.Serializable;
-
 public class Friends {
 
     private String profilePic;

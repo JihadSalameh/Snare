@@ -33,8 +33,6 @@ import com.google.android.gms.location.Priority;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class LocationForegroundService extends Service {
 
@@ -98,47 +96,33 @@ public class LocationForegroundService extends Service {
         int permission = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
         if(permission == PackageManager.PERMISSION_GRANTED) {
             client.requestLocationUpdates(request, new LocationCallback() {
-
-                int delay = 1000; // delay for 1 sec.
-                int period = 15000; // repeat every 15 sec.
-                final int[] count = {0};
-                Timer timer = new Timer();
-
                 @Override
                 public void onLocationResult(@NonNull LocationResult locationResult) {
-                    timer.scheduleAtFixedRate(new TimerTask()
-                    {
-                        public void run()
-                        {
-                            //filtering list2
-                            filter();
+                    //filtering list2
+                    filter();
 
-                            //if any of the pinned locations on the device is closer than 1Km it will
-                            //do what's inside the if statement
-                            for(PinnedLocations pinnedLocations: list2) {
-                                Location pinned = new Location("");
-                                pinned.setLatitude(Double.parseDouble(pinnedLocations.getLat()));
-                                pinned.setLongitude(Double.parseDouble(pinnedLocations.getLng()));
-                                float v = Objects.requireNonNull(locationResult.getLastLocation()).distanceTo(pinned);
-                                if(v < 2000) {
-                                    //Log.d(TAG, pinnedLocations.getName() + "******************" + locationResult.getLastLocation().distanceTo(pinned) + "********************");
-                                    //System.out.println(pinnedLocations.getName() + "******************" + locationResult.getLastLocation().distanceTo(pinned) + "********************");
+                    //if any of the pinned locations on the device is closer than 1Km it will
+                    //do what's inside the if statement
+                    for(PinnedLocations pinnedLocations: list2) {
+                        Location pinned = new Location("");
+                        pinned.setLatitude(Double.parseDouble(pinnedLocations.getLat()));
+                        pinned.setLongitude(Double.parseDouble(pinnedLocations.getLng()));
+                        float v = Objects.requireNonNull(locationResult.getLastLocation()).distanceTo(pinned);
+                        if(v < 2000) {
+                            //Log.d(TAG, pinnedLocations.getName() + "******************" + locationResult.getLastLocation().distanceTo(pinned) + "********************");
+                            //System.out.println(pinnedLocations.getName() + "******************" + locationResult.getLastLocation().distanceTo(pinned) + "********************");
 
-                                    NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), "channel_id")
-                                            .setSmallIcon(R.drawable.ic_notifications)
-                                            .setContentTitle(pinnedLocations.getName())
-                                            .setContentText("You're near this location")
-                                            .setPriority(NotificationCompat.PRIORITY_HIGH)
-                                            .setAutoCancel(true);
+                            NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), "channel_id")
+                                    .setSmallIcon(R.drawable.ic_notifications)
+                                    .setContentTitle(pinnedLocations.getName())
+                                    .setContentText("You're near this location")
+                                    .setPriority(NotificationCompat.PRIORITY_HIGH)
+                                    .setAutoCancel(true);
 
-                                    NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
-                                    notificationManager.notify(0, builder.build());
-                                }
-                            }
-
-                            count[0]++;
+                            NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+                            notificationManager.notify(0, builder.build());
                         }
-                    }, delay, period);
+                    }
                 }
             }, null);
         } else {

@@ -1,4 +1,4 @@
-package com.example.snare.firebase;
+package com.example.snare.firebaseRef;
 
 import androidx.annotation.NonNull;
 

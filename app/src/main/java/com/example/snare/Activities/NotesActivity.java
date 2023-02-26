@@ -34,7 +34,7 @@ import com.example.snare.LocationService.LocationForegroundService;
 import com.example.snare.R;
 import com.example.snare.adapters.NotesAdapter;
 import com.example.snare.dao.NotesDataBase;
-import com.example.snare.firebase.FirebaseNotes;
+import com.example.snare.firebaseRef.FirebaseNotes;
 import com.example.snare.listeners.NotesListeners;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
