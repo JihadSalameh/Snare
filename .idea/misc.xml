@@ -28,7 +28,7 @@
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/layout/activity_registrationcont.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/layout/activity_reminder.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/layout/activity_settings.xml" value="0.22" />
-        <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/layout/activity_shouts.xml" value="0.22447916666666667" />
+        <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/layout/activity_shouts.xml" value="0.1" />
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/layout/activity_splash_screen.xml" value="0.1" />
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/layout/activity_start.xml" value="0.17074275362318841" />
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/layout/activity_view_friend.xml" value="0.22447916666666667" />
@@ -37,6 +37,7 @@
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/layout/notification_view_holder.xml" value="0.22" />
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/layout/popup.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/layout/shout.xml" value="0.168359375" />
+        <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/layout/shoutpopup.xml" value="0.2234375" />
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/layout/single_view_friend.xml" value="0.1" />
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/menu/blocked_users_search_custom_menu.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/Smart/AndroidStudioProjects/Snare/app/src/main/res/menu/navigation_menu.xml" value="0.22447916666666667" />

@@ -45,7 +45,7 @@ public class FriendsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_friends);
 
-        addFriends = findViewById(R.id.addFriends);
+        addFriends = findViewById(R.id.addLocation);
         recyclerView = findViewById(R.id.friendsRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
