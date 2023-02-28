@@ -8,8 +8,13 @@ import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.snare.Entities.Group;
+import com.example.snare.Entities.Shout;
 import com.example.snare.NotificationsPkg.FCMSend;
 import com.example.snare.R;
+import com.example.snare.dao.NotesDataBase;
+import com.example.snare.dao.NotificationsDataBase;
+import com.example.snare.dao.PinnedLocationsDataBase;
+import com.example.snare.dao.ReminderDataBase;
 import com.example.snare.listeners.GroupListener;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -65,7 +70,6 @@ public class ShoutsActivity extends AppCompatActivity implements GroupListener, 
     private DatabaseReference databaseReference;
     private DatabaseReference mDatabase;
     private DatabaseReference mDatabaseShouts;
-    private FirebaseAuth auth;
     private FirebaseUser user;
 
     private List<String> shoutsUsers;
@@ -96,7 +100,9 @@ public class ShoutsActivity extends AppCompatActivity implements GroupListener, 
         assert mapFragment != null;
         mapFragment.getMapAsync(this);
 
-        databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid());
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
+        databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(Objects.requireNonNull(user).getUid());
         databaseReference.get().addOnSuccessListener(dataSnapshot -> name = Objects.requireNonNull(dataSnapshot.child("name").getValue()).toString());
         mDatabase = FirebaseDatabase.getInstance().getReference("Users");
         mDatabaseShouts = FirebaseDatabase.getInstance().getReference("Shouts");
@@ -160,6 +166,10 @@ public class ShoutsActivity extends AppCompatActivity implements GroupListener, 
         FirebaseAuth.getInstance().signOut();
 
         //delete all tables
+        NotesDataBase.getDatabase(getApplicationContext()).clearAllTables();
+        PinnedLocationsDataBase.getDatabase(getApplicationContext()).clearAllTables();
+        NotificationsDataBase.getDatabase(getApplicationContext()).clearAllTables();
+        ReminderDataBase.getDatabase(getApplicationContext()).clearAllTables();
         deleteDatabase("notes_db");
         deleteDatabase("notifications_db");
         deleteDatabase("pinnedLocations_db");
@@ -183,8 +193,6 @@ public class ShoutsActivity extends AppCompatActivity implements GroupListener, 
         dialog.show();
 
         send.setOnClickListener(view -> {
-            auth = FirebaseAuth.getInstance();
-            user = auth.getCurrentUser();
 
             mDatabase.get().addOnSuccessListener(dataSnapshot -> {
                 for(DataSnapshot users: dataSnapshot.getChildren()) {
@@ -262,9 +270,6 @@ public class ShoutsActivity extends AppCompatActivity implements GroupListener, 
         dialog.show();
 
         send.setOnClickListener(view -> {
-            auth = FirebaseAuth.getInstance();
-            user = auth.getCurrentUser();
-
             mDatabase.get().addOnSuccessListener(dataSnapshot -> {
                 for(DataSnapshot users: dataSnapshot.getChildren()) {
                     if(!Objects.requireNonNull(users.getKey()).equals(user.getUid()) && shoutsUsers.contains(users.getKey())) {
@@ -318,9 +323,42 @@ public class ShoutsActivity extends AppCompatActivity implements GroupListener, 
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         map=googleMap;
+
+        //////////////////////////////////////////////////////////////////////////
+        ArrayList<Shout> shouts = new ArrayList<>();
+        String[] temp_name = new String[1];
+        String[] text = new String[1];
+
+        mDatabaseShouts.child(user.getUid()).get().addOnSuccessListener(dataSnapshot -> {
+            for(DataSnapshot snapshot: dataSnapshot.getChildren()) {
+                LatLng latLng = null;
+                for(DataSnapshot snapshot1: snapshot.getChildren()) {
+                    double x = Double.parseDouble(Objects.requireNonNull(snapshot1.child("latitude").getValue()).toString());
+                    double y = Double.parseDouble(Objects.requireNonNull(snapshot1.child("longitude").getValue()).toString());
+                    latLng = new LatLng(x, y);
+                    temp_name[0] = snapshot1.getKey();
+                }
+                text[0] = snapshot.getKey();
+                Shout shout = new Shout(text[0], temp_name[0], latLng);
+
+                //save all shouts
+                shouts.add(shout);
+
+                //keeps changing when moving on the Screen (need to make it fixed)
+                //map.addMarker(new MarkerOptions().position(Objects.requireNonNull(latLng)).title("shout from " + temp_name[0]));
+            }
+
+            for(Shout shout: shouts) {
+                System.out.println("*********************");
+                System.out.println(shout.toString());
+                System.out.println("*********************");
+            }
+
+        });
+        //////////////////////////////////////////////////////////////////////////
+
         googleMap.setOnCameraMoveListener(() -> {
             map.clear();
-            System.out.println("lat: " + map.getCameraPosition().target.latitude + " --------- " + "lng: " + map.getCameraPosition().target.longitude);
             LatLng latLng = new LatLng(map.getCameraPosition().target.latitude, map.getCameraPosition().target.longitude);
             map.addMarker(new MarkerOptions().position(latLng));
         });

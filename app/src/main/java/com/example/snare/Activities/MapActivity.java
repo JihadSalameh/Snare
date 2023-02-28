@@ -108,7 +108,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         map=googleMap;
         googleMap.setOnCameraMoveListener(() -> {
             map.clear();
-            System.out.println("lat: " + map.getCameraPosition().target.latitude + " --------- " + "lng: " + map.getCameraPosition().target.longitude);
             LatLng latLng = new LatLng(map.getCameraPosition().target.latitude, map.getCameraPosition().target.longitude);
             map.addMarker(new MarkerOptions().position(latLng));
         });

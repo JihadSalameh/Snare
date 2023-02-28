@@ -21,7 +21,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
@@ -39,13 +38,10 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.example.snare.Entities.Group;
-import com.example.snare.Entities.Note;
 import com.example.snare.Entities.PinnedLocations;
 import com.example.snare.Entities.Reminder;
-import com.example.snare.firebaseRef.FirebaseNotes;
 import com.example.snare.firebaseRef.FirebaseReminders;
 import com.example.snare.R;
-import com.example.snare.dao.NotesDataBase;
 import com.example.snare.dao.ReminderDataBase;
 import com.example.snare.listeners.GroupListener;
 import com.example.snare.listeners.PinnedLocationListener;
@@ -255,11 +251,8 @@ public class CreateReminderActivity extends AppCompatActivity implements GroupLi
     private void setTextSaveListener() {
         if (year != -1 && month != -1 && day != -1 && hour != 0 && minute != 0) {
             layoutMiscellaneous.findViewById(R.id.layoutAddPlace).setAlpha(0.5f);
-            layoutMiscellaneous.findViewById(R.id.layoutAddPlace).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+            layoutMiscellaneous.findViewById(R.id.layoutAddPlace).setOnClickListener(v -> {
 
-                }
             });
             isTimeDateReminder = true;
             Toast.makeText(getApplicationContext(), "Date and Time Selected", Toast.LENGTH_SHORT).show();
@@ -364,6 +357,8 @@ public class CreateReminderActivity extends AppCompatActivity implements GroupLi
             reminder.setGroup(groupIDs);
 
             if(isLocationReminder){
+                reminder.setLocation(pinnedLocations.get(0).getName());
+                pinnedLocations.clear();
             }else{
                 reminder.setLocation("");
             }
@@ -391,7 +386,6 @@ public class CreateReminderActivity extends AppCompatActivity implements GroupLi
                     reminder.setMinute(minute);
                     reminder.setLocation("");
                 }else{
-
                     reminder.setYear(alreadyAvailableReminder.getYear());
                     reminder.setMonth(alreadyAvailableReminder.getMonth());
                     reminder.setDay(alreadyAvailableReminder.getDay());
@@ -716,11 +710,8 @@ public class CreateReminderActivity extends AppCompatActivity implements GroupLi
 
         pinnedLocations.add(pinnedLocation);
         layoutMiscellaneous.findViewById(R.id.layoutAddDateTime).setAlpha(0.5f);
-        layoutMiscellaneous.findViewById(R.id.layoutAddDateTime).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        layoutMiscellaneous.findViewById(R.id.layoutAddDateTime).setOnClickListener(v -> {
 
-            }
         });
         isLocationReminder = true;
         pinnedLocationDialog.dismiss();

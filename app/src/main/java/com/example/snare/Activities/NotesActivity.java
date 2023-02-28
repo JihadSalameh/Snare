@@ -34,6 +34,9 @@ import com.example.snare.LocationService.LocationForegroundService;
 import com.example.snare.R;
 import com.example.snare.adapters.NotesAdapter;
 import com.example.snare.dao.NotesDataBase;
+import com.example.snare.dao.NotificationsDataBase;
+import com.example.snare.dao.PinnedLocationsDataBase;
+import com.example.snare.dao.ReminderDataBase;
 import com.example.snare.firebaseRef.FirebaseNotes;
 import com.example.snare.listeners.NotesListeners;
 import com.google.android.gms.tasks.Task;
@@ -379,6 +382,10 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
         auth.signOut();
 
         //delete all tables
+        NotesDataBase.getDatabase(getApplicationContext()).clearAllTables();
+        PinnedLocationsDataBase.getDatabase(getApplicationContext()).clearAllTables();
+        NotificationsDataBase.getDatabase(getApplicationContext()).clearAllTables();
+        ReminderDataBase.getDatabase(getApplicationContext()).clearAllTables();
         deleteDatabase("notes_db");
         deleteDatabase("notifications_db");
         deleteDatabase("pinnedLocations_db");
