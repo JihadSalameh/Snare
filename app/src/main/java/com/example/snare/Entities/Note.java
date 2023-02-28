@@ -17,6 +17,7 @@ import java.util.Objects;
 @Entity(tableName = "notes")
 public class Note implements Serializable {
 
+    @PrimaryKey
     @NonNull
     private String idFirebase;
 
@@ -35,9 +36,6 @@ public class Note implements Serializable {
     @ColumnInfo(name = "color")
     private String color;
 
-    @PrimaryKey(autoGenerate = true)
-    private int count;
-
     @TypeConverters(ConverterType.class)
     private List<String> group ;
 
@@ -47,14 +45,6 @@ public class Note implements Serializable {
 
     public void setGroup(List<String> group) {
         this.group = group;
-    }
-
-    public int getCount() {
-        return count;
-    }
-
-    public void setCount(int count) {
-        this.count = count;
     }
 
     @NonNull

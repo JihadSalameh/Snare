@@ -64,41 +64,40 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-public class CreateActivity extends AppCompatActivity implements GroupListener, PinnedLocationListener {
+public class CreateReminderActivity extends AppCompatActivity implements GroupListener, PinnedLocationListener {
 
-    private ImageView imageSave;
-    private EditText inputNoteTitle;
-    private EditText inputNote;
-    private TextView textDateTime;
+    private ImageView imageSaveReminder;
+    private EditText inputReminderTitle;
+    private EditText inputReminder;
+    private TextView textDateTimeReminder;
     private LinearLayout layoutMiscellaneous;
-    private String selectedNoteColor = "#333333";
-    private View viewTitleIndicator;
-    private ImageView imageColor1;
-    private ImageView imageColor2;
-    private ImageView imageColor3;
-    private ImageView imageColor4;
-    private ImageView imageColor5;
+    private String selectedReminderColor = "#333333";
+    private View viewTitleIndicatorReminder;
+    private ImageView imageColor1Reminder;
+    private ImageView imageColor2Reminder;
+    private ImageView imageColor3Reminder;
+    private ImageView imageColor4Reminder;
+    private ImageView imageColor5Reminder;
     private BottomSheetBehavior bottomSheetBehavior;
-    private ImageView imageNote;
+    private ImageView imageReminder;
     private String selectedImagePath;
-    private Note alreadyAvailableNote;
     private Reminder alreadyAvailableReminder;
-    private ImageView imageRemoveImage;
-    private AlertDialog dialogDeleteNote;
+    private ImageView imageRemoveImageReminder;
+    private AlertDialog dialogDeleteReminder;
     private AlertDialog dialogReminder;
-    private int year = -1, month = -1, day =-1;
+    private int year = -1, month = -1, day = -1;
     private int hour, minute;
-    private boolean isReminder = false;
     private AlarmManager alarmManager;
     private List<String> groupIDs;
     private List<PinnedLocations> pinnedLocations;
     private GroupLayout popupGroup;
-    private PinnedLocationDialog pinnedLocationDialog ;
+    private PinnedLocationDialog pinnedLocationDialog;
+    boolean isTimeDateReminder = false , isLocationReminder = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_create_note);
+        setContentView(R.layout.activity_create_reminder);
         setActivity();
     }
 
@@ -108,23 +107,22 @@ public class CreateActivity extends AppCompatActivity implements GroupListener, 
     }
 
     private void initializeActivity() {
-        imageSave = findViewById(R.id.imageSave);
-        inputNoteTitle = findViewById(R.id.inputNoteTitle);
-        inputNote = findViewById(R.id.inputNote);
-        textDateTime = findViewById(R.id.textDateTime);
-        layoutMiscellaneous = findViewById(R.id.layoutMiscellaneous);
-        viewTitleIndicator = findViewById(R.id.viewTitleIndicator);
+        imageSaveReminder = findViewById(R.id.imageSaveReminder);
+        inputReminderTitle = findViewById(R.id.inputReminderTitle);
+        inputReminder = findViewById(R.id.inputReminder);
+        textDateTimeReminder = findViewById(R.id.textDateTimeReminder);
+        layoutMiscellaneous = findViewById(R.id.layoutMiscellaneousReminder);
+        viewTitleIndicatorReminder = findViewById(R.id.viewTitleIndicatorReminder);
         setViewTitleIndicatorColor();
         bottomSheetBehavior = BottomSheetBehavior.from(layoutMiscellaneous);
-        imageColor1 = findViewById(R.id.imageColor1);
-        imageColor2 = findViewById(R.id.imageColor2);
-        imageColor3 = findViewById(R.id.imageColor3);
-        imageColor4 = findViewById(R.id.imageColor4);
-        imageColor5 = findViewById(R.id.imageColor5);
-        imageNote = findViewById(R.id.imageNote);
-        imageRemoveImage = findViewById(R.id.imageRemoveImage);
+        imageColor1Reminder = findViewById(R.id.imageColor1Reminder);
+        imageColor2Reminder = findViewById(R.id.imageColor2Reminder);
+        imageColor3Reminder = findViewById(R.id.imageColor3Reminder);
+        imageColor4Reminder = findViewById(R.id.imageColor4Reminder);
+        imageColor5Reminder = findViewById(R.id.imageColor5Reminder);
+        imageReminder = findViewById(R.id.imageReminder);
+        imageRemoveImageReminder = findViewById(R.id.imageRemoveImageReminder);
         checkIfUpdateOrCreate();
-        checkIfAddNoteFromQuickAction();
         alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
     }
 
@@ -168,9 +166,9 @@ public class CreateActivity extends AppCompatActivity implements GroupListener, 
                 try {
                     inputStream = getContentResolver().openInputStream(selectedImageUri);
                     Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                    imageNote.setImageBitmap(bitmap);
-                    imageNote.setVisibility(View.VISIBLE);
-                    imageRemoveImage.setVisibility(View.VISIBLE);
+                    imageReminder.setImageBitmap(bitmap);
+                    imageReminder.setVisibility(View.VISIBLE);
+                    imageRemoveImageReminder.setVisibility(View.VISIBLE);
                     selectedImagePath = getPathFromUri(selectedImageUri);
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
@@ -182,11 +180,11 @@ public class CreateActivity extends AppCompatActivity implements GroupListener, 
     }
 
     private void setImageBackListener() {
-        findViewById(R.id.imageBack).setOnClickListener(view -> onBackPressed());
+        findViewById(R.id.imageBackReminder).setOnClickListener(view -> onBackPressed());
     }
 
     private void setBottomSheetBehaviorListener() {
-        layoutMiscellaneous.findViewById(R.id.textMiscellaneous).setOnClickListener(view -> {
+        layoutMiscellaneous.findViewById(R.id.textMiscellaneousReminder).setOnClickListener(view -> {
             if (bottomSheetBehavior.getState() != BottomSheetBehavior.STATE_EXPANDED) {
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
             } else {
@@ -196,8 +194,8 @@ public class CreateActivity extends AppCompatActivity implements GroupListener, 
     }
 
     private void setViewTitleIndicatorColor() {
-        GradientDrawable gradientDrawable = (GradientDrawable) viewTitleIndicator.getBackground();
-        gradientDrawable.setColor(Color.parseColor(selectedNoteColor));
+        GradientDrawable gradientDrawable = (GradientDrawable) viewTitleIndicatorReminder.getBackground();
+        gradientDrawable.setColor(Color.parseColor(selectedReminderColor));
     }
 
     private void setAddReminderListener() {
@@ -241,7 +239,7 @@ public class CreateActivity extends AppCompatActivity implements GroupListener, 
         int minute = calendar.get(Calendar.MINUTE);
 
         TimePickerDialog timePickerDialog = new TimePickerDialog(
-                CreateActivity.this,
+                CreateReminderActivity.this,
                 (timePicker, hour1, minute1) -> getTime(hour1, minute1),
                 hour,
                 minute,
@@ -255,10 +253,18 @@ public class CreateActivity extends AppCompatActivity implements GroupListener, 
     }
 
     private void setTextSaveListener() {
-        if (year != -1 && month != -1 && day != -1 && hour != 0 && minute != 0){
-            isReminder = true;
-        }else {
-            Toast.makeText(getApplicationContext(),"Choose Date and Time",Toast.LENGTH_SHORT).show();
+        if (year != -1 && month != -1 && day != -1 && hour != 0 && minute != 0) {
+            layoutMiscellaneous.findViewById(R.id.layoutAddPlace).setAlpha(0.5f);
+            layoutMiscellaneous.findViewById(R.id.layoutAddPlace).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                }
+            });
+            isTimeDateReminder = true;
+            Toast.makeText(getApplicationContext(), "Date and Time Selected", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getApplicationContext(), "Choose Date and Time", Toast.LENGTH_SHORT).show();
         }
 
         dialogReminder.dismiss();
@@ -271,7 +277,7 @@ public class CreateActivity extends AppCompatActivity implements GroupListener, 
         int day = calendar.get(Calendar.DAY_OF_MONTH);
 
         DatePickerDialog datePickerDialog = new DatePickerDialog(
-                CreateActivity.this,
+                CreateReminderActivity.this,
                 (datePicker, year1, month1, day1) -> getDate(year1, month1, day1),
                 year,
                 month,
@@ -296,7 +302,9 @@ public class CreateActivity extends AppCompatActivity implements GroupListener, 
             @Override
             protected Void doInBackground(Void... voids) {
                 ReminderDataBase.getDatabase(getApplicationContext()).reminderDao().insertReminder(reminder);
-                setAlarm(reminder);
+                if(isTimeDateReminder){
+                    setAlarm(reminder);
+                }
                 FirebaseReminders firebaseReminders = new FirebaseReminders();
                 firebaseReminders.save(reminder);
                 return null;
@@ -306,7 +314,7 @@ public class CreateActivity extends AppCompatActivity implements GroupListener, 
             protected void onPostExecute(Void avoid) {
                 super.onPostExecute(avoid);
                 Intent intent = new Intent();
-                intent.putExtra("type","reminder");
+                intent.putExtra("type", "reminder");
                 setResult(RESULT_OK, intent);
                 finish();
             }
@@ -317,9 +325,9 @@ public class CreateActivity extends AppCompatActivity implements GroupListener, 
 
     private void setAlarm(Reminder reminder) {
         Intent intent = new Intent(getApplicationContext(), AlarmReceiver.class);
-        intent.putExtra("title",reminder.getTitle());
-        intent.putExtra("description",reminder.getReminderText());
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(),reminder.hashCode(),intent,PendingIntent.FLAG_IMMUTABLE);
+        intent.putExtra("title", reminder.getTitle());
+        intent.putExtra("description", reminder.getReminderText());
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), reminder.hashCode(), intent, PendingIntent.FLAG_IMMUTABLE);
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
         calendar.set(Calendar.HOUR_OF_DAY, reminder.getHour());
@@ -330,73 +338,86 @@ public class CreateActivity extends AppCompatActivity implements GroupListener, 
         alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
     }
 
-    //////////////////////////////////////////////////////////
-    //1
     private void setImageSaveListener() {
-        imageSave.setOnClickListener(view -> {
+        imageSaveReminder.setOnClickListener(view -> {
             setTimeDate();
+            Reminder reminder = new Reminder();
+            DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference("reminders");
+            reminder.setIdFirebase(Objects.requireNonNull(mDatabase.getRef().push().getKey()));
+            reminder.setTitle(inputReminderTitle.getText().toString());
+            reminder.setReminderText(inputReminder.getText().toString());
+            reminder.setDateTime(textDateTimeReminder.getText().toString());
+            reminder.setColor(selectedReminderColor);
+            reminder.setImagePath(selectedImagePath);
 
-            if(isReminder) {
-                isReminder = false;
-                Reminder reminder = new Reminder();
-                DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference("reminders");
-                reminder.setIdFirebase(Objects.requireNonNull(mDatabase.getRef().push().getKey()));
-                reminder.setTitle(inputNoteTitle.getText().toString());
-                reminder.setReminderText(inputNote.getText().toString());
-                reminder.setDateTime(textDateTime.getText().toString());
-                reminder.setColor(selectedNoteColor);
-                reminder.setImagePath(selectedImagePath);
+            if(isTimeDateReminder){
                 reminder.setYear(year);
                 reminder.setMonth(month);
                 reminder.setDay(day);
                 reminder.setHour(hour);
                 reminder.setMinute(minute);
-                if(groupIDs  == null){
-                    groupIDs  = new ArrayList<>();
-                }
-                reminder.setGroup(groupIDs );
+            }
 
-                if(pinnedLocations == null){
-                    pinnedLocations = new ArrayList<>();
-                }
-                reminder.setLocation(pinnedLocations.get(0).getName());
-                if(alreadyAvailableReminder != null) {
-                    reminder.setIdFirebase(alreadyAvailableReminder.getIdFirebase());
-                    reminder.setCount(alreadyAvailableReminder.getCount());
-                    reminder.setGroup(alreadyAvailableReminder.getGroup());
+            if (groupIDs == null) {
+                groupIDs = new ArrayList<>();
+            }
+            reminder.setGroup(groupIDs);
+
+            if(isLocationReminder){
+            }else{
+                reminder.setLocation("");
+            }
+
+
+            if (alreadyAvailableReminder != null) {
+                reminder.setIdFirebase(alreadyAvailableReminder.getIdFirebase());
+
+                if(isLocationReminder){
+                    reminder.setLocation(pinnedLocations.get(0).getName());
+                    reminder.setYear(year);
+                    reminder.setMonth(month);
+                    reminder.setDay(day);
+                    reminder.setHour(hour);
+                    reminder.setMinute(minute);
+                }else{
                     reminder.setLocation(alreadyAvailableReminder.getLocation());
                 }
+
+                if(isTimeDateReminder){
+                    reminder.setYear(year);
+                    reminder.setMonth(month);
+                    reminder.setDay(day);
+                    reminder.setHour(hour);
+                    reminder.setMinute(minute);
+                    reminder.setLocation("");
+                }else{
+
+                    reminder.setYear(alreadyAvailableReminder.getYear());
+                    reminder.setMonth(alreadyAvailableReminder.getMonth());
+                    reminder.setDay(alreadyAvailableReminder.getDay());
+                    reminder.setHour(alreadyAvailableReminder.getHour());
+                    reminder.setMinute(alreadyAvailableReminder.getMinute());
+                }
+
+
+                reminder.setGroup(alreadyAvailableReminder.getGroup());
+            }
+
+            if(isLocationReminder || isTimeDateReminder || alreadyAvailableReminder != null){
                 saveReminder(reminder);
-            } else {
-                Note note = new Note();
-                DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference("notes");
-                note.setIdFirebase(Objects.requireNonNull(mDatabase.getRef().push().getKey()));
-                note.setTitle(inputNoteTitle.getText().toString());
-                note.setNoteText(inputNote.getText().toString());
-                note.setDateTime(textDateTime.getText().toString());
-                note.setColor(selectedNoteColor);
-                note.setImagePath(selectedImagePath);
-                if(groupIDs  == null){
-                    groupIDs  = new ArrayList<>();
-                }
-                note.setGroup(groupIDs );
-                if(alreadyAvailableNote != null) {
-                    note.setIdFirebase(alreadyAvailableNote.getIdFirebase());
-                    note.setCount(alreadyAvailableNote.getCount());
-                    note.setGroup(alreadyAvailableNote.getGroup());
-                }
-                saveNote(note);
+            }else {
+                Toast.makeText(getApplicationContext(),"Select time or location" , Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     private void setAddImageListener() {
-        layoutMiscellaneous.findViewById(R.id.layoutAddImage).setOnClickListener(view -> {
+        layoutMiscellaneous.findViewById(R.id.layoutAddImageReminder).setOnClickListener(view -> {
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
 
             if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE) !=
                     PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(CreateActivity.this,
+                ActivityCompat.requestPermissions(CreateReminderActivity.this,
                         new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                         Constants.REQUEST_CODE_STORAGE_PERMISSION);
             } else {
@@ -415,17 +436,6 @@ public class CreateActivity extends AppCompatActivity implements GroupListener, 
         }
     }
 
-    private void makeNoteWithImage() {
-        String imagePath = getIntent().getStringExtra("imagePath");
-        if (imagePath != null && !imagePath.trim().isEmpty()) {
-            imageNote.setImageBitmap(BitmapFactory.decodeFile(imagePath));
-            imageNote.setVisibility(View.VISIBLE);
-            imageRemoveImage.setVisibility(View.VISIBLE);
-            selectedImagePath = imagePath;
-        }
-
-    }
-
     @SuppressLint("Range")
     private String getPathFromUri(Uri imageUri) {
         String filePath = null;
@@ -441,129 +451,98 @@ public class CreateActivity extends AppCompatActivity implements GroupListener, 
     }
 
     private void setRemoveImageListener() {
-        imageRemoveImage.setOnClickListener(view -> {
-            imageNote.setImageBitmap(null);
-            imageNote.setVisibility(View.GONE);
-            imageRemoveImage.setVisibility(View.GONE);
+        imageRemoveImageReminder.setOnClickListener(view -> {
+            imageReminder.setImageBitmap(null);
+            imageReminder.setVisibility(View.GONE);
+            imageRemoveImageReminder.setVisibility(View.GONE);
             selectedImagePath = "";
         });
     }
 
     private void setTimeDate() {
-        textDateTime.setText(new SimpleDateFormat("EEEE, dd MMMM yyyy HH:mm a",
+        textDateTimeReminder.setText(new SimpleDateFormat("EEEE, dd MMMM yyyy HH:mm a",
                 Locale.getDefault()).format(new Date()));
     }
 
-    private void saveNote(Note note) {
-
-        if (isTitleEmpty()) {
-            Toast.makeText(this, "Note Title is Empty", Toast.LENGTH_LONG).show();
-            return;
-        }
-
-        class SaveNoteTask extends AsyncTask<Void, Void, Void> {
-
-            @Override
-            protected Void doInBackground(Void... voids) {
-                NotesDataBase.getDatabase(getApplicationContext()).noteDao().insertNote(note);
-                FirebaseNotes firebaseNotes = new FirebaseNotes();
-                firebaseNotes.save(note);
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void avoid) {
-                super.onPostExecute(avoid);
-                Intent intent = new Intent();
-                setResult(RESULT_OK, intent);
-                finish();
-            }
-
-        }
-
-        new SaveNoteTask().execute();
-    }
-
     private boolean isTitleEmpty() {
-        return inputNoteTitle.getText().toString().isEmpty();
+        return inputReminderTitle.getText().toString().isEmpty();
     }
 
-    //////////////////////////////////////////////////////////
     private void setImageColor1Listener() {
-        layoutMiscellaneous.findViewById(R.id.imageColor1).setOnClickListener(view -> {
-            selectedNoteColor = "#333333";
-            imageColor1.setImageResource(R.drawable.ic_done);
-            imageColor2.setImageResource(0);
-            imageColor3.setImageResource(0);
-            imageColor4.setImageResource(0);
-            imageColor5.setImageResource(0);
+        layoutMiscellaneous.findViewById(R.id.imageColor1Reminder).setOnClickListener(view -> {
+            selectedReminderColor = "#333333";
+            imageColor1Reminder.setImageResource(R.drawable.ic_done);
+            imageColor2Reminder.setImageResource(0);
+            imageColor3Reminder.setImageResource(0);
+            imageColor4Reminder.setImageResource(0);
+            imageColor5Reminder.setImageResource(0);
             setViewTitleIndicatorColor();
         });
     }
 
     private void setImageColor2Listener() {
-        layoutMiscellaneous.findViewById(R.id.imageColor2).setOnClickListener(view -> {
-            selectedNoteColor = "#FDBE3B";
-            imageColor1.setImageResource(0);
-            imageColor2.setImageResource(R.drawable.ic_done);
-            imageColor3.setImageResource(0);
-            imageColor4.setImageResource(0);
-            imageColor5.setImageResource(0);
+        layoutMiscellaneous.findViewById(R.id.imageColor2Reminder).setOnClickListener(view -> {
+            selectedReminderColor = "#FDBE3B";
+            imageColor1Reminder.setImageResource(0);
+            imageColor2Reminder.setImageResource(R.drawable.ic_done);
+            imageColor3Reminder.setImageResource(0);
+            imageColor4Reminder.setImageResource(0);
+            imageColor5Reminder.setImageResource(0);
             setViewTitleIndicatorColor();
         });
     }
 
     private void setImageColor3Listener() {
-        layoutMiscellaneous.findViewById(R.id.imageColor3).setOnClickListener(view -> {
-            selectedNoteColor = "#FF4842";
-            imageColor1.setImageResource(0);
-            imageColor2.setImageResource(0);
-            imageColor3.setImageResource(R.drawable.ic_done);
-            imageColor4.setImageResource(0);
-            imageColor5.setImageResource(0);
+        layoutMiscellaneous.findViewById(R.id.imageColor3Reminder).setOnClickListener(view -> {
+            selectedReminderColor = "#FF4842";
+            imageColor1Reminder.setImageResource(0);
+            imageColor2Reminder.setImageResource(0);
+            imageColor3Reminder.setImageResource(R.drawable.ic_done);
+            imageColor4Reminder.setImageResource(0);
+            imageColor5Reminder.setImageResource(0);
             setViewTitleIndicatorColor();
         });
     }
 
     private void setImageColor4Listener() {
-        layoutMiscellaneous.findViewById(R.id.imageColor4).setOnClickListener(view -> {
-            selectedNoteColor = "#3A52FC";
-            imageColor1.setImageResource(0);
-            imageColor2.setImageResource(0);
-            imageColor3.setImageResource(0);
-            imageColor4.setImageResource(R.drawable.ic_done);
-            imageColor5.setImageResource(0);
+        layoutMiscellaneous.findViewById(R.id.imageColor4Reminder).setOnClickListener(view -> {
+            selectedReminderColor = "#3A52FC";
+            imageColor1Reminder.setImageResource(0);
+            imageColor2Reminder.setImageResource(0);
+            imageColor3Reminder.setImageResource(0);
+            imageColor4Reminder.setImageResource(R.drawable.ic_done);
+            imageColor5Reminder.setImageResource(0);
             setViewTitleIndicatorColor();
         });
     }
 
     private void setImageColor5Listener() {
-        layoutMiscellaneous.findViewById(R.id.imageColor5).setOnClickListener(view -> {
-            selectedNoteColor = "#000000";
-            imageColor1.setImageResource(0);
-            imageColor2.setImageResource(0);
-            imageColor3.setImageResource(0);
-            imageColor4.setImageResource(0);
-            imageColor5.setImageResource(R.drawable.ic_done);
+        layoutMiscellaneous.findViewById(R.id.imageColor5Reminder).setOnClickListener(view -> {
+            selectedReminderColor = "#000000";
+            imageColor1Reminder.setImageResource(0);
+            imageColor2Reminder.setImageResource(0);
+            imageColor3Reminder.setImageResource(0);
+            imageColor4Reminder.setImageResource(0);
+            imageColor5Reminder.setImageResource(R.drawable.ic_done);
             setViewTitleIndicatorColor();
         });
     }
 
     private void setViewColor() {
-        if (alreadyAvailableNote != null && alreadyAvailableNote.getColor() != null && !alreadyAvailableNote.getColor().trim().isEmpty()) {
+        if (alreadyAvailableReminder != null && alreadyAvailableReminder.getColor() != null && !alreadyAvailableReminder.getColor().trim().isEmpty()) {
 
-            switch (alreadyAvailableNote.getColor()) {
+            switch (alreadyAvailableReminder.getColor()) {
                 case "#FDBE3B":
-                    layoutMiscellaneous.findViewById(R.id.viewColor2).performClick();
+                    layoutMiscellaneous.findViewById(R.id.viewColor2Reminder).performClick();
                     break;
                 case "#FF4842":
-                    layoutMiscellaneous.findViewById(R.id.viewColor3).performClick();
+                    layoutMiscellaneous.findViewById(R.id.viewColor3Reminder).performClick();
                     break;
                 case "#3A52FC":
-                    layoutMiscellaneous.findViewById(R.id.viewColor4).performClick();
+                    layoutMiscellaneous.findViewById(R.id.viewColor4Reminder).performClick();
                     break;
                 case "#000000":
-                    layoutMiscellaneous.findViewById(R.id.viewColor5).performClick();
+                    layoutMiscellaneous.findViewById(R.id.viewColor5Reminder).performClick();
                     break;
             }
 
@@ -571,65 +550,34 @@ public class CreateActivity extends AppCompatActivity implements GroupListener, 
     }
 
     private void checkIfUpdateOrCreate() {
-        if(getIntent().getBooleanExtra("isViewOrUpdate", false)) {
-            if(getIntent().getBooleanExtra("isReminder", false)) {
-                alreadyAvailableReminder = (Reminder) getIntent().getSerializableExtra("reminder");
-                isReminder = true;
-                setViewReminder();
-                setViewColor();
-            } else {
-                alreadyAvailableNote = (Note) getIntent().getSerializableExtra("note");
-                setViewNote();
-                setViewColor();
-            }
+        if (getIntent().getBooleanExtra("isViewOrUpdate", false)) {
+            alreadyAvailableReminder = (Reminder) getIntent().getSerializableExtra("reminder");
+            setViewReminder();
+            setViewColor();
+
         }
     }
 
     private void setViewReminder() {
-        inputNoteTitle.setText(alreadyAvailableReminder.getTitle());
-        inputNote.setText(alreadyAvailableReminder.getReminderText());
-        textDateTime.setText(alreadyAvailableReminder.getDateTime());
-        getDate(alreadyAvailableReminder.getYear(),alreadyAvailableReminder.getMonth(),alreadyAvailableReminder.getDay());
-        getTime(alreadyAvailableReminder.getHour(),alreadyAvailableReminder.getMinute());
-        selectedNoteColor = alreadyAvailableReminder.getColor();
+        inputReminderTitle.setText(alreadyAvailableReminder.getTitle());
+        inputReminder.setText(alreadyAvailableReminder.getReminderText());
+        textDateTimeReminder.setText(alreadyAvailableReminder.getDateTime());
+        getDate(alreadyAvailableReminder.getYear(), alreadyAvailableReminder.getMonth(), alreadyAvailableReminder.getDay());
+        getTime(alreadyAvailableReminder.getHour(), alreadyAvailableReminder.getMinute());
+        selectedReminderColor = alreadyAvailableReminder.getColor();
 
-        if(alreadyAvailableReminder.getImagePath() != null && !alreadyAvailableReminder.getImagePath().trim().isEmpty()) {
-            imageNote.setImageBitmap(BitmapFactory.decodeFile(alreadyAvailableReminder.getImagePath()));
-            imageNote.setVisibility(View.VISIBLE);
-            imageRemoveImage.setVisibility(View.VISIBLE);
+        if (alreadyAvailableReminder.getImagePath() != null && !alreadyAvailableReminder.getImagePath().trim().isEmpty()) {
+            imageReminder.setImageBitmap(BitmapFactory.decodeFile(alreadyAvailableReminder.getImagePath()));
+            imageReminder.setVisibility(View.VISIBLE);
+            imageRemoveImageReminder.setVisibility(View.VISIBLE);
             selectedImagePath = alreadyAvailableReminder.getImagePath();
         }
 
         setDeleteListener();
     }
 
-    private void checkIfAddNoteFromQuickAction() {
-        Log.d("add","6");
-        if(getIntent().getBooleanExtra("isFromQuickActionsBar", false)) {
-            if (getIntent().getStringExtra("quickActionBarType").equals("image")) {
-                makeNoteWithImage();
-            }
-        }
-    }
-
-    private void setViewNote() {
-        inputNoteTitle.setText(alreadyAvailableNote.getTitle());
-        inputNote.setText(alreadyAvailableNote.getNoteText());
-        textDateTime.setText(alreadyAvailableNote.getDateTime());
-        selectedNoteColor = alreadyAvailableNote.getColor();
-
-        if(alreadyAvailableNote.getImagePath() != null && !alreadyAvailableNote.getImagePath().trim().isEmpty()) {
-            imageNote.setImageBitmap(BitmapFactory.decodeFile(alreadyAvailableNote.getImagePath()));
-            imageNote.setVisibility(View.VISIBLE);
-            imageRemoveImage.setVisibility(View.VISIBLE);
-            selectedImagePath = alreadyAvailableNote.getImagePath();
-        }
-
-        setDeleteListener();
-    }
-
     private void setDeleteListener() {
-        LinearLayout layoutDeleteNote = findViewById(R.id.layoutDeleteNote);
+        LinearLayout layoutDeleteNote = findViewById(R.id.layoutDeleteReminder);
         layoutDeleteNote.setVisibility(View.VISIBLE);
         layoutDeleteNote.setOnClickListener(view -> {
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
@@ -637,7 +585,6 @@ public class CreateActivity extends AppCompatActivity implements GroupListener, 
         });
     }
 
-    //2
     private void showDeleteDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
@@ -648,10 +595,10 @@ public class CreateActivity extends AppCompatActivity implements GroupListener, 
         // Set the custom layout as the view for the delete dialog
         builder.setView(dialogView);
 
-        dialogDeleteNote = builder.create();
+        dialogDeleteReminder = builder.create();
 
-        if (dialogDeleteNote.getWindow() != null) {
-            dialogDeleteNote.getWindow().setBackgroundDrawable(new ColorDrawable(0));
+        if (dialogDeleteReminder.getWindow() != null) {
+            dialogDeleteReminder.getWindow().setBackgroundDrawable(new ColorDrawable(0));
         }
 
         dialogView.findViewById(R.id.textDeleteNote).setOnClickListener(new View.OnClickListener() {
@@ -662,15 +609,10 @@ public class CreateActivity extends AppCompatActivity implements GroupListener, 
 
                     @Override
                     protected Void doInBackground(Void... voids) {
-                        if(isReminder) {
-                            ReminderDataBase.getDatabase(getApplicationContext()).reminderDao().deleteReminder(alreadyAvailableReminder);
-                            FirebaseReminders firebaseReminders = new FirebaseReminders();
-                            firebaseReminders.delete(alreadyAvailableReminder);
-                        } else {
-                            NotesDataBase.getDatabase(getApplicationContext()).noteDao().deleteNote(alreadyAvailableNote);
-                            FirebaseNotes firebaseNotes = new FirebaseNotes();
-                            firebaseNotes.delete(alreadyAvailableNote);
-                        }
+
+                        ReminderDataBase.getDatabase(getApplicationContext()).reminderDao().deleteReminder(alreadyAvailableReminder);
+                        FirebaseReminders firebaseReminders = new FirebaseReminders();
+                        firebaseReminders.delete(alreadyAvailableReminder);
 
                         return null;
                     }
@@ -680,13 +622,7 @@ public class CreateActivity extends AppCompatActivity implements GroupListener, 
                     protected void onPostExecute(Void avoid) {
                         super.onPostExecute(avoid);
                         Intent intent = new Intent();
-
-                        if(isReminder) {
-                            intent.putExtra("isReminderDeleted", true);
-                        } else {
-                            intent.putExtra("isNoteDeleted", true);
-                        }
-
+                        intent.putExtra("isReminderDeleted", true);
                         setResult(RESULT_OK, intent);
                         finish();
                     }
@@ -697,20 +633,20 @@ public class CreateActivity extends AppCompatActivity implements GroupListener, 
             }
         });
 
-        dialogView.findViewById(R.id.textCancel).setOnClickListener(view -> dialogDeleteNote.dismiss());
+        dialogView.findViewById(R.id.textCancel).setOnClickListener(view -> dialogDeleteReminder.dismiss());
 
-        dialogDeleteNote.show();
+        dialogDeleteReminder.show();
     }
 
     private void setCollaborateListener() {
-        layoutMiscellaneous.findViewById(R.id.layoutAddCollaborator).setOnClickListener(view -> {
+        layoutMiscellaneous.findViewById(R.id.layoutAddCollaboratorReminder).setOnClickListener(view -> {
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-            if(!isNetworkAvailable(getApplicationContext())){
-                Toast.makeText(getApplicationContext(),"No internet",Toast.LENGTH_SHORT).show();
+            if (!isNetworkAvailable(getApplicationContext())) {
+                Toast.makeText(getApplicationContext(), "No internet", Toast.LENGTH_SHORT).show();
                 return;
             }
-            popupGroup = new GroupLayout(CreateActivity.this);
-            popupGroup.setDialog(CreateActivity.this);
+            popupGroup = new GroupLayout(CreateReminderActivity.this);
+            popupGroup.setDialog(CreateReminderActivity.this);
             Window window = popupGroup.getWindow();
             if (window != null) {
                 WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
@@ -725,7 +661,7 @@ public class CreateActivity extends AppCompatActivity implements GroupListener, 
 
     @Override
     public void onGroupClick(Group group, int position) {
-        if(groupIDs == null){
+        if (groupIDs == null) {
             groupIDs = new ArrayList<>();
         }
 
@@ -738,8 +674,8 @@ public class CreateActivity extends AppCompatActivity implements GroupListener, 
         super.onDestroy();
 
         // Dismiss the dialog if it's still showing
-        if (dialogDeleteNote != null && dialogDeleteNote.isShowing()) {
-            dialogDeleteNote.dismiss();
+        if (dialogDeleteReminder != null && dialogDeleteReminder.isShowing()) {
+            dialogDeleteReminder.dismiss();
         }
     }
 
@@ -753,12 +689,12 @@ public class CreateActivity extends AppCompatActivity implements GroupListener, 
     private void setAddPinnedListener() {
         layoutMiscellaneous.findViewById(R.id.layoutAddPlace).setOnClickListener(view -> {
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-            if(!isNetworkAvailable(getApplicationContext())){
-                Toast.makeText(getApplicationContext(),"No internet",Toast.LENGTH_SHORT).show();
+            if (!isNetworkAvailable(getApplicationContext())) {
+                Toast.makeText(getApplicationContext(), "No internet", Toast.LENGTH_SHORT).show();
                 return;
             }
-            pinnedLocationDialog = new PinnedLocationDialog(CreateActivity.this);
-            pinnedLocationDialog.setDialog(CreateActivity.this);
+            pinnedLocationDialog = new PinnedLocationDialog(CreateReminderActivity.this);
+            pinnedLocationDialog.setDialog(CreateReminderActivity.this);
             Window window = pinnedLocationDialog.getWindow();
             if (window != null) {
                 WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
@@ -774,11 +710,19 @@ public class CreateActivity extends AppCompatActivity implements GroupListener, 
     @Override
     public void onPinnedClick(PinnedLocations pinnedLocation, int position) {
 
-        if(pinnedLocations == null){
+        if (pinnedLocations == null) {
             pinnedLocations = new ArrayList<>();
         }
 
         pinnedLocations.add(pinnedLocation);
+        layoutMiscellaneous.findViewById(R.id.layoutAddDateTime).setAlpha(0.5f);
+        layoutMiscellaneous.findViewById(R.id.layoutAddDateTime).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+        isLocationReminder = true;
         pinnedLocationDialog.dismiss();
 
     }

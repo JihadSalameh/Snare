@@ -95,6 +95,10 @@ public class ReminderViewHolder extends RecyclerView.ViewHolder {
                 month = "Dec";
                 break;
         }
+        if(reminder.getHour() == 0){
+            output = "";
+            return output;
+        }
 
         output+=month + " ,"+ reminder.getHour()+":"+reminder.getMinute();
         return output;

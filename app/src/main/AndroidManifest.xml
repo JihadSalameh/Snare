@@ -23,14 +23,18 @@
         android:supportsRtl="true"
         tools:targetApi="31">
         <activity
+            android:name=".Activities.CreateReminderActivity"
+            android:exported="false"
+            android:theme="@style/Theme.SnareWithoutActionBar">
+        </activity>
+        <activity
             android:name=".Activities.MembersActivity"
             android:exported="false"
-            android:theme="@style/Theme.Snare">
-        </activity>
+            android:theme="@style/Theme.Snare"></activity>
         <activity
             android:name=".Activities.GroupActivity"
             android:exported="false"
-            android:theme="@style/Theme.Snare"></activity>
+            android:theme="@style/Theme.Snare" />
         <activity
             android:name=".Activities.splashScreen"
             android:configChanges="orientation|keyboardHidden|screenSize"
@@ -70,7 +74,7 @@
             android:exported="false"
             android:theme="@style/Theme.Snare" />
         <activity
-            android:name=".Activities.CreateActivity"
+            android:name=".Activities.CreateNoteActivity"
             android:exported="false"
             android:theme="@style/Theme.SnareWithoutActionBar" />
         <activity

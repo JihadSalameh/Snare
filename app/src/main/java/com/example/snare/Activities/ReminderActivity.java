@@ -106,7 +106,7 @@ public class ReminderActivity extends AppCompatActivity implements RemindersList
     }
 
     private void setImageAddReminderMainListener() {
-        imageAddReminderMain.setOnClickListener(view -> startActivityForResult(new Intent(getApplicationContext(), CreateActivity.class),
+        imageAddReminderMain.setOnClickListener(view -> startActivityForResult(new Intent(getApplicationContext(), CreateReminderActivity.class),
                 REQUEST_CODE_ADD_REMINDER));
     }
 
@@ -242,7 +242,7 @@ public class ReminderActivity extends AppCompatActivity implements RemindersList
             if (selectedImageUri != null) {
                 try {
                     String selectedImagePath = getPathFromUri(selectedImageUri);
-                    Intent intent = new Intent(getApplicationContext(), CreateActivity.class);
+                    Intent intent = new Intent(getApplicationContext(), CreateNoteActivity.class);
                     intent.putExtra("isFromQuickActionsBar", true);
                     intent.putExtra("quickActionBarType", "image");
                     intent.putExtra("imagePath", selectedImagePath);
@@ -262,9 +262,8 @@ public class ReminderActivity extends AppCompatActivity implements RemindersList
     @Override
     public void onReminderClick(Reminder reminder, int position) {
         onClickPosition = position;
-        Intent intent = new Intent(getApplicationContext(), CreateActivity.class);
+        Intent intent = new Intent(getApplicationContext(), CreateReminderActivity.class);
         intent.putExtra("isViewOrUpdate", true);
-        intent.putExtra("isReminder", true);
         intent.putExtra("reminder", reminder);
         startActivityForResult(intent, REQUEST_CODE_UPDATE_REMINDER);
     }

@@ -18,6 +18,7 @@ import java.util.Objects;
 public class Reminder implements Serializable {
 
     @NonNull
+    @PrimaryKey
     private String idFirebase;
 
     @ColumnInfo(name = "title")
@@ -50,9 +51,6 @@ public class Reminder implements Serializable {
     @ColumnInfo(name = "minute")
     private int minute;
 
-    @PrimaryKey(autoGenerate = true)
-    private int count;
-
     @ColumnInfo(name = "location")
     private String location;
 
@@ -62,14 +60,6 @@ public class Reminder implements Serializable {
 
     public void setLocation(String location) {
         this.location = location;
-    }
-
-    public int getCount() {
-        return count;
-    }
-
-    public void setCount(int count) {
-        this.count = count;
     }
 
     @NonNull
@@ -183,11 +173,11 @@ public class Reminder implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Reminder reminder = (Reminder) o;
-        return year == reminder.year && month == reminder.month && day == reminder.day && hour == reminder.hour && minute == reminder.minute && count == reminder.count && idFirebase.equals(reminder.idFirebase) && Objects.equals(title, reminder.title) && Objects.equals(dateTime, reminder.dateTime) && Objects.equals(reminderText, reminder.reminderText) && Objects.equals(imagePath, reminder.imagePath) && Objects.equals(color, reminder.color);
+        return year == reminder.year && month == reminder.month && day == reminder.day && hour == reminder.hour && minute == reminder.minute&& idFirebase.equals(reminder.idFirebase) && Objects.equals(title, reminder.title) && Objects.equals(dateTime, reminder.dateTime) && Objects.equals(reminderText, reminder.reminderText) && Objects.equals(imagePath, reminder.imagePath) && Objects.equals(color, reminder.color);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(idFirebase, title, dateTime, reminderText, imagePath, color, year, month, day, hour, minute, count);
+        return Objects.hash(idFirebase, title, dateTime, reminderText, imagePath, color, year, month, day, hour, minute);
     }
 }

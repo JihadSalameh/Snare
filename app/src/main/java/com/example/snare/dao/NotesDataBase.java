@@ -8,7 +8,7 @@ import androidx.room.RoomDatabase;
 
 import com.example.snare.Entities.Note;
 
-@Database(entities = Note.class ,version = 4,exportSchema = false)
+@Database(entities = Note.class ,version = 6,exportSchema = false)
 public abstract class NotesDataBase extends RoomDatabase{
 
     private static NotesDataBase notesDataBase;

@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/layoutMiscellaneousReminder"
+    android:id="@+id/layoutMiscellaneousNote"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/background_miscellaneous"
@@ -12,7 +12,7 @@
 
 
     <TextView
-        android:id="@+id/textMiscellaneousReminder"
+        android:id="@+id/textMiscellaneous"
         android:layout_width="match_parent"
         android:layout_height="@dimen/_40sdp"
         android:gravity="center"
@@ -22,7 +22,7 @@
         android:textSize="@dimen/_13ssp" />
 
     <LinearLayout
-        android:id="@+id/layoutReminderColor"
+        android:id="@+id/layoutNoteColor"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/_10sdp"
@@ -35,13 +35,13 @@
             android:layout_weight="1">
 
             <View
-                android:id="@+id/viewColor1Reminder"
+                android:id="@+id/viewColor1"
                 android:layout_width="@dimen/_35sdp"
                 android:layout_height="@dimen/_35sdp"
                 android:background="@drawable/background_note_color1" />
 
             <ImageView
-                android:id="@+id/imageColor1Reminder"
+                android:id="@+id/imageColor1"
                 android:layout_width="@dimen/_35sdp"
                 android:layout_height="@dimen/_35sdp"
                 android:contentDescription="@string/app_name"
@@ -60,13 +60,13 @@
             android:layout_weight="1">
 
             <View
-                android:id="@+id/viewColor2Reminder"
+                android:id="@+id/viewColor2"
                 android:layout_width="@dimen/_35sdp"
                 android:layout_height="@dimen/_35sdp"
                 android:background="@drawable/background_note_color2" />
 
             <ImageView
-                android:id="@+id/imageColor2Reminder"
+                android:id="@+id/imageColor2"
                 android:layout_width="@dimen/_35sdp"
                 android:layout_height="@dimen/_35sdp"
                 android:contentDescription="@string/app_name"
@@ -83,13 +83,13 @@
             android:layout_weight="1">
 
             <View
-                android:id="@+id/viewColor3Reminder"
+                android:id="@+id/viewColor3"
                 android:layout_width="@dimen/_35sdp"
                 android:layout_height="@dimen/_35sdp"
                 android:background="@drawable/background_note_color3" />
 
             <ImageView
-                android:id="@+id/imageColor3Reminder"
+                android:id="@+id/imageColor3"
                 android:layout_width="@dimen/_35sdp"
                 android:layout_height="@dimen/_35sdp"
                 android:contentDescription="@string/app_name"
@@ -107,13 +107,13 @@
             android:layout_weight="1">
 
             <View
-                android:id="@+id/viewColor4Reminder"
+                android:id="@+id/viewColor4"
                 android:layout_width="@dimen/_35sdp"
                 android:layout_height="@dimen/_35sdp"
                 android:background="@drawable/background_note_color4" />
 
             <ImageView
-                android:id="@+id/imageColor4Reminder"
+                android:id="@+id/imageColor4"
                 android:layout_width="@dimen/_35sdp"
                 android:layout_height="@dimen/_35sdp"
                 android:contentDescription="@string/app_name"
@@ -131,13 +131,13 @@
             android:layout_weight="1">
 
             <View
-                android:id="@+id/viewColor5Reminder"
+                android:id="@+id/viewColor5"
                 android:layout_width="@dimen/_35sdp"
                 android:layout_height="@dimen/_35sdp"
                 android:background="@drawable/background_note_color5" />
 
             <ImageView
-                android:id="@+id/imageColor5Reminder"
+                android:id="@+id/imageColor5"
                 android:layout_width="@dimen/_35sdp"
                 android:layout_height="@dimen/_35sdp"
                 android:contentDescription="@string/app_name"
@@ -151,7 +151,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/layoutAddImageReminder"
+        android:id="@+id/layoutAddImage"
         android:layout_width="match_parent"
         android:layout_height="@dimen/_35sdp"
         android:layout_margin="@dimen/_10sdp"
@@ -178,61 +178,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/layoutAddDateTime"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/_35sdp"
-        android:layout_margin="@dimen/_10sdp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-
-        <ImageView
-            android:layout_width="@dimen/_22sdp"
-            android:layout_height="@dimen/_22sdp"
-            android:contentDescription="@string/app_name"
-            android:src="@drawable/ic_clock"
-            android:tint="@color/colorIcons"
-            tools:ignore="UseAppTint" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/_10sdp"
-            android:includeFontPadding="false"
-            android:text="@string/choose_a_date_time"
-            android:textColor="@color/colorIcons"
-            android:textSize="@dimen/_12ssp"/>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/layoutAddPlace"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/_35sdp"
-        android:layout_margin="@dimen/_10sdp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-
-        <ImageView
-            android:layout_width="@dimen/_22sdp"
-            android:layout_height="@dimen/_22sdp"
-            android:contentDescription="@string/app_name"
-            android:src="@drawable/ic_place"
-            android:tint="@color/colorIcons"
-            tools:ignore="UseAppTint" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/_10sdp"
-            android:includeFontPadding="false"
-            android:text="@string/choose_a_place"
-            android:textColor="@color/colorIcons"
-            android:textSize="@dimen/_12ssp"/>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/layoutAddCollaboratorReminder"
+        android:id="@+id/layoutAddCollaborator"
         android:layout_width="match_parent"
         android:layout_height="@dimen/_35sdp"
         android:layout_margin="@dimen/_10sdp"
@@ -259,7 +205,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/layoutDeleteReminder"
+        android:id="@+id/layoutDeleteNote"
         android:layout_width="match_parent"
         android:layout_height="@dimen/_35sdp"
         android:layout_margin="@dimen/_10sdp"

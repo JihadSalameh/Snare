@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
-    tools:context=".Activities.CreateNoteActivity">
+    tools:context=".Activities.CreateReminderActivity">
 
 
     <ScrollView
@@ -21,7 +21,7 @@
             android:animateLayoutChanges="true">
 
             <ImageView
-                android:id="@+id/imageBack"
+                android:id="@+id/imageBackReminder"
                 android:layout_width="@dimen/_30sdp"
                 android:layout_height="@dimen/_30sdp"
                 android:layout_marginStart="@dimen/_6sdp"
@@ -37,7 +37,7 @@
 
 
             <ImageView
-                android:id="@+id/imageSave"
+                android:id="@+id/imageSaveReminder"
                 android:layout_width="@dimen/_20sdp"
                 android:layout_height="@dimen/_20sdp"
                 android:layout_marginEnd="@dimen/_12sdp"
@@ -46,13 +46,13 @@
                 android:padding="@dimen/_4sdp"
                 android:src="@drawable/ic_done"
                 android:tint="@color/colorIcons"
-                app:layout_constraintBottom_toBottomOf="@id/imageBack"
+                app:layout_constraintBottom_toBottomOf="@id/imageBackReminder"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/imageBack"
+                app:layout_constraintTop_toTopOf="@id/imageBackReminder"
                 tools:ignore="UseAppTint" />
 
             <EditText
-                android:id="@+id/inputNoteTitle"
+                android:id="@+id/inputReminderTitle"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_35sdp"
                 android:layout_marginStart="@dimen/_12sdp"
@@ -68,30 +68,30 @@
                 android:textColor="@color/colorWhite"
                 android:textColorHint="@color/colorTextHint"
                 android:textSize="@dimen/_16ssp"
-                app:layout_constraintTop_toBottomOf="@+id/imageBack" />
+                app:layout_constraintTop_toBottomOf="@+id/imageBackReminder" />
 
             <View
-                android:id="@+id/viewTitleIndicator"
+                android:id="@+id/viewTitleIndicatorReminder"
                 android:layout_width="@dimen/_5sdp"
                 android:layout_height="0dp"
                 android:background="@drawable/background_title_indicator"
-                app:layout_constraintBottom_toBottomOf="@id/inputNoteTitle"
-                app:layout_constraintEnd_toStartOf="@id/inputNoteTitle"
-                app:layout_constraintTop_toTopOf="@id/inputNoteTitle" />
+                app:layout_constraintBottom_toBottomOf="@id/inputReminderTitle"
+                app:layout_constraintEnd_toStartOf="@id/inputReminderTitle"
+                app:layout_constraintTop_toTopOf="@id/inputReminderTitle" />
 
             <TextView
-                android:id="@+id/textDateTime"
+                android:id="@+id/textDateTimeReminder"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:includeFontPadding="false"
                 android:textColor="@color/colorIcons"
                 android:textSize="10sp"
-                app:layout_constraintEnd_toEndOf="@id/inputNoteTitle"
-                app:layout_constraintStart_toStartOf="@id/inputNoteTitle"
-                app:layout_constraintTop_toBottomOf="@id/inputNoteTitle" />
+                app:layout_constraintEnd_toEndOf="@id/inputReminderTitle"
+                app:layout_constraintStart_toStartOf="@id/inputReminderTitle"
+                app:layout_constraintTop_toBottomOf="@id/inputReminderTitle" />
 
             <ImageView
-                android:id="@+id/imageNote"
+                android:id="@+id/imageReminder"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_12sdp"
@@ -100,11 +100,11 @@
                 android:adjustViewBounds="true"
                 android:contentDescription="@string/app_name"
                 android:visibility="gone"
-                app:layout_constraintTop_toBottomOf="@id/inputNoteTitle" />
+                app:layout_constraintTop_toBottomOf="@id/inputReminderTitle" />
 
 
             <ImageView
-                android:id="@+id/imageRemoveImage"
+                android:id="@+id/imageRemoveImageReminder"
                 android:layout_width="@dimen/_25sdp"
                 android:layout_height="@dimen/_25sdp"
                 android:layout_marginTop="@dimen/_10sdp"
@@ -115,13 +115,13 @@
                 android:src="@drawable/ic_delete"
                 android:tint="@color/colorWhite"
                 android:visibility="gone"
-                app:layout_constraintTop_toTopOf="@id/imageNote"
-                app:layout_constraintEnd_toEndOf="@id/imageNote"
+                app:layout_constraintTop_toTopOf="@id/imageReminder"
+                app:layout_constraintEnd_toEndOf="@id/imageReminder"
                 tools:ignore="UseAppTint" />
 
 
             <EditText
-                android:id="@+id/inputNote"
+                android:id="@+id/inputReminder"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_12sdp"
@@ -140,13 +140,13 @@
                 android:textColorHint="@color/colorTextHint"
                 android:textSize="@dimen/_13ssp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/imageNote" />
+                app:layout_constraintTop_toBottomOf="@id/imageReminder" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </ScrollView>
 
-    <include layout="@layout/layout_miscellaneous_note" />
+    <include layout="@layout/layout_miscellaneous" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

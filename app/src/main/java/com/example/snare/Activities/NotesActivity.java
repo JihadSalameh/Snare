@@ -164,7 +164,7 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
     }
 
     private void setImageAddNoteMainListener() {
-        imageAddNoteMain.setOnClickListener(view -> startActivityForResult(new Intent(getApplicationContext(), CreateActivity.class), REQUEST_CODE_ADD_NOTE));
+        imageAddNoteMain.setOnClickListener(view -> startActivityForResult(new Intent(getApplicationContext(), CreateNoteActivity.class), REQUEST_CODE_ADD_NOTE));
     }
 
     private void getAllNotes(int requestCode, boolean isNoteDeleted) {
@@ -271,7 +271,7 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
             if(selectedImageUri != null) {
                 try {
                     String selectedImagePath = getPathFromUri(selectedImageUri);
-                    Intent intent = new Intent(getApplicationContext(), CreateActivity.class);
+                    Intent intent = new Intent(getApplicationContext(), CreateNoteActivity.class);
                     intent.putExtra("isFromQuickActionsBar",true);
                     intent.putExtra("quickActionBarType","image");
                     intent.putExtra("imagePath",selectedImagePath);
@@ -288,7 +288,7 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
     @Override
     public void onNoteClick(Note note, int position) {
         onClickPosition = position;
-        Intent intent = new Intent(getApplicationContext(), CreateActivity.class);
+        Intent intent = new Intent(getApplicationContext(), CreateNoteActivity.class);
         intent.putExtra("isViewOrUpdate", true);
         intent.putExtra("note", note);
         startActivityForResult(intent, REQUEST_CODE_UPDATE_NOTE);
@@ -345,7 +345,7 @@ public class NotesActivity extends AppCompatActivity implements NotesListeners {
     }
 
     private void setImageAddNoteListener() {
-        imageAddNote.setOnClickListener(view -> startActivityForResult(new Intent(getApplicationContext(), CreateActivity.class), REQUEST_CODE_ADD_NOTE));
+        imageAddNote.setOnClickListener(view -> startActivityForResult(new Intent(getApplicationContext(), CreateNoteActivity.class), REQUEST_CODE_ADD_NOTE));
     }
 
     private void fillNavDrawer() {
