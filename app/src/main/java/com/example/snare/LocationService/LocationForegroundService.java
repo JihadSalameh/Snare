@@ -164,7 +164,6 @@ public class LocationForegroundService extends Service {
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
         list2.clear();
     }
 
