@@ -355,7 +355,7 @@ public class ShoutsActivity extends AppCompatActivity implements GroupListener, 
                 shouts.add(shout);
 
                 //keeps changing when moving on the Screen (need to make it fixed) -> might be fixed
-                map.addMarker(new MarkerOptions().position(Objects.requireNonNull(temp)).title("shout from " + temp_name[0]));
+                map.addMarker(new MarkerOptions().position(Objects.requireNonNull(temp)).title(temp_name[0] + ": " + text[0]));
             }
 
             for(Shout shout: shouts) {
