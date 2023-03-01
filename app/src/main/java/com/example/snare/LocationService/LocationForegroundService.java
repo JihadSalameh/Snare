@@ -18,6 +18,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 
+import com.example.snare.Activities.ReminderActivity;
 import com.example.snare.Entities.PinnedLocations;
 import com.example.snare.Entities.Reminder;
 import com.example.snare.R;
@@ -112,12 +113,21 @@ public class LocationForegroundService extends Service {
                             //Log.d(TAG, pinnedLocations.getName() + "******************" + locationResult.getLastLocation().distanceTo(pinned) + "********************");
                             //System.out.println(pinnedLocations.getName() + "******************" + locationResult.getLastLocation().distanceTo(pinned) + "********************");
 
+                            Intent openIntent = new Intent(getApplicationContext(), ReminderActivity.class);
+                            openIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                            PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(),
+                                    1, openIntent, PendingIntent.FLAG_IMMUTABLE);
+                            openIntent.putExtra("locationReminder",true);
+                            openIntent.putExtra("log",pinnedLocations.getLng());
+                            openIntent.putExtra("lat",pinnedLocations.getLat());
                             NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), "channel_id")
                                     .setSmallIcon(R.drawable.ic_notifications)
                                     .setContentTitle(pinnedLocations.getName())
                                     .setContentText("You're near this location")
                                     .setPriority(NotificationCompat.PRIORITY_HIGH)
-                                    .setAutoCancel(true);
+                                    .setAutoCancel(true)
+                                    .setContentIntent(pendingIntent);
 
                             NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
                             notificationManager.notify(0, builder.build());

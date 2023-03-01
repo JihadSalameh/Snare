@@ -28,6 +28,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
+import com.example.snare.Entities.PinnedLocations;
 import com.example.snare.Entities.Reminder;
 import com.example.snare.R;
 import com.example.snare.adapters.ReminderAdapter;
@@ -35,6 +36,7 @@ import com.example.snare.dao.NotesDataBase;
 import com.example.snare.dao.NotificationsDataBase;
 import com.example.snare.dao.PinnedLocationsDataBase;
 import com.example.snare.dao.ReminderDataBase;
+import com.example.snare.firebaseRef.FirebasePinnedLocations;
 import com.example.snare.firebaseRef.FirebaseReminders;
 import com.example.snare.listeners.RemindersListeners;
 import com.google.android.material.navigation.NavigationView;
@@ -85,6 +87,55 @@ public class ReminderActivity extends AppCompatActivity implements RemindersList
         setRecycleView();
         getAllReminders(REQUEST_CODE_SHOW_REMINDER, false);
         createNotificationChannel();
+        deleteReminderByLocation();
+    }
+
+    private void deleteReminderByLocation() {
+        Intent intent = getIntent();
+        boolean isReminderByLocation = intent.getBooleanExtra("locationReminder",false);
+        String lat = intent.getStringExtra("lat");
+        if(isReminderByLocation){
+            String log = intent.getStringExtra("log");
+            FirebasePinnedLocations firebasePinnedLocations = new FirebasePinnedLocations();
+            firebasePinnedLocations.getAllPinnedLocations(new FirebasePinnedLocations.PinnedLocationsCallback() {
+                @Override
+                public void onPinnedLocationsRetrieved(List<PinnedLocations> pinnedLocations) {
+                    for(PinnedLocations pinnedLocations1 : pinnedLocations){
+                        if(pinnedLocations1.getLat().equals(lat) && pinnedLocations1.getLng().equals(log)){
+                            String name = pinnedLocations1.getName();
+                            getReminderToBeDeleted(name);
+                            break;
+                        }
+                    }
+                }
+
+                @Override
+                public void onPinnedLocationsRetrieveError(String error) {
+
+                }
+            });
+
+        }
+    }
+
+    private void getReminderToBeDeleted(String name) {
+        FirebaseReminders firebaseReminders = new FirebaseReminders();
+        firebaseReminders.getAllReminders(new FirebaseReminders.RemindersCallback() {
+            @Override
+            public void onRemindersRetrieved(List<Reminder> reminders) {
+                for(Reminder reminder : reminders){
+                    if(reminder.getLocation() != null && reminder.getLocation().equals(name)){
+                        firebaseReminders.delete(reminder);
+                        break;
+                    }
+                }
+            }
+
+            @Override
+            public void onRemindersRetrieveError(String error) {
+
+            }
+        });
     }
 
     private void createNotificationChannel() {
