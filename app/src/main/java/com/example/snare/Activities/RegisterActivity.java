@@ -59,4 +59,9 @@ public class RegisterActivity extends AppCompatActivity {
         Matcher matcher = pattern.matcher(password);
         return matcher.matches();
     }
+
+    public void HaveAccount(View view) {
+        startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+        finish();
+    }
 }

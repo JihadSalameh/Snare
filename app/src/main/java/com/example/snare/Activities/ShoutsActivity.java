@@ -72,6 +72,8 @@ public class ShoutsActivity extends AppCompatActivity implements GroupListener, 
     private DatabaseReference mDatabaseShouts;
     private FirebaseUser user;
 
+    private LatLng chosenLocation = null;
+
     private List<String> shoutsUsers;
     private String name = "";
 
@@ -180,54 +182,57 @@ public class ShoutsActivity extends AppCompatActivity implements GroupListener, 
         finish();
     }
 
-    public void shoutToAll() {
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
-        final View ShoutPopUp = getLayoutInflater().inflate(R.layout.shout, null);
+    public void shoutToAll(LatLng latLng) {
+        if(latLng != null) {
+            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+            final View ShoutPopUp = getLayoutInflater().inflate(R.layout.shout, null);
 
-        shoutText = ShoutPopUp.findViewById(R.id.shout_text);
-        send = ShoutPopUp.findViewById(R.id.send);
-        cancel = ShoutPopUp.findViewById(R.id.cancel);
+            shoutText = ShoutPopUp.findViewById(R.id.shout_text);
+            send = ShoutPopUp.findViewById(R.id.send);
+            cancel = ShoutPopUp.findViewById(R.id.cancel);
 
-        dialogBuilder.setView(ShoutPopUp);
-        AlertDialog dialog = dialogBuilder.create();
-        dialog.show();
+            dialogBuilder.setView(ShoutPopUp);
+            AlertDialog dialog = dialogBuilder.create();
+            dialog.show();
 
-        send.setOnClickListener(view -> {
+            send.setOnClickListener(view -> {
+                mDatabase.get().addOnSuccessListener(dataSnapshot -> {
+                    for(DataSnapshot users: dataSnapshot.getChildren()) {
+                        if(!Objects.requireNonNull(users.getKey()).equals(user.getUid())) {
+                            FCMSend.pushNotification(ShoutsActivity.this, Objects.requireNonNull(users.child("token").getValue()).toString(), "Shout from " + name, shoutText.getText().toString());
+                        }
 
-            mDatabase.get().addOnSuccessListener(dataSnapshot -> {
-                for(DataSnapshot users: dataSnapshot.getChildren()) {
-                    if(!Objects.requireNonNull(users.getKey()).equals(user.getUid())) {
-                        FCMSend.pushNotification(ShoutsActivity.this, Objects.requireNonNull(users.child("token").getValue()).toString(), "Shout from " + name, shoutText.getText().toString());
+                        try {
+                            Thread.sleep(100); // Delay for 0.1 second
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }
+                });
 
-                    try {
-                        Thread.sleep(100); // Delay for 0.1 second
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                //save shouts to firebase
+                LatLng loc = new LatLng(latLng.latitude, latLng.longitude);
+                Map<String, Object> s = new HashMap<>();
+                Map<String, Object> s1 = new HashMap<>();
+                s1.put(name, loc);
+                s.put(shoutText.getText().toString(), s1);
+
+                mDatabase.get().addOnSuccessListener(dataSnapshot -> {
+                    for(DataSnapshot snapshot: dataSnapshot.getChildren()) {
+                        if (!Objects.requireNonNull(snapshot.getKey()).equals(user.getUid())) {
+                            mDatabaseShouts.child(Objects.requireNonNull(snapshot.getKey())).updateChildren(s).addOnFailureListener(System.out::println);
+                        }
                     }
-                }
+                });
+
+                shoutText.setText("");
+                dialog.dismiss();
             });
 
-            //save shouts to firebase
-            LatLng loc = new LatLng(map.getCameraPosition().target.latitude, map.getCameraPosition().target.longitude);
-            Map<String, Object> s = new HashMap<>();
-            Map<String, Object> s1 = new HashMap<>();
-            s1.put(name, loc);
-            s.put(shoutText.getText().toString(), s1);
-
-            mDatabase.get().addOnSuccessListener(dataSnapshot -> {
-                for(DataSnapshot snapshot: dataSnapshot.getChildren()) {
-                    mDatabaseShouts.child(Objects.requireNonNull(snapshot.getKey())).updateChildren(s).addOnFailureListener(System.out::println);
-                }
-            });
-
-
-
-            shoutText.setText("");
-            dialog.dismiss();
-        });
-
-        cancel.setOnClickListener(view -> dialog.dismiss());
+            cancel.setOnClickListener(view -> dialog.dismiss());
+        } else {
+            Toast.makeText(this, "Select a location first!", Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void shoutToGroups() {
@@ -254,51 +259,56 @@ public class ShoutsActivity extends AppCompatActivity implements GroupListener, 
 
         shoutsUsers.addAll(group.getGroupMembers());
         popupGroup.dismiss();
-        createNewShoutToGroupsDialog();
+        createNewShoutToGroupsDialog(chosenLocation);
     }
 
-    private void createNewShoutToGroupsDialog() {
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
-        final View ShoutPopUp = getLayoutInflater().inflate(R.layout.shout, null);
+    private void createNewShoutToGroupsDialog(LatLng latLng) {
+        if(latLng != null) {
+            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+            final View ShoutPopUp = getLayoutInflater().inflate(R.layout.shout, null);
 
-        shoutText = ShoutPopUp.findViewById(R.id.shout_text);
-        send = ShoutPopUp.findViewById(R.id.send);
-        cancel = ShoutPopUp.findViewById(R.id.cancel);
+            shoutText = ShoutPopUp.findViewById(R.id.shout_text);
+            send = ShoutPopUp.findViewById(R.id.send);
+            cancel = ShoutPopUp.findViewById(R.id.cancel);
 
-        dialogBuilder.setView(ShoutPopUp);
-        AlertDialog dialog = dialogBuilder.create();
-        dialog.show();
+            dialogBuilder.setView(ShoutPopUp);
+            AlertDialog dialog = dialogBuilder.create();
+            dialog.show();
 
-        send.setOnClickListener(view -> {
-            mDatabase.get().addOnSuccessListener(dataSnapshot -> {
-                for(DataSnapshot users: dataSnapshot.getChildren()) {
-                    if(!Objects.requireNonNull(users.getKey()).equals(user.getUid()) && shoutsUsers.contains(users.getKey())) {
-                        FCMSend.pushNotification(ShoutsActivity.this, Objects.requireNonNull(users.child("token").getValue()).toString(), "Shout from " + name, shoutText.getText().toString());
+            send.setOnClickListener(view -> {
+                mDatabase.get().addOnSuccessListener(dataSnapshot -> {
+                    for(DataSnapshot users: dataSnapshot.getChildren()) {
+                        if(!Objects.requireNonNull(users.getKey()).equals(user.getUid()) && shoutsUsers.contains(users.getKey())) {
+                            FCMSend.pushNotification(ShoutsActivity.this, Objects.requireNonNull(users.child("token").getValue()).toString(), "Shout from " + name, shoutText.getText().toString());
+                        }
+
+                        try {
+                            Thread.sleep(100); // Delay for 0.1 second
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }
+                });
 
-                    try {
-                        Thread.sleep(100); // Delay for 0.1 second
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                //save shouts to firebase
+                LatLng loc = new LatLng(latLng.latitude, latLng.longitude);
+                Map<String, Object> s = new HashMap<>();
+                Map<String, Object> s1 = new HashMap<>();
+                s1.put(name, loc);
+                s.put(shoutText.getText().toString(), s1);
+                for(String token: shoutsUsers) {
+                    mDatabaseShouts.child(token).updateChildren(s).addOnFailureListener(System.out::println);
                 }
+
+                shoutText.setText("");
+                dialog.dismiss();
             });
 
-            //save shouts to firebase
-            LatLng loc = new LatLng(map.getCameraPosition().target.latitude, map.getCameraPosition().target.longitude);
-            Map<String, Object> s = new HashMap<>();
-            Map<String, Object> s1 = new HashMap<>();
-            s1.put(name, loc);
-            s.put(shoutText.getText().toString(), s1);
-            for(String token: shoutsUsers) {
-                mDatabaseShouts.child(token).updateChildren(s).addOnFailureListener(System.out::println);
-            }
+            cancel.setOnClickListener(view -> dialog.dismiss());
+        } else {
+            Toast.makeText(this, "Select a location first!", Toast.LENGTH_SHORT).show();
+        }
 
-            shoutText.setText("");
-            dialog.dismiss();
-        });
-
-        cancel.setOnClickListener(view -> dialog.dismiss());
     }
 
     public void addShout(View view) {
@@ -313,7 +323,7 @@ public class ShoutsActivity extends AppCompatActivity implements GroupListener, 
         AlertDialog dialog = dialogBuilder.create();
         dialog.show();
 
-        toAll.setOnClickListener(view12 -> shoutToAll());
+        toAll.setOnClickListener(view12 -> shoutToAll(chosenLocation));
 
         toGroups.setOnClickListener(view13 -> shoutToGroups());
 
@@ -331,21 +341,21 @@ public class ShoutsActivity extends AppCompatActivity implements GroupListener, 
 
         mDatabaseShouts.child(user.getUid()).get().addOnSuccessListener(dataSnapshot -> {
             for(DataSnapshot snapshot: dataSnapshot.getChildren()) {
-                LatLng latLng = null;
+                LatLng temp = null;
                 for(DataSnapshot snapshot1: snapshot.getChildren()) {
                     double x = Double.parseDouble(Objects.requireNonNull(snapshot1.child("latitude").getValue()).toString());
                     double y = Double.parseDouble(Objects.requireNonNull(snapshot1.child("longitude").getValue()).toString());
-                    latLng = new LatLng(x, y);
+                    temp = new LatLng(x, y);
                     temp_name[0] = snapshot1.getKey();
                 }
                 text[0] = snapshot.getKey();
-                Shout shout = new Shout(text[0], temp_name[0], latLng);
+                Shout shout = new Shout(text[0], temp_name[0], temp);
 
                 //save all shouts
                 shouts.add(shout);
 
-                //keeps changing when moving on the Screen (need to make it fixed)
-                //map.addMarker(new MarkerOptions().position(Objects.requireNonNull(latLng)).title("shout from " + temp_name[0]));
+                //keeps changing when moving on the Screen (need to make it fixed) -> might be fixed
+                map.addMarker(new MarkerOptions().position(Objects.requireNonNull(temp)).title("shout from " + temp_name[0]));
             }
 
             for(Shout shout: shouts) {
@@ -353,13 +363,20 @@ public class ShoutsActivity extends AppCompatActivity implements GroupListener, 
                 System.out.println(shout.toString());
                 System.out.println("*********************");
             }
-
         });
         //////////////////////////////////////////////////////////////////////////
 
-        googleMap.setOnCameraMoveListener(() -> {
+        /*googleMap.setOnCameraMoveListener(() -> {
             map.clear();
             LatLng latLng = new LatLng(map.getCameraPosition().target.latitude, map.getCameraPosition().target.longitude);
+            map.addMarker(new MarkerOptions().position(latLng));
+        });*/
+
+        googleMap.setOnMapLongClickListener(latLng -> {
+            //to clear map when long clicking to choose a location
+            map.clear();
+
+            chosenLocation = latLng;
             map.addMarker(new MarkerOptions().position(latLng));
         });
 
