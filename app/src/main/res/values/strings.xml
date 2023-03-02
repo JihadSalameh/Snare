@@ -24,4 +24,5 @@
     <string name="save">Save</string>
     <string name="select_a_date">Select a date ... </string>
     <string name="count"> ~ 0</string>
+    <string name="emailMsg"> We noticed unusual activity on your account,if this was you, please ignore this email, if not a Password reset email has been sent to you</string>
 </resources>
