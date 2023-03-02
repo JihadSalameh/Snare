@@ -38,7 +38,7 @@ public class PushNotificationService extends FirebaseMessagingService {
                         .setContentText(text)
                                 .setSmallIcon(R.drawable.logo)
                                         .setAutoCancel(true);
-        NotificationManagerCompat.from(this).notify(2, notification.build());
+        NotificationManagerCompat.from(this).notify(4, notification.build());
 
         notificationsDao = NotificationsDataBase.getDatabase(this).notificationsDao();
 
