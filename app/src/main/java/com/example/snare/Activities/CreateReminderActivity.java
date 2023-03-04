@@ -88,7 +88,7 @@ public class CreateReminderActivity extends AppCompatActivity implements GroupLi
     private List<PinnedLocations> pinnedLocations;
     private GroupLayout popupGroup;
     private PinnedLocationDialog pinnedLocationDialog;
-    boolean isTimeDateReminder = false , isLocationReminder = false;
+    boolean isTimeDateReminder = false , isLocationReminder = false ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -136,6 +136,43 @@ public class CreateReminderActivity extends AppCompatActivity implements GroupLi
         setAddReminderListener();
         setCollaborateListener();
         setAddPinnedListener();
+        checkIsConvert();
+    }
+
+    private void checkIsConvert() {
+        Intent intent = getIntent();
+        boolean isConverted = intent.getBooleanExtra("isConverted",false);
+        if(!isConverted){
+           return;
+        }
+
+        String title = intent.getStringExtra("title");
+        String color = intent.getStringExtra("color");
+        String group = intent.getStringExtra("group");
+        String image = intent.getStringExtra("image");
+        String content = intent.getStringExtra("content");
+
+        alreadyAvailableReminder = new Reminder();
+        alreadyAvailableReminder.setTitle(title);
+        alreadyAvailableReminder.setReminderText(content);
+        alreadyAvailableReminder.setColor(color);
+        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference("reminders");
+        alreadyAvailableReminder.setIdFirebase(Objects.requireNonNull(mDatabase.getRef().push().getKey()));
+        if (image != null) {
+            imageReminder.setImageBitmap(BitmapFactory.decodeFile(image));
+            imageReminder.setVisibility(View.VISIBLE);
+            imageRemoveImageReminder.setVisibility(View.VISIBLE);
+            selectedImagePath = alreadyAvailableReminder.getImagePath();
+        }
+        if(group != null){
+            ArrayList<String> groups = new ArrayList<>();
+            groups.add(group);
+            alreadyAvailableReminder.setGroup(groups);
+        }
+
+        alreadyAvailableReminder.setLocation("");
+
+        fillViewReminder();
     }
 
     @Override
@@ -358,7 +395,7 @@ public class CreateReminderActivity extends AppCompatActivity implements GroupLi
 
             if(isLocationReminder){
                 reminder.setLocation(pinnedLocations.get(0).getName());
-                pinnedLocations.clear();
+              //  pinnedLocations.clear();
             }else{
                 reminder.setLocation("");
             }
@@ -397,7 +434,10 @@ public class CreateReminderActivity extends AppCompatActivity implements GroupLi
                 reminder.setGroup(alreadyAvailableReminder.getGroup());
             }
 
-            if(isLocationReminder || isTimeDateReminder || alreadyAvailableReminder != null){
+            if(isLocationReminder || isTimeDateReminder ||
+                    (alreadyAvailableReminder != null && alreadyAvailableReminder.getHour() != 0)
+                    || (alreadyAvailableReminder != null && !alreadyAvailableReminder.getLocation().isEmpty())
+            ){
                 saveReminder(reminder);
             }else {
                 Toast.makeText(getApplicationContext(),"Select time or location" , Toast.LENGTH_SHORT).show();
@@ -552,7 +592,13 @@ public class CreateReminderActivity extends AppCompatActivity implements GroupLi
         }
     }
 
+
     private void setViewReminder() {
+        fillViewReminder();
+        setDeleteListener();
+    }
+
+    private void fillViewReminder() {
         inputReminderTitle.setText(alreadyAvailableReminder.getTitle());
         inputReminder.setText(alreadyAvailableReminder.getReminderText());
         textDateTimeReminder.setText(alreadyAvailableReminder.getDateTime());
@@ -566,8 +612,6 @@ public class CreateReminderActivity extends AppCompatActivity implements GroupLi
             imageRemoveImageReminder.setVisibility(View.VISIBLE);
             selectedImagePath = alreadyAvailableReminder.getImagePath();
         }
-
-        setDeleteListener();
     }
 
     private void setDeleteListener() {

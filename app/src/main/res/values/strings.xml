@@ -24,4 +24,5 @@
     <string name="save">Save</string>
     <string name="select_a_date">Select a date ... </string>
     <string name="count"> ~ 0</string>
+    <string name="make_reminder">make reminder</string>
 </resources>

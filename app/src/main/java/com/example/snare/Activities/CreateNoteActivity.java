@@ -74,6 +74,7 @@ public class CreateNoteActivity extends AppCompatActivity implements GroupListen
     private AlertDialog dialogDeleteNote;
     private List<String> groupIDs;
     private GroupLayout popupGroup;
+    private boolean isHighPriority = false ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,7 +120,10 @@ public class CreateNoteActivity extends AppCompatActivity implements GroupListen
         setAddImageListener();
         setRemoveImageListener();
         setCollaborateListener();
+        setHighPriorityListener();
+
     }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -410,6 +414,7 @@ public class CreateNoteActivity extends AppCompatActivity implements GroupListen
         }
 
         setDeleteListener();
+        setConvertListener();
     }
 
     private void setDeleteListener() {
@@ -493,6 +498,56 @@ public class CreateNoteActivity extends AppCompatActivity implements GroupListen
             }
             popupGroup.show();
         });
+    }
+
+    private void setConvertListener() {
+        LinearLayout layoutConvert = findViewById(R.id.layoutConvertToReminder);
+        layoutConvert.setVisibility(View.VISIBLE);
+        layoutConvert.setOnClickListener(view -> {
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            convertToReminder();
+        });
+    }
+
+    private void setHighPriorityListener() {
+        LinearLayout layoutConvert = findViewById(R.id.layoutPriority);
+        layoutConvert.setVisibility(View.VISIBLE);
+        layoutConvert.setOnClickListener(view -> {
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            if(!isHighPriority){
+                selectedNoteColor = "#FFBB86FC";
+                isHighPriority = true ;
+                layoutMiscellaneous.findViewById(R.id.layoutPriority).setAlpha(0.5f);
+                layoutMiscellaneous.findViewById(R.id.layoutNoteColor).setAlpha(0.5f);
+
+            }else {
+                selectedNoteColor = "#333333";
+                isHighPriority = false ;
+                layoutMiscellaneous.findViewById(R.id.layoutPriority).setAlpha(1);
+            }
+
+        });
+    }
+
+    private void convertToReminder() {
+        Intent intent = new Intent(getApplicationContext(),CreateReminderActivity.class);
+        intent.putExtra("isConverted",true);
+        intent.putExtra("title",inputNoteTitle.getText().toString());
+        intent.putExtra("content",inputNote.getText().toString());
+        intent.putExtra("color",selectedNoteColor);
+        if (alreadyAvailableNote.getImagePath() != null && !alreadyAvailableNote.getImagePath().trim().isEmpty()) {
+            imageNote.setImageBitmap(BitmapFactory.decodeFile(alreadyAvailableNote.getImagePath()));
+            imageNote.setVisibility(View.VISIBLE);
+            imageRemoveImage.setVisibility(View.VISIBLE);
+            selectedImagePath = alreadyAvailableNote.getImagePath();
+            intent.putExtra("image",selectedImagePath);
+        }
+
+        if(alreadyAvailableNote.getGroup() != null && alreadyAvailableNote.getGroup().size() != 0){
+            intent.putExtra("group",alreadyAvailableNote.getGroup().get(0));
+        }
+        startActivity(intent);
+        finish();
     }
 
     @Override
