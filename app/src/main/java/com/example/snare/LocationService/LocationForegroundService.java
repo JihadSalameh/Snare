@@ -18,7 +18,6 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 
-import com.example.snare.Activities.ReminderActivity;
 import com.example.snare.Entities.PinnedLocations;
 import com.example.snare.Entities.Reminder;
 import com.example.snare.R;
@@ -115,9 +114,9 @@ public class LocationForegroundService extends Service {
     }
 
     private void requestLocationUpdates() {
-        LocationRequest request = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 5000)
-                .setMinUpdateIntervalMillis(15000)
-                .setMaxUpdateDelayMillis(15000)
+        LocationRequest request = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 15000)
+                .setMinUpdateIntervalMillis(30000)
+                .setMaxUpdateDelayMillis(30000)
                 .setWaitForAccurateLocation(true)
                 .build();
         FusedLocationProviderClient client = LocationServices.getFusedLocationProviderClient(getBaseContext());
