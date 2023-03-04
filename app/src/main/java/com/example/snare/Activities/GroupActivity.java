@@ -27,7 +27,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.SearchView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.snare.Entities.Group;
@@ -35,11 +34,6 @@ import com.example.snare.R;
 import com.example.snare.adapters.GroupAdapter;
 import com.example.snare.firebaseRef.GroupFirebase;
 import com.example.snare.listeners.GroupListener;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,8 +45,6 @@ public class GroupActivity extends AppCompatActivity implements GroupListener {
     private static final int REQUEST_CODE_SELECT_IMAGE = 4;
     private static final int REQUEST_CODE_STORAGE_PERMISSION = 5;
     private static final int REQUEST_CODE_SHOW_GROUPS = 3;
-    private DatabaseReference userRef;
-    private FirebaseUser user;
     private RecyclerView groupRecycleView;
     private ImageView imageAddGroupMain;
     private String imagePath ;
@@ -70,7 +62,6 @@ public class GroupActivity extends AppCompatActivity implements GroupListener {
     private void setActivity() {
         initializeActivity();
         setListeners();
-        fillNavDrawer();
         getAllGroups(REQUEST_CODE_SHOW_GROUPS, false);
         setRecycleView();
 
@@ -79,21 +70,6 @@ public class GroupActivity extends AppCompatActivity implements GroupListener {
     private void initializeActivity() {
         imageAddGroupMain = findViewById(R.id.imageAddGroupMain);
         groupRecycleView = findViewById(R.id.groupRecycleView);
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        user = auth.getCurrentUser();
-        userRef = FirebaseDatabase.getInstance().getReference("Users").child(user.getUid());
-    }
-
-    private void fillNavDrawer() {
-        userRef.get().addOnSuccessListener(snapshot -> {
-            ImageView imageView = findViewById(R.id.profileImg);
-            TextView name = findViewById(R.id.nameTxt);
-            TextView email = findViewById(R.id.emailTxtNav);
-
-            Picasso.get().load(snapshot.child("profilePic").getValue(String.class)).into(imageView);
-            name.setText(snapshot.child("name").getValue(String.class));
-            email.setText(user.getEmail());
-        });
     }
 
     private void setListeners() {
