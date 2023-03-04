@@ -10,6 +10,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Binder;
 import android.os.IBinder;
 
@@ -121,7 +123,7 @@ public class LocationForegroundService extends Service {
                 .build();
         FusedLocationProviderClient client = LocationServices.getFusedLocationProviderClient(getBaseContext());
         int permission = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
-        if(permission == PackageManager.PERMISSION_GRANTED) {
+        if(permission == PackageManager.PERMISSION_GRANTED && isNetworkAvailable(getApplicationContext())) {
             client.requestLocationUpdates(request, new LocationCallback() {
                 @Override
                 public void onLocationResult(@NonNull LocationResult locationResult) {
@@ -192,6 +194,13 @@ public class LocationForegroundService extends Service {
         manager.createNotificationChannel(channel);
 
         startForeground(2, builder.build());
+    }
+
+    public boolean isNetworkAvailable(Context context) {
+        ConnectivityManager connectivityManager =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     @Override
