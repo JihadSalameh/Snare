@@ -37,7 +37,6 @@ import com.example.snare.R;
 import com.example.snare.adapters.GroupAdapter;
 import com.example.snare.firebaseRef.GroupFirebase;
 import com.example.snare.listeners.GroupListener;
-import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -57,9 +56,7 @@ public class GroupActivity extends AppCompatActivity implements GroupListener {
     private static final int REQUEST_CODE_SHOW_GROUPS = 3;
     public DrawerLayout drawerLayout;
     public ActionBarDrawerToggle actionBarDrawerToggle;
-    public NavigationView navigationView;
     private DatabaseReference userRef;
-    private FirebaseAuth auth;
     private FirebaseUser user;
     private RecyclerView groupRecycleView;
     private ImageView imageAddGroupMain;
@@ -79,7 +76,6 @@ public class GroupActivity extends AppCompatActivity implements GroupListener {
         initializeActivity();
         setListeners();
         fillNavDrawer();
-        navOnClickAction();
         getAllGroups(REQUEST_CODE_SHOW_GROUPS, false);
         setRecycleView();
 
@@ -88,13 +84,12 @@ public class GroupActivity extends AppCompatActivity implements GroupListener {
     private void initializeActivity() {
         imageAddGroupMain = findViewById(R.id.imageAddGroupMain);
         drawerLayout = findViewById(R.id.group_drawer_layout);
-        navigationView = findViewById(R.id.group_nav_menu);
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.nav_open, R.string.nav_close);
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
         actionBarDrawerToggle.syncState();
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         groupRecycleView = findViewById(R.id.groupRecycleView);
-        auth = FirebaseAuth.getInstance();
+        FirebaseAuth auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
         userRef = FirebaseDatabase.getInstance().getReference("Users").child(user.getUid());
     }
@@ -111,54 +106,12 @@ public class GroupActivity extends AppCompatActivity implements GroupListener {
         });
     }
 
-    private void navOnClickAction() {
-        navigationView.setNavigationItemSelectedListener(item -> {
-            if(item.getTitle().toString().equals("Logout")) {
-                logout();
-            } else if(item.getTitle().toString().equals("Profile")) {
-                startActivity(new Intent(GroupActivity.this, ProfileActivity.class));
-            } else if(item.getTitle().toString().equals("Friends")) {
-                startActivity(new Intent(GroupActivity.this, FriendsActivity.class));
-            } else if(item.getTitle().toString().equals("Shouts")) {
-                startActivity(new Intent(GroupActivity.this, ShoutsActivity.class));
-                finish();
-            } else if(item.getTitle().toString().equals("Reminders")) {
-                startActivity(new Intent(GroupActivity.this, ReminderActivity.class));
-                finish();
-            } else if(item.getTitle().toString().equals("Notifications")) {
-                startActivity(new Intent(GroupActivity.this, NotificationsActivity.class));
-            } else if(item.getTitle().toString().equals("Pinned Locations")) {
-                startActivity(new Intent(GroupActivity.this, PinnedLocationsActivity.class));
-            }else if(item.getTitle().toString().equals("Groups")) {
-                startActivity(new Intent(GroupActivity.this, GroupActivity.class));
-            }else if(item.getTitle().toString().equals("Notes")) {
-                startActivity(new Intent(GroupActivity.this, NotesActivity.class));
-            }
-
-            return true;
-        });
-    }
-
     private void setListeners() {
         setImageAddGroupMainListener();
     }
 
     private void setImageAddGroupMainListener() {
        imageAddGroupMain.setOnClickListener(v -> createNewGroupDialog());
-    }
-
-    private void logout() {
-        auth.signOut();
-
-        //delete all tables
-        deleteDatabase("notes_db");
-        deleteDatabase("notifications_db");
-        deleteDatabase("pinnedLocations_db");
-        deleteDatabase("reminders_db");
-
-        Toast.makeText(GroupActivity.this, "Signed out!", Toast.LENGTH_SHORT).show();
-        startActivity(new Intent(GroupActivity.this, LoginActivity.class));
-        finish();
     }
 
     @SuppressLint("IntentReset")
@@ -331,14 +284,6 @@ public class GroupActivity extends AppCompatActivity implements GroupListener {
     }
 
     @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if(actionBarDrawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
     public void onGroupClick(Group group, int position) {
         onClickPosition = position;
         Intent intent = new Intent(getApplicationContext(), MembersActivity.class);
@@ -346,4 +291,5 @@ public class GroupActivity extends AppCompatActivity implements GroupListener {
         startActivity(intent);
         finish();
     }
+
 }

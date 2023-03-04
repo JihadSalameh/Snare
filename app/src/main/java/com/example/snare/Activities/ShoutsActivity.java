@@ -126,8 +126,6 @@ public class ShoutsActivity extends AppCompatActivity implements GroupListener, 
                 logout();
             } else if(item.getTitle().toString().equals("Profile")) {
                 startActivity(new Intent(ShoutsActivity.this, ProfileActivity.class));
-            } else if(item.getTitle().toString().equals("Friends")) {
-                startActivity(new Intent(ShoutsActivity.this, FriendsActivity.class));
             } else if(item.getTitle().toString().equals("Notes")) {
                 startActivity(new Intent(ShoutsActivity.this, NotesActivity.class));
                 finish();
@@ -138,6 +136,10 @@ public class ShoutsActivity extends AppCompatActivity implements GroupListener, 
                 startActivity(new Intent(ShoutsActivity.this, NotificationsActivity.class));
             } else if(item.getTitle().toString().equals("Pinned Locations")) {
                 startActivity(new Intent(ShoutsActivity.this, PinnedLocationsActivity.class));
+            } else if(item.getTitle().toString().equals("Groups")) {
+                startActivity(new Intent(ShoutsActivity.this, GroupActivity.class));
+            } else if(item.getTitle().toString().equals("Friends")) {
+                startActivity(new Intent(ShoutsActivity.this, FriendsActivity.class));
             }
 
             return true;

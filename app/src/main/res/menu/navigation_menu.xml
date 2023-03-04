@@ -34,11 +34,6 @@
         android:icon="@drawable/ic_baseline_group_24" />
 
     <item
-        android:id="@+id/nav_labels"
-        android:title="Labels"
-        android:icon="@drawable/ic_baseline_label_24" />
-
-    <item
         android:id="@+id/nav_friends"
         android:title="Friends"
         android:icon="@drawable/ic_baseline_people_alt_24" />
