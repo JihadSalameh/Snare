@@ -1,8 +1,5 @@
 package com.example.snare.Activities;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -11,6 +8,9 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.snare.Entities.Note;
 import com.example.snare.Entities.PinnedLocations;
@@ -35,6 +35,17 @@ import com.google.firebase.auth.GoogleAuthProvider;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Properties;
+
+import javax.mail.Authenticator;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -45,6 +56,11 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth auth;
     private FirebaseUser user;
     private ImageView googleImageView;
+
+
+
+    private int reqCount=0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,7 +150,7 @@ public class LoginActivity extends AppCompatActivity {
     private void LoginUser(String email_txt, String password_txt) {
         SharedPreferences sharedPreferences = getSharedPreferences("User", 0);
 
-        auth.signInWithEmailAndPassword(email_txt, password_txt).addOnSuccessListener(authResult -> updateUI()).addOnFailureListener(e -> Toast.makeText(LoginActivity.this, "Wrong Username Or Password!", Toast.LENGTH_SHORT).show());
+        auth.signInWithEmailAndPassword(email_txt, password_txt).addOnSuccessListener(authResult -> updateUI()).addOnFailureListener(e -> wrongPassword(email_txt));
     }
 
     private void updateTables() {
@@ -203,4 +219,82 @@ public class LoginActivity extends AppCompatActivity {
         startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
         finish();
     }
+
+    public void wrongPassword(String stringRecEmail) {
+
+       String stringSenderEmail ="snarenoreply@gmail.com";
+       String stringSenderPass ="vyspjizzzitoqmgi";
+
+        reqCount++;
+         if(reqCount <= 3)
+         {
+             Toast.makeText(LoginActivity.this, "Wrong Username Or Password!", Toast.LENGTH_SHORT).show();
+
+         }
+         else if(reqCount==4) {
+
+             try {
+                 String stringHost = "smtp.gmail.com";
+                 Properties properties = System.getProperties();
+                 properties.put("mail.smtp.host", stringHost);
+                 properties.put("mail.smtp.port", "465");
+                 properties.put("mail.smtp.ssl.enable", "true");
+                 properties.put("mail.smtp.auth", "true");
+
+                 javax.mail.Session session = Session.getInstance(properties, new Authenticator() {
+                     @Override
+                     protected PasswordAuthentication getPasswordAuthentication() {
+                         return new PasswordAuthentication(stringSenderEmail, stringSenderPass);
+                     }
+                 });
+
+                 MimeMessage mimeMessage = new MimeMessage(session);
+                 mimeMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(stringRecEmail));
+
+                 mimeMessage.setSubject("Account Alert");
+                 mimeMessage.setText(getString(R.string.emailMsg));
+
+                 auth.sendPasswordResetEmail(stringRecEmail);
+
+                 Thread thread = new Thread(new Runnable() {
+                     @Override
+                     public void run() {
+                         try {
+                             Transport.send(mimeMessage);
+                         } catch (MessagingException e) {
+                             e.printStackTrace();
+                         }
+                     }
+                 });
+                 thread.start();
+
+             } catch (AddressException e) {
+                 e.printStackTrace();
+             }catch (MessagingException e) {
+                 e.printStackTrace();
+             }
+
+             Toast.makeText(LoginActivity.this, "You have reached the maximum number of attempts", Toast.LENGTH_SHORT).show();
+         }
+         else {
+             Toast.makeText(LoginActivity.this, "an Email was sent to you", Toast.LENGTH_SHORT).show();
+         }
+
+
+    }
+
+         public void forgotPassword(View view) {
+             String email_txt = email.getText().toString();
+
+             if(TextUtils.isEmpty(email_txt)) {
+                 Toast.makeText(this, "Email cannot be empty", Toast.LENGTH_SHORT).show();
+             } else if(!android.util.Patterns.EMAIL_ADDRESS.matcher(email_txt).matches()) {
+                 Toast.makeText(this, "Wrong Email Format", Toast.LENGTH_SHORT).show();
+             } else {
+                 auth.sendPasswordResetEmail(email_txt);
+                 Toast.makeText(this, "Password Reset Email has been sent", Toast.LENGTH_SHORT).show();
+             }
+
+    }
+
 }

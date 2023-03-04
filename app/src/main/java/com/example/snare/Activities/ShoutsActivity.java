@@ -323,9 +323,15 @@ public class ShoutsActivity extends AppCompatActivity implements GroupListener, 
         AlertDialog dialog = dialogBuilder.create();
         dialog.show();
 
-        toAll.setOnClickListener(view12 -> shoutToAll(chosenLocation));
+        toAll.setOnClickListener(view12 -> {
+            shoutToAll(chosenLocation);
+            dialog.dismiss();
+        });
 
-        toGroups.setOnClickListener(view13 -> shoutToGroups());
+        toGroups.setOnClickListener(view13 -> {
+            shoutToGroups();
+            dialog.dismiss();
+        });
 
         cancel1.setOnClickListener(view1 -> dialog.dismiss());
     }
@@ -334,7 +340,6 @@ public class ShoutsActivity extends AppCompatActivity implements GroupListener, 
     public void onMapReady(@NonNull GoogleMap googleMap) {
         map=googleMap;
 
-        //////////////////////////////////////////////////////////////////////////
         ArrayList<Shout> shouts = new ArrayList<>();
         String[] temp_name = new String[1];
         String[] text = new String[1];
@@ -357,20 +362,7 @@ public class ShoutsActivity extends AppCompatActivity implements GroupListener, 
                 //keeps changing when moving on the Screen (need to make it fixed) -> might be fixed
                 map.addMarker(new MarkerOptions().position(Objects.requireNonNull(temp)).title(temp_name[0] + ": " + text[0]));
             }
-
-            for(Shout shout: shouts) {
-                System.out.println("*********************");
-                System.out.println(shout.toString());
-                System.out.println("*********************");
-            }
         });
-        //////////////////////////////////////////////////////////////////////////
-
-        /*googleMap.setOnCameraMoveListener(() -> {
-            map.clear();
-            LatLng latLng = new LatLng(map.getCameraPosition().target.latitude, map.getCameraPosition().target.longitude);
-            map.addMarker(new MarkerOptions().position(latLng));
-        });*/
 
         googleMap.setOnMapLongClickListener(latLng -> {
             //to clear map when long clicking to choose a location
