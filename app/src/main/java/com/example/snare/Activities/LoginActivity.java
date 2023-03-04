@@ -56,11 +56,7 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth auth;
     private FirebaseUser user;
     private ImageView googleImageView;
-
-
-
-    private int reqCount=0;
-
+    private int reqCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,14 +79,15 @@ public class LoginActivity extends AppCompatActivity {
         googleImageView.setOnClickListener(v -> signInGoogle());
     }
 
-    private void isUserLogin(){
-        if(user != null) {
+    private void isUserLogin() {
+        if (user != null) {
             startActivity(new Intent(LoginActivity.this, NotesActivity.class));
             finish();
         }
     }
 
     private void initializeActivity() {
+        reqCount = 0;
         email = findViewById(R.id.email_Txt);
         password = findViewById(R.id.password_Txt);
         auth = FirebaseAuth.getInstance();
@@ -113,7 +110,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == RC_SIGN_IN) {
+        if (requestCode == RC_SIGN_IN) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             try {
                 GoogleSignInAccount account = task.getResult(ApiException.class);
@@ -129,7 +126,7 @@ public class LoginActivity extends AppCompatActivity {
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
         auth.signInWithCredential(credential)
                 .addOnCompleteListener(this, task -> {
-                    if(task.isSuccessful()) {
+                    if (task.isSuccessful()) {
                         FirebaseUser user = auth.getCurrentUser();
                         assert user != null;
                         Toast.makeText(LoginActivity.this, user.getEmail(), Toast.LENGTH_SHORT).show();
@@ -141,7 +138,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void updateUI() {
-        Toast.makeText(LoginActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
+        Toast.makeText(LoginActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
         updateTables();
         startActivity(new Intent(LoginActivity.this, NotesActivity.class));
         finish();
@@ -150,7 +147,9 @@ public class LoginActivity extends AppCompatActivity {
     private void LoginUser(String email_txt, String password_txt) {
         SharedPreferences sharedPreferences = getSharedPreferences("User", 0);
 
-        auth.signInWithEmailAndPassword(email_txt, password_txt).addOnSuccessListener(authResult -> updateUI()).addOnFailureListener(e -> wrongPassword(email_txt));
+        if (reqCount < 4) {
+            auth.signInWithEmailAndPassword(email_txt, password_txt).addOnSuccessListener(authResult -> updateUI()).addOnFailureListener(e -> wrongPassword(email_txt));
+        }
     }
 
     private void updateTables() {
@@ -161,7 +160,7 @@ public class LoginActivity extends AppCompatActivity {
         firebaseNotes.getAllNotes(new FirebaseNotes.NotesCallback() {
             @Override
             public void onNotesRetrieved(List<Note> notes) {
-                for(Note note: notes) {
+                for (Note note : notes) {
                     NotesDataBase.getDatabase(getApplicationContext()).noteDao().insertNote(note);
                 }
             }
@@ -175,7 +174,7 @@ public class LoginActivity extends AppCompatActivity {
         firebaseReminders.getAllReminders(new FirebaseReminders.RemindersCallback() {
             @Override
             public void onRemindersRetrieved(List<Reminder> reminders) {
-                for(Reminder reminder: reminders) {
+                for (Reminder reminder : reminders) {
                     ReminderDataBase.getDatabase(getApplicationContext()).reminderDao().insertReminder(reminder);
                 }
             }
@@ -189,7 +188,7 @@ public class LoginActivity extends AppCompatActivity {
         firebasePinnedLocations.getAllPinnedLocations(new FirebasePinnedLocations.PinnedLocationsCallback() {
             @Override
             public void onPinnedLocationsRetrieved(List<PinnedLocations> pinnedLocations) {
-                for(PinnedLocations pinnedLocations1: pinnedLocations) {
+                for (PinnedLocations pinnedLocations1 : pinnedLocations) {
                     PinnedLocationsDataBase.getDatabase(getApplicationContext()).pinnedLocationsDao().Insert(pinnedLocations1);
                 }
             }
@@ -206,10 +205,10 @@ public class LoginActivity extends AppCompatActivity {
         String email_txt = email.getText().toString();
         String password_txt = password.getText().toString();
 
-        if(TextUtils.isEmpty(email_txt) || TextUtils.isEmpty(password_txt)) {
-            Toast.makeText(this, "Empty Credentials!", Toast.LENGTH_SHORT).show();
-        } else if(!android.util.Patterns.EMAIL_ADDRESS.matcher(email_txt).matches()) {
-            Toast.makeText(this, "Wrong Email Format!", Toast.LENGTH_SHORT).show();
+        if (TextUtils.isEmpty(email_txt) || TextUtils.isEmpty(password_txt)) {
+            Toast.makeText(this, "Empty Credentials", Toast.LENGTH_SHORT).show();
+        } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email_txt).matches()) {
+            Toast.makeText(this, "Wrong Email Format", Toast.LENGTH_SHORT).show();
         } else {
             LoginUser(email_txt, password_txt);
         }
@@ -222,79 +221,73 @@ public class LoginActivity extends AppCompatActivity {
 
     public void wrongPassword(String stringRecEmail) {
 
-       String stringSenderEmail ="snarenoreply@gmail.com";
-       String stringSenderPass ="vyspjizzzitoqmgi";
+        String stringSenderEmail = "snarenoreply@gmail.com";
+        String stringSenderPass = "vyspjizzzitoqmgi";
 
         reqCount++;
-         if(reqCount <= 3)
-         {
-             Toast.makeText(LoginActivity.this, "Wrong Username Or Password!", Toast.LENGTH_SHORT).show();
+        if (reqCount <= 3) {
+            Toast.makeText(LoginActivity.this, "Wrong Username Or Password", Toast.LENGTH_SHORT).show();
 
-         }
-         else if(reqCount==4) {
+        } else if (reqCount == 4) {
 
-             try {
-                 String stringHost = "smtp.gmail.com";
-                 Properties properties = System.getProperties();
-                 properties.put("mail.smtp.host", stringHost);
-                 properties.put("mail.smtp.port", "465");
-                 properties.put("mail.smtp.ssl.enable", "true");
-                 properties.put("mail.smtp.auth", "true");
+            try {
+                String stringHost = "smtp.gmail.com";
+                Properties properties = System.getProperties();
+                properties.put("mail.smtp.host", stringHost);
+                properties.put("mail.smtp.port", "465");
+                properties.put("mail.smtp.ssl.enable", "true");
+                properties.put("mail.smtp.auth", "true");
 
-                 javax.mail.Session session = Session.getInstance(properties, new Authenticator() {
-                     @Override
-                     protected PasswordAuthentication getPasswordAuthentication() {
-                         return new PasswordAuthentication(stringSenderEmail, stringSenderPass);
-                     }
-                 });
+                javax.mail.Session session = Session.getInstance(properties, new Authenticator() {
+                    @Override
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication(stringSenderEmail, stringSenderPass);
+                    }
+                });
 
-                 MimeMessage mimeMessage = new MimeMessage(session);
-                 mimeMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(stringRecEmail));
+                MimeMessage mimeMessage = new MimeMessage(session);
+                mimeMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(stringRecEmail));
 
-                 mimeMessage.setSubject("Account Alert");
-                 mimeMessage.setText(getString(R.string.emailMsg));
+                mimeMessage.setSubject("Account Alert");
+                mimeMessage.setText(getString(R.string.emailMsg));
 
-                 auth.sendPasswordResetEmail(stringRecEmail);
+                auth.sendPasswordResetEmail(stringRecEmail);
 
-                 Thread thread = new Thread(new Runnable() {
-                     @Override
-                     public void run() {
-                         try {
-                             Transport.send(mimeMessage);
-                         } catch (MessagingException e) {
-                             e.printStackTrace();
-                         }
-                     }
-                 });
-                 thread.start();
+                Thread thread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Transport.send(mimeMessage);
+                        } catch (MessagingException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+                thread.start();
 
-             } catch (AddressException e) {
-                 e.printStackTrace();
-             }catch (MessagingException e) {
-                 e.printStackTrace();
-             }
+            } catch (AddressException e) {
+                e.printStackTrace();
+            } catch (MessagingException e) {
+                e.printStackTrace();
+            }
 
-             Toast.makeText(LoginActivity.this, "You have reached the maximum number of attempts", Toast.LENGTH_SHORT).show();
-         }
-         else {
-             Toast.makeText(LoginActivity.this, "an Email was sent to you", Toast.LENGTH_SHORT).show();
-         }
-
+            Toast.makeText(LoginActivity.this, "You have reached the maximum number of attempts", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(LoginActivity.this, "an Email was sent to you", Toast.LENGTH_SHORT).show();
+        }
 
     }
 
-         public void forgotPassword(View view) {
-             String email_txt = email.getText().toString();
-
-             if(TextUtils.isEmpty(email_txt)) {
-                 Toast.makeText(this, "Email cannot be empty", Toast.LENGTH_SHORT).show();
-             } else if(!android.util.Patterns.EMAIL_ADDRESS.matcher(email_txt).matches()) {
-                 Toast.makeText(this, "Wrong Email Format", Toast.LENGTH_SHORT).show();
-             } else {
-                 auth.sendPasswordResetEmail(email_txt);
-                 Toast.makeText(this, "Password Reset Email has been sent", Toast.LENGTH_SHORT).show();
-             }
-
+    public void forgotPassword(View view) {
+        String email_txt = email.getText().toString();
+        if (TextUtils.isEmpty(email_txt)) {
+            Toast.makeText(this, "Email cannot be empty", Toast.LENGTH_SHORT).show();
+        } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email_txt).matches()) {
+            Toast.makeText(this, "Wrong Email Format", Toast.LENGTH_SHORT).show();
+        } else {
+            auth.sendPasswordResetEmail(email_txt);
+            Toast.makeText(this, "Password Reset Email has been sent", Toast.LENGTH_SHORT).show();
+        }
     }
 
 }
