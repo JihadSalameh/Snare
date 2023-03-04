@@ -2,11 +2,9 @@ package com.example.snare.Activities;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
@@ -45,7 +43,6 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class GroupActivity extends AppCompatActivity implements GroupListener {
 
@@ -54,8 +51,6 @@ public class GroupActivity extends AppCompatActivity implements GroupListener {
     private static final int REQUEST_CODE_SELECT_IMAGE = 4;
     private static final int REQUEST_CODE_STORAGE_PERMISSION = 5;
     private static final int REQUEST_CODE_SHOW_GROUPS = 3;
-    public DrawerLayout drawerLayout;
-    public ActionBarDrawerToggle actionBarDrawerToggle;
     private DatabaseReference userRef;
     private FirebaseUser user;
     private RecyclerView groupRecycleView;
@@ -83,11 +78,6 @@ public class GroupActivity extends AppCompatActivity implements GroupListener {
 
     private void initializeActivity() {
         imageAddGroupMain = findViewById(R.id.imageAddGroupMain);
-        drawerLayout = findViewById(R.id.group_drawer_layout);
-        actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.nav_open, R.string.nav_close);
-        drawerLayout.addDrawerListener(actionBarDrawerToggle);
-        actionBarDrawerToggle.syncState();
-        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         groupRecycleView = findViewById(R.id.groupRecycleView);
         FirebaseAuth auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
